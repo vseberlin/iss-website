@@ -1,0 +1,17 @@
+# Ignore everything by default.
+/*
+/.*
+
+# Keep this ignore file.
+!.gitignore
+
+# Keep only the SaaS API plugin.
+!/plugins/
+/plugins/*
+!/plugins/saas-api/
+!/plugins/saas-api/**
+
+# Keep themes (note: `themes/` is its own git repo here).
+!/themes/
+!/themes/**
+
