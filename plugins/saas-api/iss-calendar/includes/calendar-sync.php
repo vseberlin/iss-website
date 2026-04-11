@@ -228,9 +228,21 @@ function iss_calendar_get_supersaas_slots_for_tag($tag, $settings = null) {
             continue;
         }
 
-        $parsed = iss_calendar_parse_supersaas_title($raw_title);
-        if (empty($parsed['tag']) || strtoupper((string) $parsed['tag']) !== $tag) {
-            continue;
+        // Prefer a structured tag stored in SuperSaaS "location".
+        // This lets us avoid encoding [TAG] into the public title.
+        $loc = isset($slot['location']) ? strtoupper(trim((string) $slot['location'])) : '';
+        $parsed = null;
+        $clean_title = $raw_title;
+
+        if ($loc !== '' && $loc === $tag) {
+            // Title is already clean.
+        } else {
+            // Back-compat: support legacy "[TAG] Title" format in the title string.
+            $parsed = iss_calendar_parse_supersaas_title($raw_title);
+            if (empty($parsed['tag']) || strtoupper((string) $parsed['tag']) !== $tag) {
+                continue;
+            }
+            $clean_title = (string) ($parsed['title'] ?? $raw_title);
         }
 
         $start = $slot['start'] ?? null;
@@ -239,7 +251,7 @@ function iss_calendar_get_supersaas_slots_for_tag($tag, $settings = null) {
         }
 
         if (function_exists('is_saas_build_slot_response')) {
-            $built = is_saas_build_slot_response($slot, (string) ($parsed['title'] ?? ''), $start);
+            $built = is_saas_build_slot_response($slot, $clean_title, $start);
             if (is_array($built)) {
                 $built['id'] = isset($built['id']) ? (string) $built['id'] : '';
                 $built['booking_url'] = null;
@@ -260,7 +272,7 @@ function iss_calendar_get_supersaas_slots_for_tag($tag, $settings = null) {
 
         $slots[] = [
             'id' => isset($slot['id']) ? (string) $slot['id'] : '',
-            'title' => (string) ($parsed['title'] ?? $raw_title),
+            'title' => $clean_title,
             'start' => $start,
             'end' => $slot['end'] ?? ($slot['finish'] ?? null),
             'capacity' => isset($slot['capacity']) ? (int) $slot['capacity'] : null,
@@ -423,11 +435,22 @@ function iss_calendar_sync_supersaas_to_cpt() {
 
         $raw_title = isset($slot['title']) ? (string) $slot['title'] : '';
         $parsed = iss_calendar_parse_supersaas_title($raw_title);
-        $tag = isset($parsed['tag']) ? (string) $parsed['tag'] : '';
-        $clean_title = isset($parsed['title']) ? (string) $parsed['title'] : '';
+
+        $loc_tag = isset($slot['location']) ? strtoupper(trim((string) $slot['location'])) : '';
+        $tag = '';
+        if ($loc_tag !== '' && in_array($loc_tag, $mapped_tags, true)) {
+            $tag = $loc_tag;
+        } else {
+            $tag = isset($parsed['tag']) ? strtoupper((string) $parsed['tag']) : '';
+        }
 
         if ($tag === '' || !in_array($tag, $mapped_tags, true)) {
             continue;
+        }
+
+        $clean_title = isset($parsed['title']) ? (string) $parsed['title'] : '';
+        if ($clean_title === '') {
+            $clean_title = trim((string) $raw_title);
         }
 
         $start = isset($slot['start']) ? trim((string) $slot['start']) : '';
@@ -494,6 +517,9 @@ function iss_calendar_sync_supersaas_to_cpt() {
         update_post_meta($post_id, 'source_post_id', $source_post_id);
         update_post_meta($post_id, 'source_post_type', $source_post_type);
         update_post_meta($post_id, 'booking_url', $booking_url);
+        if (!empty($slot['location'])) {
+            update_post_meta($post_id, 'location', sanitize_text_field((string) $slot['location']));
+        }
         update_post_meta($post_id, 'availability_state', $availability_state);
         if ($capacity_total !== null) update_post_meta($post_id, 'capacity_total', (int) $capacity_total);
         if ($available !== null) update_post_meta($post_id, 'capacity_available', (int) $available);
