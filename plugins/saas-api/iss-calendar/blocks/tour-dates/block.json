@@ -1,0 +1,14 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "iss/tour-dates",
+  "title": "Tour Dates",
+  "category": "widgets",
+  "icon": "calendar",
+  "description": "Shows upcoming dates from iss_calendar_item.",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./editor.css",
+  "supports": {
+    "html": false
+  }
+}

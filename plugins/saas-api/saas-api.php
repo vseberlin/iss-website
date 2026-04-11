@@ -11,9 +11,7 @@ define('IS_SAAS_VERSION', '1.2.0');
 define('IS_SAAS_OPTION_GROUP', 'is_saas_options');
 define('IS_SAAS_OPTION_NAME', 'is_saas_settings');
 
-require_once __DIR__ . '/includes/iss-calendar-cpt.php';
-require_once __DIR__ . '/includes/iss-calendar-sync.php';
-require_once __DIR__ . '/includes/iss-calendar-query.php';
+require_once __DIR__ . '/iss-calendar/iss-calendar.php';
 
 register_activation_hook(__FILE__, 'iss_calendar_activate_sync');
 register_deactivation_hook(__FILE__, 'iss_calendar_deactivate_sync');
