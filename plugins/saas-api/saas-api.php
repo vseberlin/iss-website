@@ -203,17 +203,23 @@ add_action('rest_api_init', function () {
 function is_tours_get_slots(WP_REST_Request $request) {
     $settings = is_saas_get_settings();
 
-    if (empty($settings['schedule_id']) || empty($settings['api_key']) || empty($settings['account_name'])) {
-        return new WP_REST_Response([
-            'error' => 'Missing SuperSaaS configuration'
-        ], 500);
+    $tag = strtoupper(sanitize_text_field($request->get_param('tag')));
+    $source_post_id = (int) $request->get_param('post_id');
+
+    if (!$tag && $source_post_id > 0) {
+        $tag = strtoupper(sanitize_text_field((string) get_post_meta($source_post_id, 'calendar_tag', true)));
+        if (!$tag && function_exists('iss_calendar_resolve_tag_for_source_post_id')) {
+            $tag = iss_calendar_resolve_tag_for_source_post_id($source_post_id);
+        }
     }
 
-    $tag = strtoupper(sanitize_text_field($request->get_param('tag')));
     if (!$tag) {
-        return new WP_REST_Response([
-            'error' => 'Missing tag'
-        ], 400);
+        // Return empty array (UI will show fallback link). Also signals the reason via header.
+        $res = new WP_REST_Response([], 200);
+        $res->header('X-IS-Tours-Source', 'nomap');
+        $res->header('X-IS-Tours-Error', 'missing-tag');
+        $res->header('Cache-Control', 'no-store');
+        return $res;
     }
 
 	    $cache_key = 'is_tours_slots_' . md5($tag);

@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.is-tour-calendar').forEach(async (widget) => {
     let tag = widget.dataset.tag;
     const fallbackUrl = widget.dataset.fallback;
+    const sourcePostId = (widget.dataset && (widget.dataset.sourcePostId || widget.dataset.postId)) ? String(widget.dataset.sourcePostId || widget.dataset.postId) : '';
 
     ensureCalendarShell(widget);
 
@@ -18,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bookUrl = (window.IS_TOUR_CALENDAR && window.IS_TOUR_CALENDAR.bookUrl) || '';
 
     tag = widget.dataset.tag;
-    if (!tag) {
+    if (!tag && !sourcePostId) {
       widget.classList.add('is-tour-calendar--no-slots');
 
       let statusEl = status;
@@ -39,11 +40,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      const res = await fetch(`${restUrl}?tag=${encodeURIComponent(tag)}`, {
+      const query = tag
+        ? `tag=${encodeURIComponent(tag)}`
+        : `post_id=${encodeURIComponent(sourcePostId)}`;
+
+      const res = await fetch(`${restUrl}?${query}`, {
         credentials: 'same-origin'
       });
 
       const data = await res.json();
+
+      if (res.ok && Array.isArray(data) && data.length === 0 && res.headers && res.headers.get) {
+        const err = res.headers.get('X-IS-Tours-Error');
+        if (err === 'missing-tag') {
+          widget.classList.add('is-tour-calendar--no-slots');
+          renderStatus(status, fallbackUrl, 'Keine Zuordnung vorhanden.', 'Alle Termine anzeigen');
+          return;
+        }
+      }
 
       if (!res.ok || !Array.isArray(data) || data.length === 0) {
         widget.classList.add('is-tour-calendar--no-slots');
@@ -170,9 +184,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		            if (!isSoldOut) {
 		              btn.addEventListener('click', () => {
 		                widget.dispatchEvent(new CustomEvent('is:slotSelected', { detail: slot }));
-		                openBookingForm(widget, slot, tag, btn);
-		              });
-		            }
+			                openBookingForm(widget, slot, tag || '', btn);
+			              });
+			            }
 
 		            appointmentsList.appendChild(btn);
 		          } else {
@@ -197,9 +211,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		              if (!isSoldOut) {
 		                btn.addEventListener('click', () => {
 		                  widget.dispatchEvent(new CustomEvent('is:slotSelected', { detail: slot }));
-		                  openBookingForm(widget, slot, tag, btn);
-		                });
-		              }
+			                  openBookingForm(widget, slot, tag || '', btn);
+			                });
+			              }
 
 		              appointmentsList.appendChild(btn);
 		            });
@@ -236,9 +250,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		          const clickedEl = appointmentsList
 		            ? appointmentsList.querySelector(`[data-slot-id="${safeId}"]`)
 		            : null;
-		          openBookingForm(widget, slot, tag, clickedEl);
-		        });
-		      }
+			          openBookingForm(widget, slot, tag || '', clickedEl);
+			        });
+			      }
 
       if (dateInput && window.flatpickr && dayKeys.length) {
         if (window.flatpickr.l10ns && window.flatpickr.l10ns.de) {
@@ -320,13 +334,14 @@ function ensureCalendarShell(widget) {
   if (widget.querySelector('.is-tour-calendar__date-input')) return;
 
   const tag = (widget.dataset && widget.dataset.tag) ? String(widget.dataset.tag) : '';
+  const sourcePostId = (widget.dataset && (widget.dataset.sourcePostId || widget.dataset.postId)) ? String(widget.dataset.sourcePostId || widget.dataset.postId) : '';
   const fallbackUrl = (widget.dataset && widget.dataset.fallback) ? String(widget.dataset.fallback) : '';
   const title = (widget.dataset && widget.dataset.title) ? String(widget.dataset.title) : 'Termine wählen';
-  if (!tag) return;
+  if (!tag && !sourcePostId) return;
   const fallbackLabel = fallbackLinkText(fallbackUrl, 'Direkt buchen');
 
-  const safeTag = tag.toLowerCase().replace(/[^a-z0-9_-]/g, '');
-  const slotSelectId = `is-tour-slot-${safeTag || 'tour'}-${Math.floor(Math.random() * 9000 + 1000)}`;
+  const safeKey = (tag || sourcePostId).toLowerCase().replace(/[^a-z0-9_-]/g, '');
+  const slotSelectId = `is-tour-slot-${safeKey || 'tour'}-${Math.floor(Math.random() * 9000 + 1000)}`;
 
   widget.innerHTML = `
     <div class="is-tour-calendar__inner wp-block-group is-layout-constrained">
