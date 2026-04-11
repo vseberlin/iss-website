@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.is-tour-calendar').forEach(async (widget) => {
-    const tag = widget.dataset.tag;
+    let tag = widget.dataset.tag;
     const fallbackUrl = widget.dataset.fallback;
 
     ensureCalendarShell(widget);
@@ -16,6 +16,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const restUrl = (window.IS_TOUR_CALENDAR && window.IS_TOUR_CALENDAR.restUrl) || '';
     const bookUrl = (window.IS_TOUR_CALENDAR && window.IS_TOUR_CALENDAR.bookUrl) || '';
+
+    tag = widget.dataset.tag;
+    if (!tag) {
+      widget.classList.add('is-tour-calendar--no-slots');
+
+      let statusEl = status;
+      if (!statusEl) {
+        statusEl = document.createElement('p');
+        statusEl.className = 'is-tour-calendar__status has-small-font-size';
+        widget.prepend(statusEl);
+      }
+
+      renderStatus(statusEl, fallbackUrl, 'Keine Zuordnung vorhanden.', 'Alle Termine anzeigen');
+      return;
+    }
 
     if (!restUrl) {
       widget.classList.add('is-tour-calendar--no-slots');
