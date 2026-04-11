@@ -239,7 +239,12 @@ function iss_calendar_get_supersaas_slots_for_tag($tag, $settings = null) {
         }
 
         if (function_exists('is_saas_build_slot_response')) {
-            $slots[] = is_saas_build_slot_response($slot, (string) ($parsed['title'] ?? ''), $start);
+            $built = is_saas_build_slot_response($slot, (string) ($parsed['title'] ?? ''), $start);
+            if (is_array($built)) {
+                $built['id'] = isset($built['id']) ? (string) $built['id'] : '';
+                $built['booking_url'] = null;
+                $slots[] = $built;
+            }
             continue;
         }
 
@@ -254,12 +259,13 @@ function iss_calendar_get_supersaas_slots_for_tag($tag, $settings = null) {
         }
 
         $slots[] = [
-            'id' => $slot['id'] ?? null,
+            'id' => isset($slot['id']) ? (string) $slot['id'] : '',
             'title' => (string) ($parsed['title'] ?? $raw_title),
             'start' => $start,
             'end' => $slot['end'] ?? ($slot['finish'] ?? null),
             'capacity' => isset($slot['capacity']) ? (int) $slot['capacity'] : null,
             'available' => $available,
+            'booking_url' => null,
         ];
     }
 
@@ -285,7 +291,7 @@ function iss_calendar_get_slots_with_fallback($tag, $settings = null) {
 
     $slots = iss_calendar_get_supersaas_slots_for_tag($tag, $settings);
     if (!is_wp_error($slots) && !empty($slots)) {
-        return ['slots' => $slots, 'source' => 'supersaas', 'error' => null];
+        return ['slots' => $slots, 'source' => 'saas', 'error' => null];
     }
 
     $fallback = iss_calendar_get_slots_fallback_for_tag($tag);
@@ -361,14 +367,20 @@ function iss_calendar_get_slots_fallback_for_tag($tag) {
 
         $capacity = ($cap_raw === '' || $cap_raw === null) ? null : (int) $cap_raw;
         $available = ($avail_raw === '' || $avail_raw === null) ? null : (int) $avail_raw;
+        $booking_url = get_post_meta($post_id, 'booking_url', true);
+        $booking_url = $booking_url ? (string) $booking_url : null;
+
+        $end = (string) get_post_meta($post_id, 'event_end', true);
+        $end = $end !== '' ? $end : null;
 
         $out[] = [
-            'id' => $external_id,
+            'id' => (string) $external_id,
             'title' => get_the_title($post_id),
             'start' => $start,
-            'end' => (string) get_post_meta($post_id, 'event_end', true),
+            'end' => $end,
             'capacity' => $capacity,
             'available' => $available,
+            'booking_url' => $booking_url,
         ];
     }
 
@@ -422,6 +434,9 @@ function iss_calendar_sync_supersaas_to_cpt() {
         if ($start === '') continue;
 
         $end = isset($slot['end']) ? trim((string) $slot['end']) : (isset($slot['finish']) ? trim((string) $slot['finish']) : '');
+        if ($end === '') {
+            $end = null;
+        }
 
         $capacity_total = isset($slot['capacity']) ? (int) $slot['capacity'] : null;
         $available = null;
@@ -494,12 +509,13 @@ function iss_calendar_sync_supersaas_to_cpt() {
             $slots_by_tag[$tag] = [];
         }
         $slots_by_tag[$tag][] = [
-            'id' => $external_id,
+            'id' => (string) $external_id,
             'title' => $clean_title !== '' ? $clean_title : $raw_title,
             'start' => $start,
             'end' => $end,
             'capacity' => $capacity_total !== null ? (int) $capacity_total : null,
             'available' => $available,
+            'booking_url' => $booking_url ? (string) $booking_url : null,
         ];
     }
 
@@ -513,8 +529,12 @@ function iss_calendar_sync_supersaas_to_cpt() {
 
         if (function_exists('is_tours_set_cached_slots_by_tag')) {
             is_tours_set_cached_slots_by_tag($tag, $slots, 60 * 60 * 6);
+            if (function_exists('is_tours_set_cached_source_by_tag')) {
+                is_tours_set_cached_source_by_tag($tag, 'cpt', 60 * 60 * 6);
+            }
         } else {
             set_transient('is_tours_slots_' . md5($tag), $slots, 60 * 60 * 6);
+            set_transient('is_tours_slots_src_' . md5($tag), 'cpt', 60 * 60 * 6);
         }
     }
 

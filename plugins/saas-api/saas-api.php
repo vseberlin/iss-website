@@ -127,12 +127,13 @@ function is_saas_build_slot_response($slot, $title, $start) {
     }
 
     return [
-        'id'        => $slot['id'] ?? null,
+        'id'        => isset($slot['id']) ? (string) $slot['id'] : '',
         'title'     => $title,
         'start'     => $start,
         'end'       => $slot['end'] ?? ($slot['finish'] ?? null),
         'capacity'  => isset($slot['capacity']) ? (int) $slot['capacity'] : null,
         'available' => $available,
+        'booking_url' => null,
     ];
 }
 
@@ -215,7 +216,7 @@ function is_tours_get_slots(WP_REST_Request $request) {
 
     if (!$tag) {
         // Return empty array (UI will show fallback link). Also signals the reason via header.
-        $res = new WP_REST_Response([], 200);
+        $res = new WP_REST_Response(['source' => 'nomap', 'slots' => []], 200);
         $res->header('X-IS-Tours-Source', 'nomap');
         $res->header('X-IS-Tours-Error', 'missing-tag');
         $res->header('Cache-Control', 'no-store');
@@ -226,14 +227,29 @@ function is_tours_get_slots(WP_REST_Request $request) {
 	    $cached = get_transient($cache_key);
 	    if ($cached !== false) {
         $cached_at = is_tours_get_cached_at_by_tag($tag);
-        $etag = is_tours_build_slots_etag($cached);
+        $source = is_tours_get_cached_source_by_tag($tag);
+        if ($source === '' || $source === 'cache') {
+            $source = 'saas';
+            if (is_array($cached)) {
+                foreach ($cached as $row) {
+                    if (!is_array($row)) continue;
+                    if (array_key_exists('booking_url', $row) && $row['booking_url']) {
+                        $source = 'cpt';
+                        break;
+                    }
+                }
+            }
+            is_tours_set_cached_source_by_tag($tag, $source, 60 * 60 * 6);
+        }
+        $payload = ['source' => $source, 'slots' => is_array($cached) ? $cached : []];
+        $etag = is_tours_build_etag($payload);
         $maybe = is_tours_maybe_304($request, $etag, $cached_at, 60);
         if ($maybe) {
             $maybe->header('X-IS-Tours-Source', 'cache');
             return $maybe;
         }
 
-        $res = new WP_REST_Response($cached, 200);
+        $res = new WP_REST_Response($payload, 200);
         $res->header('X-IS-Tours-Source', 'cache');
         if ($etag !== '') $res->header('ETag', $etag);
         $res->header('Cache-Control', 'public, max-age=60');
@@ -255,12 +271,14 @@ function is_tours_get_slots(WP_REST_Request $request) {
     $err = isset($result['error']) ? $result['error'] : null;
 
     if (!empty($slots)) {
-        $ttl = ($source === 'supersaas') ? (60 * 60 * 6) : (60 * 10);
+        $ttl = ($source === 'saas') ? (60 * 60 * 6) : (60 * 10);
         is_tours_set_cached_slots_by_tag($tag, $slots, $ttl);
+        is_tours_set_cached_source_by_tag($tag, $source, $ttl);
 
-        $etag = is_tours_build_slots_etag($slots);
+        $payload = ['source' => $source, 'slots' => $slots];
+        $etag = is_tours_build_etag($payload);
         $cached_at = is_tours_get_cached_at_by_tag($tag);
-        $max_age = ($source === 'supersaas') ? 300 : 60;
+        $max_age = ($source === 'saas') ? 300 : 60;
         $maybe = is_tours_maybe_304($request, $etag, $cached_at, $max_age);
         if ($maybe) {
             $maybe->header('X-IS-Tours-Source', $source);
@@ -270,7 +288,7 @@ function is_tours_get_slots(WP_REST_Request $request) {
             return $maybe;
         }
 
-        $res = new WP_REST_Response($slots, 200);
+        $res = new WP_REST_Response($payload, 200);
         $res->header('X-IS-Tours-Source', $source);
         if ($source === 'cpt') {
             $res->header('X-IS-Tours-Fallback', 'cpt');
@@ -285,13 +303,15 @@ function is_tours_get_slots(WP_REST_Request $request) {
 
     if ($err instanceof WP_Error) {
         return new WP_REST_Response([
+            'source' => 'error',
+            'slots' => [],
             'error' => 'Availability fetch failed',
             'fallback' => true,
             'details' => $err->get_error_message(),
         ], 502);
     }
 
-    $res = new WP_REST_Response([], 200);
+    $res = new WP_REST_Response(['source' => $source, 'slots' => []], 200);
     $res->header('X-IS-Tours-Source', $source);
     $res->header('Cache-Control', 'no-store');
     return $res;
@@ -438,6 +458,17 @@ function is_tours_get_cached_slots_by_tag($tag) {
     return $cached;
 }
 
+function is_tours_get_cached_source_by_tag($tag) {
+    $tag = strtoupper(sanitize_text_field((string) $tag));
+    if ($tag === '') {
+        return '';
+    }
+
+    $cache_key = 'is_tours_slots_src_' . md5($tag);
+    $src = get_transient($cache_key);
+    return $src ? (string) $src : '';
+}
+
 /**
  * Return when the tag cache was last written (unix timestamp), or 0.
  */
@@ -480,9 +511,25 @@ function is_tours_set_cached_slots_by_tag($tag, $slots, $ttl_seconds) {
     set_transient($ts_key, (int) current_time('timestamp'), $ttl_seconds);
 }
 
-function is_tours_build_slots_etag($slots) {
+function is_tours_set_cached_source_by_tag($tag, $source, $ttl_seconds) {
+    $tag = strtoupper(sanitize_text_field((string) $tag));
+    if ($tag === '') return;
+
+    $source = sanitize_key((string) $source);
+    if ($source === '') return;
+
+    $ttl_seconds = (int) $ttl_seconds;
+    if ($ttl_seconds <= 0) {
+        $ttl_seconds = 60 * 10;
+    }
+
+    $cache_key = 'is_tours_slots_src_' . md5($tag);
+    set_transient($cache_key, $source, $ttl_seconds);
+}
+
+function is_tours_build_etag($data) {
     try {
-        $json = wp_json_encode($slots);
+        $json = wp_json_encode($data);
         if (!is_string($json)) return '';
         return '"' . md5($json) . '"';
     } catch (Throwable $e) {
@@ -601,6 +648,7 @@ function is_tours_create_booking(WP_REST_Request $request) {
             if (!empty($fallback_slots)) {
                 // Prime cache from CPT fallback so the rest of the code path can reuse it.
                 is_tours_set_cached_slots_by_tag($tag, $fallback_slots, 60 * 10);
+                is_tours_set_cached_source_by_tag($tag, 'cpt', 60 * 10);
                 $slots = $fallback_slots;
             }
         }

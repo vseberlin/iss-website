@@ -50,16 +50,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const data = await res.json();
 
-      if (res.ok && Array.isArray(data) && data.length === 0 && res.headers && res.headers.get) {
-        const err = res.headers.get('X-IS-Tours-Error');
-        if (err === 'missing-tag') {
-          widget.classList.add('is-tour-calendar--no-slots');
-          renderStatus(status, fallbackUrl, 'Keine Zuordnung vorhanden.', 'Alle Termine anzeigen');
-          return;
-        }
+      const payload = (data && typeof data === 'object' && !Array.isArray(data))
+        ? data
+        : { source: 'legacy', slots: Array.isArray(data) ? data : [] };
+
+      const source = payload && typeof payload.source === 'string' ? payload.source : '';
+      const slotRows = Array.isArray(payload.slots) ? payload.slots : [];
+
+      if (res.ok && source === 'nomap') {
+        widget.classList.add('is-tour-calendar--no-slots');
+        renderStatus(status, fallbackUrl, 'Keine Zuordnung vorhanden.', 'Alle Termine anzeigen');
+        return;
       }
 
-      if (!res.ok || !Array.isArray(data) || data.length === 0) {
+      if (!res.ok || slotRows.length === 0) {
         widget.classList.add('is-tour-calendar--no-slots');
         renderStatus(status, fallbackUrl, 'Für diese Führung sind aktuell keine Termine verfügbar.', 'Alle Termine anzeigen');
         return;
@@ -67,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       widget.classList.remove('is-tour-calendar--no-slots');
 
-      const slots = data
+      const slots = slotRows
         .map(slot => {
           const d = parseDate(slot.start);
           if (!d) return null;
