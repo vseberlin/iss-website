@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!restUrl) {
       widget.classList.add('is-tour-calendar--no-slots');
-      renderStatus(status, fallbackUrl, 'Kalender momentan nicht verfügbar.', 'Direkt buchen');
+      renderStatus(status, fallbackUrl, 'Kalender momentan nicht verfügbar.', fallbackLinkText(fallbackUrl, 'Direkt buchen'));
       return;
     }
 
@@ -273,13 +273,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     } catch (e) {
       widget.classList.add('is-tour-calendar--no-slots');
-      renderStatus(status, fallbackUrl, 'Kalender momentan nicht verfügbar.', 'Direkt buchen');
+      renderStatus(status, fallbackUrl, 'Kalender momentan nicht verfügbar.', fallbackLinkText(fallbackUrl, 'Direkt buchen'));
     }
   });
 });
 
 function renderStatus(el, url, msg, linkText) {
-  el.innerHTML = url ? `${msg} <a href="${url}">${linkText}</a>` : msg;
+  if (!el) return;
+  if (url) {
+    el.innerHTML = `${escapeHtml(msg)} <a href="${escapeHtml(url)}">${escapeHtml(linkText)}</a>`;
+    return;
+  }
+  el.textContent = msg;
+}
+
+function fallbackLinkText(url, defaultText) {
+  const u = String(url || '').trim();
+  if (!u) return defaultText;
+  if (u.startsWith('#')) return 'Alle Termine anzeigen';
+  return defaultText;
 }
 
 function ensureCalendarShell(widget) {
@@ -290,6 +302,7 @@ function ensureCalendarShell(widget) {
   const fallbackUrl = (widget.dataset && widget.dataset.fallback) ? String(widget.dataset.fallback) : '';
   const title = (widget.dataset && widget.dataset.title) ? String(widget.dataset.title) : 'Termine wählen';
   if (!tag) return;
+  const fallbackLabel = fallbackLinkText(fallbackUrl, 'Direkt buchen');
 
   const safeTag = tag.toLowerCase().replace(/[^a-z0-9_-]/g, '');
   const slotSelectId = `is-tour-slot-${safeTag || 'tour'}-${Math.floor(Math.random() * 9000 + 1000)}`;
@@ -302,7 +315,7 @@ function ensureCalendarShell(widget) {
         <p class="is-tour-calendar__status has-small-font-size">Termine werden geladen …</p>
         ${fallbackUrl ? `
           <p class="is-tour-calendar__fallback has-small-font-size">
-            <a class="is-tour-calendar__fallback-link" href="${escapeHtml(fallbackUrl)}">Direkt buchen</a>
+            <a class="is-tour-calendar__fallback-link" href="${escapeHtml(fallbackUrl)}">${escapeHtml(fallbackLabel)}</a>
           </p>
         ` : ``}
       </div>

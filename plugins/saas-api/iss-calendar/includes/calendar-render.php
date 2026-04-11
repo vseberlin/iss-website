@@ -178,7 +178,10 @@ function iss_render_tour_calendar($attributes = [], $content = '') {
             : 'class="is-tour-calendar wp-block-group alignwide has-global-padding is-layout-constrained"';
 
         $msg = esc_html__('Kalender ist nicht konfiguriert (Tag fehlt).', 'iss-calendar');
-        $link = $fallback_url ? ' <a href="' . esc_url($fallback_url) . '">' . esc_html__('Direkt buchen', 'iss-calendar') . '</a>' : '';
+        $link_text = ($fallback_url && str_starts_with((string) $fallback_url, '#'))
+            ? esc_html__('Alle Termine anzeigen', 'iss-calendar')
+            : esc_html__('Direkt buchen', 'iss-calendar');
+        $link = $fallback_url ? ' <a href="' . esc_url($fallback_url) . '">' . $link_text . '</a>' : '';
         return '<div ' . $attrs . '><p class="is-tour-calendar__status has-small-font-size">' . $msg . $link . '</p></div>';
     }
 
@@ -193,13 +196,33 @@ function iss_render_tour_calendar($attributes = [], $content = '') {
         ])
         : 'class="is-tour-calendar wp-block-group alignwide has-global-padding is-layout-constrained"';
 
+    $fallback_label = ($fallback_url && str_starts_with((string) $fallback_url, '#'))
+        ? esc_html__('Alle Termine anzeigen', 'iss-calendar')
+        : esc_html__('Direkt buchen', 'iss-calendar');
+
+    $fallback_html = '';
+    if ($fallback_url) {
+        $fallback_html = '<p class="is-tour-calendar__fallback has-small-font-size">'
+            . '<a class="is-tour-calendar__fallback-link" href="' . esc_url($fallback_url) . '">' . $fallback_label . '</a>'
+            . '</p>';
+    }
+
+    $noscript = '<noscript><p class="is-tour-calendar__status has-small-font-size">'
+        . esc_html__('Bitte JavaScript aktivieren, um den Kalender zu nutzen.', 'iss-calendar')
+        . '</p>'
+        . $fallback_html
+        . '</noscript>';
+
     return sprintf(
-        '<div %s data-tag="%s" data-fallback="%s" data-title="%s" data-source-post-id="%s" data-source-post-type="%s"></div>',
+        '<div %s data-tag="%s" data-fallback="%s" data-title="%s" data-source-post-id="%s" data-source-post-type="%s"><p class="is-tour-calendar__status has-small-font-size">%s</p>%s%s</div>',
         $attrs,
         esc_attr($tag),
         esc_url($fallback_url),
         esc_attr($title),
         esc_attr($post_id ? (string) $post_id : ''),
-        esc_attr((string) $post_type)
+        esc_attr((string) $post_type),
+        esc_html__('Termine werden geladen …', 'iss-calendar'),
+        $fallback_html,
+        $noscript
     );
 }
