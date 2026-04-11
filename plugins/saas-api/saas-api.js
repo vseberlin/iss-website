@@ -3,14 +3,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const tag = widget.dataset.tag;
     const fallbackUrl = widget.dataset.fallback;
 
-	    const status = widget.querySelector('.is-tour-calendar__status');
-	    const dateInput = widget.querySelector('.is-tour-calendar__date-input');
-	    const selectedDateLabel = widget.querySelector('.is-tour-calendar__selected-date');
-	    const slotSelect = widget.querySelector('.is-tour-calendar__slot-select');
-	    const appointmentsTitleDate = widget.querySelector('.is-tour-calendar__appointments-title-date');
-	    const appointmentsList = widget.querySelector('.is-tour-calendar__appointments-list');
-	    const bookingPanel = widget.querySelector('.is-tour-calendar__booking');
-	    const fallbackLink = widget.querySelector('.is-tour-calendar__fallback-link');
+    ensureCalendarShell(widget);
+
+    const status = widget.querySelector('.is-tour-calendar__status');
+    const dateInput = widget.querySelector('.is-tour-calendar__date-input');
+    const selectedDateLabel = widget.querySelector('.is-tour-calendar__selected-date');
+    const slotSelect = widget.querySelector('.is-tour-calendar__slot-select');
+    const appointmentsTitleDate = widget.querySelector('.is-tour-calendar__appointments-title-date');
+    const appointmentsList = widget.querySelector('.is-tour-calendar__appointments-list');
+    const bookingPanel = widget.querySelector('.is-tour-calendar__booking');
+    const fallbackLink = widget.querySelector('.is-tour-calendar__fallback-link');
 
     const restUrl = (window.IS_TOUR_CALENDAR && window.IS_TOUR_CALENDAR.restUrl) || '';
     const bookUrl = (window.IS_TOUR_CALENDAR && window.IS_TOUR_CALENDAR.bookUrl) || '';
@@ -278,6 +280,61 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function renderStatus(el, url, msg, linkText) {
   el.innerHTML = url ? `${msg} <a href="${url}">${linkText}</a>` : msg;
+}
+
+function ensureCalendarShell(widget) {
+  if (!widget) return;
+  if (widget.querySelector('.is-tour-calendar__date-input')) return;
+
+  const tag = (widget.dataset && widget.dataset.tag) ? String(widget.dataset.tag) : '';
+  const fallbackUrl = (widget.dataset && widget.dataset.fallback) ? String(widget.dataset.fallback) : '';
+  const title = (widget.dataset && widget.dataset.title) ? String(widget.dataset.title) : 'Termine wählen';
+  if (!tag) return;
+
+  const safeTag = tag.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+  const slotSelectId = `is-tour-slot-${safeTag || 'tour'}-${Math.floor(Math.random() * 9000 + 1000)}`;
+
+  widget.innerHTML = `
+    <div class="is-tour-calendar__inner wp-block-group is-layout-constrained">
+      <div class="is-tour-calendar__header wp-block-group is-layout-constrained">
+        <p class="is-tour-calendar__eyebrow has-small-font-size">Kalender</p>
+        <h3 class="is-tour-calendar__heading wp-block-heading">${escapeHtml(title)}</h3>
+        <p class="is-tour-calendar__status has-small-font-size">Termine werden geladen …</p>
+        ${fallbackUrl ? `
+          <p class="is-tour-calendar__fallback has-small-font-size">
+            <a class="is-tour-calendar__fallback-link" href="${escapeHtml(fallbackUrl)}">Direkt buchen</a>
+          </p>
+        ` : ``}
+      </div>
+      <div class="is-tour-calendar__layout">
+        <div class="is-tour-calendar__calendar">
+          <input type="text" class="is-tour-calendar__date-input" aria-label="Datum auswählen" />
+          <div class="is-tour-calendar__slots-panel">
+            <p class="is-tour-calendar__selected-date has-small-font-size">Bitte wählen Sie einen Tag.</p>
+            <div class="is-tour-calendar__appointments">
+              <p class="is-tour-calendar__appointments-title">
+                <span class="is-tour-calendar__appointments-title-label">Verfügbare Termine am</span>
+                <span class="is-tour-calendar__appointments-title-date"></span>
+              </p>
+              <div class="is-tour-calendar__appointments-divider" aria-hidden="true"></div>
+              <div class="is-tour-calendar__appointments-list"></div>
+            </div>
+            <div class="is-tour-calendar__slot-select-wrap">
+              <label class="is-tour-calendar__slot-label" for="${escapeHtml(slotSelectId)}">Uhrzeit</label>
+              <select id="${escapeHtml(slotSelectId)}" class="is-tour-calendar__slot-select" disabled>
+                <option value="">Bitte zuerst ein Datum wählen</option>
+              </select>
+            </div>
+            <div class="is-tour-calendar__booking"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Ensure data attributes exist.
+  if (tag && !widget.dataset.tag) widget.dataset.tag = tag;
+  if (fallbackUrl && !widget.dataset.fallback) widget.dataset.fallback = fallbackUrl;
 }
 
 

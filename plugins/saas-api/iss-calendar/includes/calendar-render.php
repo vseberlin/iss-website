@@ -166,10 +166,23 @@ function iss_render_tour_calendar($attributes = [], $content = '') {
         return '';
     }
 
-    return do_shortcode(sprintf(
-        '[is_tour_calendar tag="%s" title="%s" fallback_url="%s"]',
+    $post_id = (int) get_the_ID();
+    $post_type = $post_id ? get_post_type($post_id) : '';
+
+    // Render only a lightweight mount node; front-end JS builds the UI.
+    $attrs = function_exists('get_block_wrapper_attributes')
+        ? get_block_wrapper_attributes([
+            'class' => 'is-tour-calendar wp-block-group alignwide has-global-padding is-layout-constrained',
+        ])
+        : 'class="is-tour-calendar wp-block-group alignwide has-global-padding is-layout-constrained"';
+
+    return sprintf(
+        '<div %s data-tag="%s" data-fallback="%s" data-title="%s" data-source-post-id="%s" data-source-post-type="%s"></div>',
+        $attrs,
         esc_attr($tag),
+        esc_url($fallback_url),
         esc_attr($title),
-        esc_attr($fallback_url)
-    ));
+        esc_attr($post_id ? (string) $post_id : ''),
+        esc_attr((string) $post_type)
+    );
 }
