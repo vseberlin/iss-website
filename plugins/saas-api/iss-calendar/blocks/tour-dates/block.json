@@ -2,10 +2,10 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "iss/tour-dates",
-  "title": "Tour Dates",
+  "title": "Tour Dates (List)",
   "category": "widgets",
   "icon": "calendar",
-  "description": "Shows upcoming dates from iss_calendar_item.",
+  "description": "SEO-friendly list of upcoming dates (CPT fallback).",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./editor.css",
   "attributes": {

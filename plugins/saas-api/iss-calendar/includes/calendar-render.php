@@ -145,3 +145,31 @@ function iss_calendar_render_dates($attributes = [], $content = '') {
     $out .= '</ul></div>';
     return $out;
 }
+
+/**
+ * Dynamic block renderer: iss/tour-calendar.
+ *
+ * Uses the existing shortcode markup so the front-end JS can attach reliably.
+ *
+ * @param array<string,mixed> $attributes
+ * @param string $content
+ * @return string
+ */
+function iss_render_tour_calendar($attributes = [], $content = '') {
+    $attributes = is_array($attributes) ? $attributes : [];
+
+    $tag = isset($attributes['tag']) ? strtoupper(sanitize_text_field((string) $attributes['tag'])) : '';
+    $title = isset($attributes['title']) ? sanitize_text_field((string) $attributes['title']) : 'Termine wählen';
+    $fallback_url = isset($attributes['fallbackUrl']) ? esc_url_raw((string) $attributes['fallbackUrl']) : '';
+
+    if ($tag === '') {
+        return '';
+    }
+
+    return do_shortcode(sprintf(
+        '[is_tour_calendar tag="%s" title="%s" fallback_url="%s"]',
+        esc_attr($tag),
+        esc_attr($title),
+        esc_attr($fallback_url)
+    ));
+}
