@@ -74,23 +74,27 @@ function iss_calendar_prepare_item($item_id) {
 function iss_calendar_render_dates($attributes = [], $content = '') {
     $attributes = is_array($attributes) ? $attributes : [];
 
-    $source_post_id = isset($attributes['sourcePostId']) ? (int) $attributes['sourcePostId'] : 0;
-    if ($source_post_id <= 0) {
-        $source_post_id = (int) get_the_ID();
-    }
-
     $limit = isset($attributes['limit']) ? (int) $attributes['limit'] : 12;
     if ($limit <= 0) {
         $limit = 12;
     }
 
-    $title = isset($attributes['title']) ? trim((string) $attributes['title']) : '';
+    $title = isset($attributes['title']) ? (string) $attributes['title'] : 'Termine';
+    $title = trim($title);
+    if ($title === '') {
+        $title = 'Termine';
+    }
 
     if (!function_exists('iss_calendar_get_items_for_post')) {
         return '';
     }
 
-    $items = iss_calendar_get_items_for_post($source_post_id, [
+    $post_id = (int) get_the_ID();
+    if ($post_id <= 0) {
+        return '';
+    }
+
+    $items = iss_calendar_get_items_for_post($post_id, [
         'public_only' => true,
         'future_only' => true,
         'limit' => $limit,
@@ -102,18 +106,14 @@ function iss_calendar_render_dates($attributes = [], $content = '') {
 
     if (empty($items)) {
         $out = '<div ' . $attrs . '>';
-        if ($title !== '') {
-            $out .= '<h3 class="iss-tour-dates__title">' . esc_html($title) . '</h3>';
-        }
+        $out .= '<h3 class="iss-tour-dates__title">' . esc_html($title) . '</h3>';
         $out .= '<p>' . esc_html__('Aktuell sind keine Termine verfügbar.', 'iss-calendar') . '</p>';
         $out .= '</div>';
         return $out;
     }
 
     $out = '<div ' . $attrs . '>';
-    if ($title !== '') {
-        $out .= '<h3 class="iss-tour-dates__title">' . esc_html($title) . '</h3>';
-    }
+    $out .= '<h3 class="iss-tour-dates__title">' . esc_html($title) . '</h3>';
     $out .= '<ul class="iss-tour-dates">';
 
     foreach ($items as $item) {
