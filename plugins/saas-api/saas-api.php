@@ -226,6 +226,9 @@ function is_tours_get_slots(WP_REST_Request $request) {
     if (is_wp_error($slot_items)) {
         $fallback_slots = iss_calendar_get_slots_fallback_for_tag($tag);
         if (!empty($fallback_slots)) {
+            // Reuse the same cache key as the live endpoint so other helpers
+            // (e.g. next-slot selection, booking validation) work consistently.
+            is_tours_set_cached_slots_by_tag($tag, $fallback_slots, 60 * 10);
             $res = new WP_REST_Response($fallback_slots, 200);
             $res->header('X-IS-Tours-Fallback', 'cpt');
             return $res;
@@ -267,7 +270,7 @@ function is_tours_get_slots(WP_REST_Request $request) {
         return strcmp((string) $a['start'], (string) $b['start']);
     });
 
-    set_transient($cache_key, $slots, 60 * 60 * 6); // 6h
+    is_tours_set_cached_slots_by_tag($tag, $slots, 60 * 60 * 6); // 6h
 
     return new WP_REST_Response($slots, 200);
 }
@@ -414,6 +417,31 @@ function is_tours_get_cached_slots_by_tag($tag) {
 }
 
 /**
+ * Store normalized slots into the shared tag cache.
+ *
+ * @param string $tag
+ * @param array $slots
+ * @param int $ttl_seconds
+ * @return void
+ */
+function is_tours_set_cached_slots_by_tag($tag, $slots, $ttl_seconds) {
+    $tag = strtoupper(sanitize_text_field((string) $tag));
+    if ($tag === '') return;
+
+    if (!is_array($slots)) {
+        $slots = [];
+    }
+
+    $ttl_seconds = (int) $ttl_seconds;
+    if ($ttl_seconds <= 0) {
+        $ttl_seconds = 60 * 10;
+    }
+
+    $cache_key = 'is_tours_slots_' . md5($tag);
+    set_transient($cache_key, $slots, $ttl_seconds);
+}
+
+/**
  * Return the next available slot from cache for a tag (or null).
  */
 function is_tours_get_next_slot($tag) {
@@ -459,6 +487,15 @@ function is_tours_create_booking(WP_REST_Request $request) {
 
     if ($tag !== '') {
         $slots = is_tours_get_cached_slots_by_tag($tag);
+        if (empty($slots) && function_exists('iss_calendar_get_slots_fallback_for_tag')) {
+            $fallback_slots = iss_calendar_get_slots_fallback_for_tag($tag);
+            if (!empty($fallback_slots)) {
+                // Prime cache from CPT fallback so the rest of the code path can reuse it.
+                is_tours_set_cached_slots_by_tag($tag, $fallback_slots, 60 * 10);
+                $slots = $fallback_slots;
+            }
+        }
+
         $found = null;
         foreach ($slots as $slot) {
             if (is_array($slot) && (string) ($slot['id'] ?? '') === (string) $slot_id) {
