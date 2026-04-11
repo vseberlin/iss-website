@@ -3,6 +3,7 @@
 if (!defined('ABSPATH')) exit;
 
 define('ISS_CALENDAR_SYNC_HOOK', 'iss_calendar_cron_sync');
+define('ISS_CALENDAR_LAST_SYNC_OPTION', 'iss_calendar_last_sync_at');
 
 add_action('admin_menu', function () {
     add_management_page(
@@ -216,6 +217,7 @@ function iss_calendar_get_slots_fallback_for_tag($tag) {
         'post_status' => 'publish',
         'posts_per_page' => 250,
         'orderby' => 'meta_value',
+        'meta_type' => 'DATETIME',
         'order' => 'ASC',
         'meta_key' => 'event_start',
         'meta_query' => [
@@ -223,6 +225,7 @@ function iss_calendar_get_slots_fallback_for_tag($tag) {
                 'key' => 'source_post_id',
                 'value' => $source_post_id,
                 'compare' => '=',
+                'type' => 'NUMERIC',
             ],
             [
                 'key' => 'event_start',
@@ -292,6 +295,7 @@ function iss_calendar_sync_supersaas_to_cpt() {
     $created = 0;
     $updated = 0;
     $errors = 0;
+    $slots_by_tag = [];
 
     foreach ($slot_items as $slot) {
         if (!is_array($slot)) continue;
@@ -378,7 +382,37 @@ function iss_calendar_sync_supersaas_to_cpt() {
         update_post_meta($post_id, 'last_seen_at', $now);
         update_post_meta($post_id, 'origin_mode', 'supersaas');
         update_post_meta($post_id, 'sort_date', $start);
+
+        // Prime the REST/tag cache from the same normalized shape as the REST endpoint.
+        if (!isset($slots_by_tag[$tag])) {
+            $slots_by_tag[$tag] = [];
+        }
+        $slots_by_tag[$tag][] = [
+            'id' => $external_id,
+            'title' => $clean_title !== '' ? $clean_title : $raw_title,
+            'start' => $start,
+            'end' => $end,
+            'capacity' => $capacity_total !== null ? (int) $capacity_total : null,
+            'available' => $available,
+        ];
     }
+
+    // Keep the REST endpoint cache and the CPT in sync.
+    foreach ($slots_by_tag as $tag => $slots) {
+        if (!is_array($slots)) continue;
+
+        usort($slots, function ($a, $b) {
+            return strcmp((string) ($a['start'] ?? ''), (string) ($b['start'] ?? ''));
+        });
+
+        if (function_exists('is_tours_set_cached_slots_by_tag')) {
+            is_tours_set_cached_slots_by_tag($tag, $slots, 60 * 60 * 6);
+        } else {
+            set_transient('is_tours_slots_' . md5($tag), $slots, 60 * 60 * 6);
+        }
+    }
+
+    update_option(ISS_CALENDAR_LAST_SYNC_OPTION, $now, false);
 
     return [
         'created' => $created,

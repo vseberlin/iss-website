@@ -219,7 +219,27 @@ function is_tours_get_slots(WP_REST_Request $request) {
     $cache_key = 'is_tours_slots_' . md5($tag);
     $cached = get_transient($cache_key);
     if ($cached !== false) {
-        return new WP_REST_Response($cached, 200);
+        $res = new WP_REST_Response($cached, 200);
+        $res->header('X-IS-Tours-Source', 'cache');
+        return $res;
+    }
+
+    // Prefer CPT-backed cache when we have a recent sync and local items exist.
+    if (defined('ISS_CALENDAR_LAST_SYNC_OPTION')) {
+        $last = get_option(ISS_CALENDAR_LAST_SYNC_OPTION, '');
+        $last_ts = $last ? strtotime((string) $last) : 0;
+        $now_ts = (int) current_time('timestamp');
+
+        // Consider CPT "fresh" for ~2 hours since last successful sync.
+        if ($last_ts && ($now_ts - $last_ts) < (2 * 60 * 60)) {
+            $cpt_slots = iss_calendar_get_slots_fallback_for_tag($tag);
+            if (!empty($cpt_slots)) {
+                is_tours_set_cached_slots_by_tag($tag, $cpt_slots, 60 * 60);
+                $res = new WP_REST_Response($cpt_slots, 200);
+                $res->header('X-IS-Tours-Source', 'cpt');
+                return $res;
+            }
+        }
     }
 
     $slot_items = iss_calendar_supersaas_fetch_free_slots($settings);
@@ -231,6 +251,7 @@ function is_tours_get_slots(WP_REST_Request $request) {
             is_tours_set_cached_slots_by_tag($tag, $fallback_slots, 60 * 10);
             $res = new WP_REST_Response($fallback_slots, 200);
             $res->header('X-IS-Tours-Fallback', 'cpt');
+            $res->header('X-IS-Tours-Source', 'cpt');
             return $res;
         }
 
@@ -272,7 +293,9 @@ function is_tours_get_slots(WP_REST_Request $request) {
 
     is_tours_set_cached_slots_by_tag($tag, $slots, 60 * 60 * 6); // 6h
 
-    return new WP_REST_Response($slots, 200);
+    $res = new WP_REST_Response($slots, 200);
+    $res->header('X-IS-Tours-Source', 'supersaas');
+    return $res;
 }
 
 	add_shortcode('is_tour_calendar', function ($atts) {
