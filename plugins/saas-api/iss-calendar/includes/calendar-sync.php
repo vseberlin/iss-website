@@ -202,6 +202,11 @@ function iss_calendar_extract_tag_from_text($text) {
     $text = trim((string) $text);
     if ($text === '') return '';
 
+    // Hidden marker (if SuperSaaS renders HTML): "Elektropolis Tour <!-- TAG=ELEKTRO -->"
+    if (preg_match('/<!--\\s*TAG\\s*[:=]\\s*([A-Z0-9_-]{2,})\\s*-->/i', $text, $m)) {
+        return strtoupper(trim((string) $m[1]));
+    }
+
     // Example: "TAG=ELEKTRO" or "tag: elektro"
     if (preg_match('/\\bTAG\\s*[:=]\\s*([A-Z0-9_-]{2,})\\b/i', $text, $m)) {
         return strtoupper(trim((string) $m[1]));
