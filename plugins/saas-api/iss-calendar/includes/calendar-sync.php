@@ -198,6 +198,38 @@ function iss_calendar_parse_supersaas_title($raw_title) {
     ];
 }
 
+function iss_calendar_clean_supersaas_title($raw_title) {
+    $raw_title = trim((string) $raw_title);
+    if ($raw_title === '') return '';
+
+    $parsed = iss_calendar_parse_supersaas_title($raw_title);
+    $title = isset($parsed['title']) ? (string) $parsed['title'] : '';
+    return $title !== '' ? $title : $raw_title;
+}
+
+function iss_calendar_generate_tag_from_title($title) {
+    $title = trim((string) $title);
+    if ($title === '') {
+        return 'TOUR_' . substr(md5((string) microtime(true)), 0, 8);
+    }
+
+    $slug = sanitize_title($title);
+    $slug = strtoupper(str_replace('-', '_', $slug));
+    $slug = preg_replace('/[^A-Z0-9_]+/', '', (string) $slug);
+    $slug = trim((string) $slug, '_');
+
+    if ($slug === '') {
+        $slug = 'TOUR_' . substr(md5($title), 0, 8);
+    }
+
+    if (strlen($slug) > 32) {
+        $slug = substr($slug, 0, 32);
+        $slug = rtrim($slug, '_');
+    }
+
+    return $slug;
+}
+
 function iss_calendar_extract_tag_from_text($text) {
     $text = trim((string) $text);
     if ($text === '') return '';
@@ -240,6 +272,68 @@ function iss_calendar_extract_supersaas_slot_tag($slot) {
     if ($tag !== '') return $tag;
 
     return '';
+}
+
+/**
+ * Normalize SuperSaaS free slots for a given (clean) title to the REST "slots" shape.
+ *
+ * @param string $title
+ * @param array|null $settings
+ * @return array<int,array<string,mixed>>|WP_Error
+ */
+function iss_calendar_get_supersaas_slots_for_title($title, $settings = null) {
+    $title = trim((string) $title);
+    if ($title === '') {
+        return [];
+    }
+
+    $slot_items = iss_calendar_supersaas_fetch_free_slots($settings);
+    if (is_wp_error($slot_items)) {
+        return $slot_items;
+    }
+
+    $slots = [];
+
+    foreach ($slot_items as $slot) {
+        if (!is_array($slot)) continue;
+
+        $raw_title = isset($slot['title']) ? (string) $slot['title'] : '';
+        $clean_title = iss_calendar_clean_supersaas_title($raw_title);
+        if ($clean_title === '' || $clean_title !== $title) {
+            continue;
+        }
+
+        $start = $slot['start'] ?? null;
+        if (!$start) continue;
+
+        $available = null;
+        if (isset($slot['available'])) {
+            $available = (int) $slot['available'];
+        } elseif (isset($slot['remaining'])) {
+            $available = (int) $slot['remaining'];
+        } elseif (isset($slot['count'])) {
+            $available = (int) $slot['count'];
+        }
+
+        $end = $slot['end'] ?? ($slot['finish'] ?? null);
+        if ($end === '') $end = null;
+
+        $slots[] = [
+            'id' => isset($slot['id']) ? (string) $slot['id'] : '',
+            'title' => $clean_title,
+            'start' => $start,
+            'end' => $end,
+            'available' => $available,
+            'capacity' => isset($slot['capacity']) ? (int) $slot['capacity'] : null,
+            'booking_url' => null,
+        ];
+    }
+
+    usort($slots, function ($a, $b) {
+        return strcmp((string) ($a['start'] ?? ''), (string) ($b['start'] ?? ''));
+    });
+
+    return $slots;
 }
 
 /**
@@ -337,6 +431,12 @@ function iss_calendar_get_slots_with_fallback($tag, $settings = null) {
     }
 
     $slots = iss_calendar_get_supersaas_slots_for_tag($tag, $settings);
+    if (!is_wp_error($slots) && empty($slots) && function_exists('iss_calendar_get_source_map_entry')) {
+        $entry = iss_calendar_get_source_map_entry($tag);
+        if (is_array($entry) && !empty($entry['supersaas_title'])) {
+            $slots = iss_calendar_get_supersaas_slots_for_title((string) $entry['supersaas_title'], $settings);
+        }
+    }
     if (!is_wp_error($slots) && !empty($slots)) {
         return ['slots' => $slots, 'source' => 'saas', 'error' => null];
     }
@@ -456,6 +556,15 @@ function iss_calendar_sync_supersaas_to_cpt() {
     $mapped_tags = array_keys($map);
     $mapped_tags = array_filter(array_map(function ($t) { return strtoupper(sanitize_text_field((string) $t)); }, $mapped_tags));
 
+    $title_index = [];
+    foreach ($map as $map_tag => $entry) {
+        if (!is_array($entry)) continue;
+        $t = isset($entry['supersaas_title']) ? trim((string) $entry['supersaas_title']) : '';
+        if ($t !== '') {
+            $title_index[$t] = strtoupper(sanitize_text_field((string) $map_tag));
+        }
+    }
+
     $now = current_time('mysql');
     $created = 0;
     $updated = 0;
@@ -471,6 +580,12 @@ function iss_calendar_sync_supersaas_to_cpt() {
         $raw_title = isset($slot['title']) ? (string) $slot['title'] : '';
         $parsed = iss_calendar_parse_supersaas_title($raw_title);
         $tag = iss_calendar_extract_supersaas_slot_tag($slot);
+        if ($tag === '' && !empty($title_index)) {
+            $ct = iss_calendar_clean_supersaas_title($raw_title);
+            if ($ct !== '' && isset($title_index[$ct])) {
+                $tag = $title_index[$ct];
+            }
+        }
 
         if ($tag === '' || !in_array($tag, $mapped_tags, true)) {
             continue;

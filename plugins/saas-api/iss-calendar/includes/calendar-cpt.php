@@ -4,6 +4,7 @@ if (!defined('ABSPATH')) exit;
 
 define('ISS_CALENDAR_ITEM_POST_TYPE', 'iss_calendar_item');
 define('ISS_CALENDAR_SOURCE_MAP_OPTION', 'iss_calendar_source_map');
+define('ISS_CALENDAR_SOURCE_MAP_VERSION', 2);
 
 add_action('init', function () {
     $labels = [
@@ -109,6 +110,8 @@ function iss_calendar_remember_source_mapping($tag, $fallback_url, $source_post_
         'source_post_id' => $source_post_id,
         'source_post_type' => $source_post_type,
         'fallback_url' => $fallback_url,
+        'supersaas_title' => '',
+        'version' => ISS_CALENDAR_SOURCE_MAP_VERSION,
         'last_seen_at' => current_time('mysql'),
     ];
 
@@ -121,7 +124,21 @@ function iss_calendar_remember_source_mapping($tag, $fallback_url, $source_post_
 
 function iss_calendar_get_source_map() {
     $map = get_option(ISS_CALENDAR_SOURCE_MAP_OPTION, []);
-    return is_array($map) ? $map : [];
+    if (!is_array($map)) return [];
+
+    // Backfill missing keys for older entries.
+    foreach ($map as $tag => $entry) {
+        if (!is_array($entry)) continue;
+        if (!array_key_exists('supersaas_title', $entry)) {
+            $entry['supersaas_title'] = '';
+        }
+        if (!array_key_exists('version', $entry)) {
+            $entry['version'] = ISS_CALENDAR_SOURCE_MAP_VERSION;
+        }
+        $map[$tag] = $entry;
+    }
+
+    return $map;
 }
 
 function iss_calendar_get_source_map_entry($tag) {
