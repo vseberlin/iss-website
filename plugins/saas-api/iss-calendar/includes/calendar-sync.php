@@ -199,6 +199,112 @@ function iss_calendar_parse_supersaas_title($raw_title) {
 }
 
 /**
+ * Normalize SuperSaaS free slots for a specific tag to the REST "slots" shape.
+ *
+ * @param string $tag
+ * @param array|null $settings
+ * @return array<int,array<string,mixed>>|WP_Error
+ */
+function iss_calendar_get_supersaas_slots_for_tag($tag, $settings = null) {
+    $tag = strtoupper(sanitize_text_field((string) $tag));
+    if ($tag === '') {
+        return [];
+    }
+
+    $slot_items = iss_calendar_supersaas_fetch_free_slots($settings);
+    if (is_wp_error($slot_items)) {
+        return $slot_items;
+    }
+
+    $slots = [];
+
+    foreach ($slot_items as $slot) {
+        if (!is_array($slot)) {
+            continue;
+        }
+
+        $raw_title = isset($slot['title']) ? trim((string) $slot['title']) : '';
+        if ($raw_title === '') {
+            continue;
+        }
+
+        $parsed = iss_calendar_parse_supersaas_title($raw_title);
+        if (empty($parsed['tag']) || strtoupper((string) $parsed['tag']) !== $tag) {
+            continue;
+        }
+
+        $start = $slot['start'] ?? null;
+        if (!$start) {
+            continue;
+        }
+
+        if (function_exists('is_saas_build_slot_response')) {
+            $slots[] = is_saas_build_slot_response($slot, (string) ($parsed['title'] ?? ''), $start);
+            continue;
+        }
+
+        // Fallback normalizer if plugin function isn't available for some reason.
+        $available = null;
+        if (isset($slot['available'])) {
+            $available = (int) $slot['available'];
+        } elseif (isset($slot['remaining'])) {
+            $available = (int) $slot['remaining'];
+        } elseif (isset($slot['count'])) {
+            $available = (int) $slot['count'];
+        }
+
+        $slots[] = [
+            'id' => $slot['id'] ?? null,
+            'title' => (string) ($parsed['title'] ?? $raw_title),
+            'start' => $start,
+            'end' => $slot['end'] ?? ($slot['finish'] ?? null),
+            'capacity' => isset($slot['capacity']) ? (int) $slot['capacity'] : null,
+            'available' => $available,
+        ];
+    }
+
+    usort($slots, function ($a, $b) {
+        return strcmp((string) ($a['start'] ?? ''), (string) ($b['start'] ?? ''));
+    });
+
+    return $slots;
+}
+
+/**
+ * Get normalized slots with automatic CPT fallback when SaaS is unavailable.
+ *
+ * @param string $tag
+ * @param array|null $settings
+ * @return array{slots:array<int,array<string,mixed>>,source:string,error:WP_Error|null}
+ */
+function iss_calendar_get_slots_with_fallback($tag, $settings = null) {
+    $tag = strtoupper(sanitize_text_field((string) $tag));
+    if ($tag === '') {
+        return ['slots' => [], 'source' => 'empty', 'error' => null];
+    }
+
+    $slots = iss_calendar_get_supersaas_slots_for_tag($tag, $settings);
+    if (!is_wp_error($slots) && !empty($slots)) {
+        return ['slots' => $slots, 'source' => 'supersaas', 'error' => null];
+    }
+
+    $fallback = iss_calendar_get_slots_fallback_for_tag($tag);
+    if (!empty($fallback)) {
+        return [
+            'slots' => $fallback,
+            'source' => 'cpt',
+            'error' => is_wp_error($slots) ? $slots : null,
+        ];
+    }
+
+    return [
+        'slots' => [],
+        'source' => is_wp_error($slots) ? 'error' : 'empty',
+        'error' => is_wp_error($slots) ? $slots : null,
+    ];
+}
+
+/**
  * REST fallback: serve future slots from CPT when SuperSaaS is down.
  *
  * @return array<int,array<string,mixed>>

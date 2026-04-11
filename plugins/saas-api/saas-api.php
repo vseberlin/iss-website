@@ -216,85 +216,47 @@ function is_tours_get_slots(WP_REST_Request $request) {
         ], 400);
     }
 
-    $cache_key = 'is_tours_slots_' . md5($tag);
-    $cached = get_transient($cache_key);
-    if ($cached !== false) {
-        $res = new WP_REST_Response($cached, 200);
-        $res->header('X-IS-Tours-Source', 'cache');
+	    $cache_key = 'is_tours_slots_' . md5($tag);
+	    $cached = get_transient($cache_key);
+	    if ($cached !== false) {
+	        $res = new WP_REST_Response($cached, 200);
+	        $res->header('X-IS-Tours-Source', 'cache');
+	        return $res;
+	    }
+
+    if (!function_exists('iss_calendar_get_slots_with_fallback')) {
+        return new WP_REST_Response([
+            'error' => 'Calendar module missing',
+        ], 500);
+    }
+
+    $result = iss_calendar_get_slots_with_fallback($tag, $settings);
+    $slots = isset($result['slots']) && is_array($result['slots']) ? $result['slots'] : [];
+    $source = isset($result['source']) ? (string) $result['source'] : 'unknown';
+    $err = isset($result['error']) ? $result['error'] : null;
+
+    if (!empty($slots)) {
+        $ttl = ($source === 'supersaas') ? (60 * 60 * 6) : (60 * 10);
+        is_tours_set_cached_slots_by_tag($tag, $slots, $ttl);
+
+        $res = new WP_REST_Response($slots, 200);
+        $res->header('X-IS-Tours-Source', $source);
+        if ($source === 'cpt') {
+            $res->header('X-IS-Tours-Fallback', 'cpt');
+        }
         return $res;
     }
 
-    // Prefer CPT-backed cache when we have a recent sync and local items exist.
-    if (defined('ISS_CALENDAR_LAST_SYNC_OPTION')) {
-        $last = get_option(ISS_CALENDAR_LAST_SYNC_OPTION, '');
-        $last_ts = $last ? strtotime((string) $last) : 0;
-        $now_ts = (int) current_time('timestamp');
-
-        // Consider CPT "fresh" for ~2 hours since last successful sync.
-        if ($last_ts && ($now_ts - $last_ts) < (2 * 60 * 60)) {
-            $cpt_slots = iss_calendar_get_slots_fallback_for_tag($tag);
-            if (!empty($cpt_slots)) {
-                is_tours_set_cached_slots_by_tag($tag, $cpt_slots, 60 * 60);
-                $res = new WP_REST_Response($cpt_slots, 200);
-                $res->header('X-IS-Tours-Source', 'cpt');
-                return $res;
-            }
-        }
-    }
-
-    $slot_items = iss_calendar_supersaas_fetch_free_slots($settings);
-    if (is_wp_error($slot_items)) {
-        $fallback_slots = iss_calendar_get_slots_fallback_for_tag($tag);
-        if (!empty($fallback_slots)) {
-            // Reuse the same cache key as the live endpoint so other helpers
-            // (e.g. next-slot selection, booking validation) work consistently.
-            is_tours_set_cached_slots_by_tag($tag, $fallback_slots, 60 * 10);
-            $res = new WP_REST_Response($fallback_slots, 200);
-            $res->header('X-IS-Tours-Fallback', 'cpt');
-            $res->header('X-IS-Tours-Source', 'cpt');
-            return $res;
-        }
-
+    if ($err instanceof WP_Error) {
         return new WP_REST_Response([
-            'error'    => 'Availability fetch failed',
+            'error' => 'Availability fetch failed',
             'fallback' => true,
-            'details'  => $slot_items->get_error_message(),
+            'details' => $err->get_error_message(),
         ], 502);
     }
 
-    $slots = [];
-
-    foreach ($slot_items as $slot) {
-        if (!is_array($slot)) {
-            continue;
-        }
-
-        $raw_title = isset($slot['title']) ? trim((string) $slot['title']) : '';
-        if ($raw_title === '') {
-            continue;
-        }
-
-        $parsed = iss_calendar_parse_supersaas_title($raw_title);
-        if (empty($parsed['tag']) || strtoupper((string) $parsed['tag']) !== $tag) {
-            continue;
-        }
-
-        $start = $slot['start'] ?? null;
-        if (!$start) {
-            continue;
-        }
-
-        $slots[] = is_saas_build_slot_response($slot, $parsed['title'], $start);
-    }
-
-    usort($slots, function ($a, $b) {
-        return strcmp((string) $a['start'], (string) $b['start']);
-    });
-
-    is_tours_set_cached_slots_by_tag($tag, $slots, 60 * 60 * 6); // 6h
-
-    $res = new WP_REST_Response($slots, 200);
-    $res->header('X-IS-Tours-Source', 'supersaas');
+    $res = new WP_REST_Response([], 200);
+    $res->header('X-IS-Tours-Source', $source);
     return $res;
 }
 
