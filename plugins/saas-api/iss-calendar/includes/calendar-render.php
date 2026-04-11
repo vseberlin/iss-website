@@ -158,16 +158,33 @@ function iss_calendar_render_dates($attributes = [], $content = '') {
 function iss_render_tour_calendar($attributes = [], $content = '') {
     $attributes = is_array($attributes) ? $attributes : [];
 
-    $tag = isset($attributes['tag']) ? strtoupper(sanitize_text_field((string) $attributes['tag'])) : '';
     $title = isset($attributes['title']) ? sanitize_text_field((string) $attributes['title']) : 'Termine wählen';
     $fallback_url = isset($attributes['fallbackUrl']) ? esc_url_raw((string) $attributes['fallbackUrl']) : '';
 
-    if ($tag === '') {
-        return '';
-    }
-
     $post_id = (int) get_the_ID();
     $post_type = $post_id ? get_post_type($post_id) : '';
+
+    $tag = isset($attributes['tag']) ? strtoupper(sanitize_text_field((string) $attributes['tag'])) : '';
+    if ($tag === '' && $post_id) {
+        $tag = strtoupper(sanitize_text_field((string) get_post_meta($post_id, 'calendar_tag', true)));
+    }
+
+    if ($tag === '') {
+        // Can't render an interactive calendar without a tag.
+        $attrs = function_exists('get_block_wrapper_attributes')
+            ? get_block_wrapper_attributes([
+                'class' => 'is-tour-calendar wp-block-group alignwide has-global-padding is-layout-constrained',
+            ])
+            : 'class="is-tour-calendar wp-block-group alignwide has-global-padding is-layout-constrained"';
+
+        $msg = esc_html__('Kalender ist nicht konfiguriert (Tag fehlt).', 'iss-calendar');
+        $link = $fallback_url ? ' <a href="' . esc_url($fallback_url) . '">' . esc_html__('Direkt buchen', 'iss-calendar') . '</a>' : '';
+        return '<div ' . $attrs . '><p class="is-tour-calendar__status has-small-font-size">' . $msg . $link . '</p></div>';
+    }
+
+    if (function_exists('iss_calendar_remember_source_mapping')) {
+        iss_calendar_remember_source_mapping($tag, $fallback_url, $post_id, $post_type);
+    }
 
     // Render only a lightweight mount node; front-end JS builds the UI.
     $attrs = function_exists('get_block_wrapper_attributes')
