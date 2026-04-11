@@ -219,9 +219,22 @@ function is_tours_get_slots(WP_REST_Request $request) {
 	    $cache_key = 'is_tours_slots_' . md5($tag);
 	    $cached = get_transient($cache_key);
 	    if ($cached !== false) {
-	        $res = new WP_REST_Response($cached, 200);
-	        $res->header('X-IS-Tours-Source', 'cache');
-	        return $res;
+        $cached_at = is_tours_get_cached_at_by_tag($tag);
+        $etag = is_tours_build_slots_etag($cached);
+        $maybe = is_tours_maybe_304($request, $etag, $cached_at, 60);
+        if ($maybe) {
+            $maybe->header('X-IS-Tours-Source', 'cache');
+            return $maybe;
+        }
+
+        $res = new WP_REST_Response($cached, 200);
+        $res->header('X-IS-Tours-Source', 'cache');
+        if ($etag !== '') $res->header('ETag', $etag);
+        $res->header('Cache-Control', 'public, max-age=60');
+        if ($cached_at > 0) {
+            $res->header('Last-Modified', gmdate('D, d M Y H:i:s', $cached_at) . ' GMT');
+        }
+        return $res;
 	    }
 
     if (!function_exists('iss_calendar_get_slots_with_fallback')) {
@@ -239,10 +252,27 @@ function is_tours_get_slots(WP_REST_Request $request) {
         $ttl = ($source === 'supersaas') ? (60 * 60 * 6) : (60 * 10);
         is_tours_set_cached_slots_by_tag($tag, $slots, $ttl);
 
+        $etag = is_tours_build_slots_etag($slots);
+        $cached_at = is_tours_get_cached_at_by_tag($tag);
+        $max_age = ($source === 'supersaas') ? 300 : 60;
+        $maybe = is_tours_maybe_304($request, $etag, $cached_at, $max_age);
+        if ($maybe) {
+            $maybe->header('X-IS-Tours-Source', $source);
+            if ($source === 'cpt') {
+                $maybe->header('X-IS-Tours-Fallback', 'cpt');
+            }
+            return $maybe;
+        }
+
         $res = new WP_REST_Response($slots, 200);
         $res->header('X-IS-Tours-Source', $source);
         if ($source === 'cpt') {
             $res->header('X-IS-Tours-Fallback', 'cpt');
+        }
+        if ($etag !== '') $res->header('ETag', $etag);
+        $res->header('Cache-Control', 'public, max-age=' . $max_age);
+        if ($cached_at > 0) {
+            $res->header('Last-Modified', gmdate('D, d M Y H:i:s', $cached_at) . ' GMT');
         }
         return $res;
     }
@@ -257,6 +287,7 @@ function is_tours_get_slots(WP_REST_Request $request) {
 
     $res = new WP_REST_Response([], 200);
     $res->header('X-IS-Tours-Source', $source);
+    $res->header('Cache-Control', 'no-store');
     return $res;
 }
 
@@ -402,6 +433,20 @@ function is_tours_get_cached_slots_by_tag($tag) {
 }
 
 /**
+ * Return when the tag cache was last written (unix timestamp), or 0.
+ */
+function is_tours_get_cached_at_by_tag($tag) {
+    $tag = strtoupper(sanitize_text_field((string) $tag));
+    if ($tag === '') {
+        return 0;
+    }
+
+    $cache_key = 'is_tours_slots_ts_' . md5($tag);
+    $ts = get_transient($cache_key);
+    return $ts ? (int) $ts : 0;
+}
+
+/**
  * Store normalized slots into the shared tag cache.
  *
  * @param string $tag
@@ -424,6 +469,64 @@ function is_tours_set_cached_slots_by_tag($tag, $slots, $ttl_seconds) {
 
     $cache_key = 'is_tours_slots_' . md5($tag);
     set_transient($cache_key, $slots, $ttl_seconds);
+
+    $ts_key = 'is_tours_slots_ts_' . md5($tag);
+    set_transient($ts_key, (int) current_time('timestamp'), $ttl_seconds);
+}
+
+function is_tours_build_slots_etag($slots) {
+    try {
+        $json = wp_json_encode($slots);
+        if (!is_string($json)) return '';
+        return '"' . md5($json) . '"';
+    } catch (Throwable $e) {
+        return '';
+    }
+}
+
+/**
+ * Apply HTTP cache headers + conditional GET handling.
+ *
+ * @return WP_REST_Response|null Return a 304 response to short-circuit, or null to continue.
+ */
+function is_tours_maybe_304(WP_REST_Request $request, $etag, $last_modified_ts, $max_age) {
+    $etag = (string) $etag;
+    $last_modified_ts = (int) $last_modified_ts;
+    $max_age = (int) $max_age;
+    if ($max_age <= 0) {
+        $max_age = 60;
+    }
+
+    if ($etag !== '') {
+        $if_none_match = (string) $request->get_header('if-none-match');
+        if ($if_none_match !== '' && trim($if_none_match) === $etag) {
+            $res = new WP_REST_Response(null, 304);
+            $res->header('ETag', $etag);
+            $res->header('Cache-Control', 'public, max-age=' . $max_age);
+            if ($last_modified_ts > 0) {
+                $res->header('Last-Modified', gmdate('D, d M Y H:i:s', $last_modified_ts) . ' GMT');
+            }
+            return $res;
+        }
+    }
+
+    if ($last_modified_ts > 0) {
+        $if_modified_since = (string) $request->get_header('if-modified-since');
+        if ($if_modified_since !== '') {
+            $since = strtotime($if_modified_since);
+            if ($since && $since >= $last_modified_ts) {
+                $res = new WP_REST_Response(null, 304);
+                if ($etag !== '') {
+                    $res->header('ETag', $etag);
+                }
+                $res->header('Cache-Control', 'public, max-age=' . $max_age);
+                $res->header('Last-Modified', gmdate('D, d M Y H:i:s', $last_modified_ts) . ' GMT');
+                return $res;
+            }
+        }
+    }
+
+    return null;
 }
 
 /**
