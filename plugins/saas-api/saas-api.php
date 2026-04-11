@@ -566,11 +566,25 @@ function is_tours_create_booking(WP_REST_Request $request) {
     $slot_id = isset($payload['slot_id']) ? trim((string) $payload['slot_id']) : '';
     $payment = sanitize_text_field($payload['payment'] ?? '');
 
-    $tag = isset($payload['tag']) ? strtoupper(sanitize_text_field((string) $payload['tag'])) : '';
+    $payload_tag = isset($payload['tag']) ? strtoupper(sanitize_text_field((string) $payload['tag'])) : '';
     $start = sanitize_text_field($payload['start'] ?? '');
     $title = sanitize_text_field($payload['title'] ?? '');
     $source_post_id = isset($payload['source_post_id']) ? (int) $payload['source_post_id'] : 0;
     $source_post_type = sanitize_key($payload['source_post_type'] ?? '');
+
+    $tag = $payload_tag;
+    if ($source_post_id > 0) {
+        $resolved = strtoupper(sanitize_text_field((string) get_post_meta($source_post_id, 'calendar_tag', true)));
+        if ($resolved === '' && function_exists('iss_calendar_resolve_tag_for_source_post_id')) {
+            $resolved = iss_calendar_resolve_tag_for_source_post_id($source_post_id);
+        }
+
+        if ($tag === '' && $resolved !== '') {
+            $tag = $resolved;
+        } elseif ($tag !== '' && $resolved !== '' && $tag !== $resolved) {
+            return new WP_REST_Response(['ok' => false, 'error' => 'Ungültige Zuordnung.'], 400);
+        }
+    }
 
     $errors = [];
     if ($name === '') { $errors[] = 'Name fehlt.'; }
@@ -578,6 +592,7 @@ function is_tours_create_booking(WP_REST_Request $request) {
     if ($tickets < 1) { $errors[] = 'Bitte mindestens 1 Ticket.'; }
     if ($slot_id === '') { $errors[] = 'Slot fehlt.'; }
     if (!in_array($payment, ['onsite', 'mollie'], true)) { $errors[] = 'Ungültige Zahlungsart.'; }
+    if ($tag === '' && $source_post_id <= 0) { $errors[] = 'Keine Zuordnung vorhanden.'; }
 
     if ($tag !== '') {
         $slots = is_tours_get_cached_slots_by_tag($tag);
@@ -613,6 +628,12 @@ function is_tours_create_booking(WP_REST_Request $request) {
             if (function_exists('iss_calendar_find_item_post_id') && $source_calendar !== '') {
                 $slot_post_id = iss_calendar_find_item_post_id($slot_id, $source_calendar);
                 if ($slot_post_id) {
+                    if ($source_post_id > 0) {
+                        $slot_source_post_id = (int) get_post_meta($slot_post_id, 'source_post_id', true);
+                        if ($slot_source_post_id > 0 && $slot_source_post_id !== $source_post_id) {
+                            $errors[] = 'Ungültiger Slot.';
+                        }
+                    }
                     $avail_raw = get_post_meta($slot_post_id, 'capacity_available', true);
                     if ($avail_raw !== '' && $avail_raw !== null && (int) $avail_raw <= 0) {
                         $errors[] = 'Slot ist ausgebucht.';

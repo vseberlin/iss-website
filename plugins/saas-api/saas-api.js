@@ -182,9 +182,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		            btn.textContent = formatSlotTimeRange(slot) || '';
 
 		            if (!isSoldOut) {
-		              btn.addEventListener('click', () => {
-		                widget.dispatchEvent(new CustomEvent('is:slotSelected', { detail: slot }));
-			                openBookingForm(widget, slot, tag || '', btn);
+			              btn.addEventListener('click', () => {
+			                widget.dispatchEvent(new CustomEvent('is:slotSelected', { detail: slot }));
+			                openBookingForm(widget, slot, btn);
 			              });
 			            }
 
@@ -209,11 +209,11 @@ document.addEventListener('DOMContentLoaded', () => {
 		              btn.textContent = formatSlotTimeRange(slot) || '';
 
 		              if (!isSoldOut) {
-		                btn.addEventListener('click', () => {
-		                  widget.dispatchEvent(new CustomEvent('is:slotSelected', { detail: slot }));
-			                  openBookingForm(widget, slot, tag || '', btn);
-			                });
-			              }
+			                  btn.addEventListener('click', () => {
+			                    widget.dispatchEvent(new CustomEvent('is:slotSelected', { detail: slot }));
+			                    openBookingForm(widget, slot, btn);
+			                  });
+			                }
 
 		              appointmentsList.appendChild(btn);
 		            });
@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		          const clickedEl = appointmentsList
 		            ? appointmentsList.querySelector(`[data-slot-id="${safeId}"]`)
 		            : null;
-			          openBookingForm(widget, slot, tag || '', clickedEl);
+			          openBookingForm(widget, slot, clickedEl);
 			        });
 			      }
 
@@ -445,7 +445,7 @@ function buildSlotMeta(slot) {
   return '';
 }
 
-function openBookingForm(widget, slot, tag, clickedEl) {
+function openBookingForm(widget, slot, clickedEl) {
   const bookingPanel = widget.querySelector('.is-tour-calendar__booking');
   if (!bookingPanel) return;
 
@@ -464,7 +464,7 @@ function openBookingForm(widget, slot, tag, clickedEl) {
     clickedEl.classList.add('is-selected');
   }
 
-  const formWrap = createBookingForm(widget, slot, tag);
+  const formWrap = createBookingForm(widget, slot);
 
   // Best case: open as modal.
   const modal = getTourCalendarModal();
@@ -551,7 +551,7 @@ function getTourCalendarModal() {
   }
 }
 
-function createBookingForm(widget, slot, tag) {
+function createBookingForm(widget, slot) {
   const startISO = slot._date ? slot._date.toISOString() : (slot.start || '');
   const hasBookUrl = !!(window.IS_TOUR_CALENDAR && window.IS_TOUR_CALENDAR.bookUrl);
   const mollieDisabledAttr = 'disabled aria-disabled="true"';
@@ -562,7 +562,6 @@ function createBookingForm(widget, slot, tag) {
   wrap.innerHTML = `
     <form class="is-tour-calendar__form" novalidate>
       <input type="hidden" name="slot_id" value="${escapeHtml(slot.id ?? '')}">
-      <input type="hidden" name="tag" value="${escapeHtml(tag)}">
       <input type="hidden" name="start" value="${escapeHtml(startISO)}">
       <input type="hidden" name="title" value="${escapeHtml(slot.title || '')}">
       <input type="hidden" name="source_post_id" value="${escapeHtml(sourcePostId)}">
