@@ -291,6 +291,12 @@ function fallbackLinkText(url, defaultText) {
   const u = String(url || '').trim();
   if (!u) return defaultText;
   if (u.startsWith('#')) return 'Alle Termine anzeigen';
+  try {
+    const parsed = new URL(u, window.location.href);
+    if (parsed.hash && parsed.origin === window.location.origin && parsed.pathname === window.location.pathname) {
+      return 'Alle Termine anzeigen';
+    }
+  } catch {}
   return defaultText;
 }
 

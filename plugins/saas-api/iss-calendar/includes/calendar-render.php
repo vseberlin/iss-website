@@ -168,6 +168,15 @@ function iss_render_tour_calendar($attributes = [], $content = '') {
     if ($tag === '' && $post_id) {
         $tag = strtoupper(sanitize_text_field((string) get_post_meta($post_id, 'calendar_tag', true)));
     }
+    if ($tag === '' && $post_id && function_exists('iss_calendar_resolve_tag_for_source_post_id')) {
+        $tag = iss_calendar_resolve_tag_for_source_post_id($post_id);
+        if ($tag !== '' && $fallback_url === '' && function_exists('iss_calendar_get_source_map_entry')) {
+            $entry = iss_calendar_get_source_map_entry($tag);
+            if (is_array($entry) && !empty($entry['fallback_url'])) {
+                $fallback_url = esc_url_raw((string) $entry['fallback_url']);
+            }
+        }
+    }
 
     if ($tag === '') {
         // Can't render an interactive calendar without a tag.
@@ -178,7 +187,7 @@ function iss_render_tour_calendar($attributes = [], $content = '') {
             : 'class="is-tour-calendar wp-block-group alignwide has-global-padding is-layout-constrained"';
 
         $msg = esc_html__('Kalender ist nicht konfiguriert (Tag fehlt).', 'iss-calendar');
-        $link_text = ($fallback_url && str_starts_with((string) $fallback_url, '#'))
+        $link_text = iss_calendar_is_fallback_anchor($fallback_url, $post_id)
             ? esc_html__('Alle Termine anzeigen', 'iss-calendar')
             : esc_html__('Direkt buchen', 'iss-calendar');
         $link = $fallback_url ? ' <a href="' . esc_url($fallback_url) . '">' . $link_text . '</a>' : '';
@@ -196,7 +205,7 @@ function iss_render_tour_calendar($attributes = [], $content = '') {
         ])
         : 'class="is-tour-calendar wp-block-group alignwide has-global-padding is-layout-constrained"';
 
-    $fallback_label = ($fallback_url && str_starts_with((string) $fallback_url, '#'))
+    $fallback_label = iss_calendar_is_fallback_anchor($fallback_url, $post_id)
         ? esc_html__('Alle Termine anzeigen', 'iss-calendar')
         : esc_html__('Direkt buchen', 'iss-calendar');
 
@@ -225,4 +234,40 @@ function iss_render_tour_calendar($attributes = [], $content = '') {
         $fallback_html,
         $noscript
     );
+}
+
+/**
+ * Decide whether a fallback URL should be presented as a same-page list anchor.
+ *
+ * @param string $fallback_url
+ * @param int $post_id
+ * @return bool
+ */
+function iss_calendar_is_fallback_anchor($fallback_url, $post_id) {
+    $fallback_url = trim((string) $fallback_url);
+    if ($fallback_url === '') return false;
+
+    if (str_starts_with($fallback_url, '#')) return true;
+
+    $post_id = (int) $post_id;
+    if ($post_id <= 0) return false;
+
+    $parsed = wp_parse_url($fallback_url);
+    if (empty($parsed['fragment'])) return false;
+
+    $permalink = get_permalink($post_id);
+    if (!$permalink) return false;
+
+    $p1 = wp_parse_url($permalink);
+    if (!is_array($p1) || !is_array($parsed)) return false;
+
+    $host1 = isset($p1['host']) ? (string) $p1['host'] : '';
+    $host2 = isset($parsed['host']) ? (string) $parsed['host'] : '';
+    $path1 = isset($p1['path']) ? (string) $p1['path'] : '';
+    $path2 = isset($parsed['path']) ? (string) $parsed['path'] : '';
+
+    if ($host2 !== '' && $host1 !== '' && strcasecmp($host1, $host2) !== 0) return false;
+    if ($path2 !== '' && $path1 !== '' && untrailingslashit($path1) !== untrailingslashit($path2)) return false;
+
+    return true;
 }

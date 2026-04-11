@@ -132,6 +132,27 @@ function iss_calendar_get_source_map_entry($tag) {
     return $map[$tag];
 }
 
+/**
+ * Best-effort: resolve a calendar tag for a given source post id.
+ *
+ * @param int $source_post_id
+ * @return string
+ */
+function iss_calendar_resolve_tag_for_source_post_id($source_post_id) {
+    $source_post_id = (int) $source_post_id;
+    if ($source_post_id <= 0) return '';
+
+    $map = iss_calendar_get_source_map();
+    foreach ($map as $tag => $entry) {
+        if (!is_array($entry)) continue;
+        if ((int) ($entry['source_post_id'] ?? 0) === $source_post_id) {
+            return strtoupper(sanitize_text_field((string) $tag));
+        }
+    }
+
+    return '';
+}
+
 add_filter('manage_' . ISS_CALENDAR_ITEM_POST_TYPE . '_posts_columns', function ($cols) {
     $out = [];
     foreach ($cols as $key => $label) {
