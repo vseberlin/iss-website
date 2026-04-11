@@ -79,10 +79,12 @@ function iss_calendar_render_dates($attributes = [], $content = '') {
         $source_post_id = (int) get_the_ID();
     }
 
-    $limit = isset($attributes['limit']) ? (int) $attributes['limit'] : 6;
+    $limit = isset($attributes['limit']) ? (int) $attributes['limit'] : 12;
     if ($limit <= 0) {
-        $limit = 6;
+        $limit = 12;
     }
+
+    $title = isset($attributes['title']) ? trim((string) $attributes['title']) : '';
 
     if (!function_exists('iss_calendar_get_items_for_post')) {
         return '';
@@ -99,10 +101,19 @@ function iss_calendar_render_dates($attributes = [], $content = '') {
         : 'class="wp-block-iss-tour-dates"';
 
     if (empty($items)) {
-        return '<div ' . $attrs . '><p>' . esc_html__('Aktuell sind keine Termine verfügbar.', 'iss-calendar') . '</p></div>';
+        $out = '<div ' . $attrs . '>';
+        if ($title !== '') {
+            $out .= '<h3 class="iss-tour-dates__title">' . esc_html($title) . '</h3>';
+        }
+        $out .= '<p>' . esc_html__('Aktuell sind keine Termine verfügbar.', 'iss-calendar') . '</p>';
+        $out .= '</div>';
+        return $out;
     }
 
     $out = '<div ' . $attrs . '>';
+    if ($title !== '') {
+        $out .= '<h3 class="iss-tour-dates__title">' . esc_html($title) . '</h3>';
+    }
     $out .= '<ul class="iss-tour-dates">';
 
     foreach ($items as $item) {

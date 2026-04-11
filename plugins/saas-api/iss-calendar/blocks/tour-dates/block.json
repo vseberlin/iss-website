@@ -8,6 +8,16 @@
   "description": "Shows upcoming dates from iss_calendar_item.",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./editor.css",
+  "attributes": {
+    "limit": {
+      "type": "number",
+      "default": 12
+    },
+    "title": {
+      "type": "string",
+      "default": "Termine"
+    }
+  },
   "supports": {
     "html": false
   }
