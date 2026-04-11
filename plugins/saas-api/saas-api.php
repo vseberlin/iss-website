@@ -11,158 +11,11 @@ define('IS_SAAS_VERSION', '1.2.0');
 define('IS_SAAS_OPTION_GROUP', 'is_saas_options');
 define('IS_SAAS_OPTION_NAME', 'is_saas_settings');
 
-/**
- * CPT: iss_calendar_item
- */
-add_action('init', function () {
-    register_post_type('iss_calendar_item', [
-        'labels' => [
-            'name' => 'Calendar Items',
-            'singular_name' => 'Calendar Item',
-            'add_new_item' => 'Add Calendar Item',
-            'edit_item' => 'Edit Calendar Item',
-            'new_item' => 'New Calendar Item',
-            'view_item' => 'View Calendar Item',
-            'search_items' => 'Search Calendar Items',
-        ],
-        'public' => false,
-        'publicly_queryable' => false,
-        'exclude_from_search' => true,
-        'show_ui' => true,
-        'show_in_menu' => true,
-        'show_in_rest' => true,
-        'rest_base' => 'iss-calendar-items',
-        'menu_icon' => 'calendar-alt',
-        'supports' => ['title', 'editor', 'excerpt'],
-        'has_archive' => false,
-        'rewrite' => false,
-    ]);
+require_once __DIR__ . '/includes/iss-calendar-cpt.php';
+require_once __DIR__ . '/includes/iss-calendar-sync.php';
 
-    $rest_schema_date_time = [
-        'schema' => [
-            'type' => 'string',
-            'format' => 'date-time',
-        ],
-    ];
-
-    $meta_fields = [
-        'event_start' => [
-            'type' => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
-            'show_in_rest' => $rest_schema_date_time,
-        ],
-        'event_end' => [
-            'type' => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
-            'show_in_rest' => $rest_schema_date_time,
-        ],
-        'item_type' => [
-            'type' => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
-            'show_in_rest' => true,
-        ],
-        'source_system' => [
-            'type' => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
-            'show_in_rest' => true,
-        ],
-        'source_calendar' => [
-            'type' => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
-            'show_in_rest' => true,
-        ],
-        'external_id' => [
-            'type' => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
-            'show_in_rest' => true,
-        ],
-        'source_post_id' => [
-            'type' => 'integer',
-            'sanitize_callback' => static function ($value) {
-                return (int) $value;
-            },
-            'show_in_rest' => true,
-        ],
-        'source_post_type' => [
-            'type' => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
-            'show_in_rest' => true,
-        ],
-        'booking_url' => [
-            'type' => 'string',
-            'sanitize_callback' => 'esc_url_raw',
-            'show_in_rest' => true,
-        ],
-        'location' => [
-            'type' => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
-            'show_in_rest' => true,
-        ],
-        'availability_state' => [
-            'type' => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
-            'show_in_rest' => true,
-        ],
-        'capacity_total' => [
-            'type' => 'integer',
-            'sanitize_callback' => static function ($value) {
-                return (int) $value;
-            },
-            'show_in_rest' => true,
-        ],
-        'capacity_available' => [
-            'type' => 'integer',
-            'sanitize_callback' => static function ($value) {
-                return (int) $value;
-            },
-            'show_in_rest' => true,
-        ],
-        'is_public' => [
-            'type' => 'boolean',
-            'sanitize_callback' => 'rest_sanitize_boolean',
-            'show_in_rest' => true,
-        ],
-        'sync_status' => [
-            'type' => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
-            'show_in_rest' => true,
-        ],
-        'last_synced_at' => [
-            'type' => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
-            'show_in_rest' => $rest_schema_date_time,
-        ],
-        'last_seen_at' => [
-            'type' => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
-            'show_in_rest' => $rest_schema_date_time,
-        ],
-        'origin_mode' => [
-            'type' => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
-            'show_in_rest' => true,
-        ],
-        'public_note' => [
-            'type' => 'string',
-            'sanitize_callback' => 'sanitize_textarea_field',
-            'show_in_rest' => true,
-        ],
-        'sort_date' => [
-            'type' => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
-            'show_in_rest' => $rest_schema_date_time,
-        ],
-    ];
-
-    foreach ($meta_fields as $meta_key => $args) {
-        register_post_meta('iss_calendar_item', $meta_key, array_merge([
-            'single' => true,
-            'auth_callback' => static function () {
-                return current_user_can('edit_posts');
-            },
-        ], $args));
-    }
-}, 5);
+register_activation_hook(__FILE__, 'iss_calendar_activate_sync');
+register_deactivation_hook(__FILE__, 'iss_calendar_deactivate_sync');
 
 function is_saas_get_settings() {
     $defaults = [
@@ -370,43 +223,19 @@ function is_tours_get_slots(WP_REST_Request $request) {
         return new WP_REST_Response($cached, 200);
     }
 
-    $base_url = untrailingslashit($settings['base_url']);
-    $from = rawurlencode(current_time('Y-m-d H:i:s'));
-    $url = $base_url . '/api/free/' . rawurlencode($settings['schedule_id']) . '.json?from=' . $from;
+    $slot_items = iss_calendar_supersaas_fetch_free_slots($settings);
+    if (is_wp_error($slot_items)) {
+        $fallback_slots = iss_calendar_get_slots_fallback_for_tag($tag);
+        if (!empty($fallback_slots)) {
+            $res = new WP_REST_Response($fallback_slots, 200);
+            $res->header('X-IS-Tours-Fallback', 'cpt');
+            return $res;
+        }
 
-    $response = wp_remote_get($url, [
-        'timeout' => 15,
-        'headers' => [
-            'Authorization' => 'Basic ' . base64_encode($settings['account_name'] . ':' . $settings['api_key']),
-        ],
-    ]);
-
-    if (is_wp_error($response)) {
         return new WP_REST_Response([
             'error'    => 'Availability fetch failed',
             'fallback' => true,
-            'details'  => $response->get_error_message(),
-        ], 502);
-    }
-
-    $code = wp_remote_retrieve_response_code($response);
-    if ($code < 200 || $code >= 300) {
-        return new WP_REST_Response([
-            'error'           => 'API request failed',
-            'fallback'        => true,
-            'upstream_status' => $code,
-            'upstream_body'   => wp_remote_retrieve_body($response),
-        ], 502);
-    }
-
-    $body = wp_remote_retrieve_body($response);
-    $data = json_decode($body, true);
-    $slot_items = isset($data['slots']) && is_array($data['slots']) ? $data['slots'] : $data;
-
-    if (!is_array($slot_items)) {
-        return new WP_REST_Response([
-            'error'    => 'Invalid API response',
-            'fallback' => true,
+            'details'  => $slot_items->get_error_message(),
         ], 502);
     }
 
@@ -417,8 +246,13 @@ function is_tours_get_slots(WP_REST_Request $request) {
             continue;
         }
 
-        $title = isset($slot['title']) ? trim((string) $slot['title']) : '';
-        if ($title === '' || stripos($title, '[' . $tag . ']') !== 0) {
+        $raw_title = isset($slot['title']) ? trim((string) $slot['title']) : '';
+        if ($raw_title === '') {
+            continue;
+        }
+
+        $parsed = iss_calendar_parse_supersaas_title($raw_title);
+        if (empty($parsed['tag']) || strtoupper((string) $parsed['tag']) !== $tag) {
             continue;
         }
 
@@ -427,7 +261,7 @@ function is_tours_get_slots(WP_REST_Request $request) {
             continue;
         }
 
-        $slots[] = is_saas_build_slot_response($slot, $title, $start);
+        $slots[] = is_saas_build_slot_response($slot, $parsed['title'], $start);
     }
 
     usort($slots, function ($a, $b) {
@@ -449,11 +283,18 @@ function is_tours_get_slots(WP_REST_Request $request) {
 	    $tag = esc_attr(strtoupper($atts['tag']));
 	    $title = esc_html($atts['title']);
 	    $fallback = esc_url($atts['fallback_url']);
+	    $source_post_id = get_the_ID();
+	    $source_post_type = $source_post_id ? get_post_type($source_post_id) : '';
+	    if (!$source_post_id) {
+	        $source_post_id = '';
+	    }
 	    $slot_select_id = 'is-tour-slot-' . sanitize_key($tag) . '-' . wp_rand(1000, 9999);
+
+	    iss_calendar_remember_source_mapping($tag, $fallback, $source_post_id, $source_post_type);
 
 	    ob_start();
 	    ?>
-	    <section class="is-tour-calendar wp-block-group alignwide has-global-padding is-layout-constrained" data-tag="<?php echo $tag; ?>" data-fallback="<?php echo $fallback; ?>">
+	    <section class="is-tour-calendar wp-block-group alignwide has-global-padding is-layout-constrained" data-tag="<?php echo $tag; ?>" data-fallback="<?php echo $fallback; ?>" data-source-post-id="<?php echo esc_attr($source_post_id); ?>" data-source-post-type="<?php echo esc_attr($source_post_type); ?>">
 	        <div class="is-tour-calendar__inner wp-block-group is-layout-constrained">
 	            <div class="is-tour-calendar__header wp-block-group is-layout-constrained">
 	                <p class="is-tour-calendar__eyebrow has-small-font-size">Kalender</p>
@@ -607,6 +448,8 @@ function is_tours_create_booking(WP_REST_Request $request) {
     $tag = isset($payload['tag']) ? strtoupper(sanitize_text_field((string) $payload['tag'])) : '';
     $start = sanitize_text_field($payload['start'] ?? '');
     $title = sanitize_text_field($payload['title'] ?? '');
+    $source_post_id = isset($payload['source_post_id']) ? (int) $payload['source_post_id'] : 0;
+    $source_post_type = sanitize_key($payload['source_post_type'] ?? '');
 
     $errors = [];
     if ($name === '') { $errors[] = 'Name fehlt.'; }
@@ -625,10 +468,27 @@ function is_tours_create_booking(WP_REST_Request $request) {
             }
         }
 
-        if ($found === null) {
-            $errors[] = 'Slot nicht gefunden (Cache).';
-        } elseif (array_key_exists('available', $found) && $found['available'] !== null && (int) $found['available'] <= 0) {
-            $errors[] = 'Slot ist ausgebucht.';
+        if ($found !== null) {
+            if (array_key_exists('available', $found) && $found['available'] !== null && (int) $found['available'] <= 0) {
+                $errors[] = 'Slot ist ausgebucht.';
+            }
+        } else {
+            // If the live API/cache is empty (e.g. API down), allow CPT-backed slots too.
+            $settings = is_saas_get_settings();
+            $source_calendar = is_saas_get_schedule_path($settings);
+            if ($source_calendar === '') {
+                $source_calendar = (string) ($settings['schedule_id'] ?? '');
+            }
+
+            if (function_exists('iss_calendar_find_item_post_id') && $source_calendar !== '') {
+                $slot_post_id = iss_calendar_find_item_post_id($slot_id, $source_calendar);
+                if ($slot_post_id) {
+                    $avail_raw = get_post_meta($slot_post_id, 'capacity_available', true);
+                    if ($avail_raw !== '' && $avail_raw !== null && (int) $avail_raw <= 0) {
+                        $errors[] = 'Slot ist ausgebucht.';
+                    }
+                }
+            }
         }
     }
 
@@ -646,6 +506,8 @@ function is_tours_create_booking(WP_REST_Request $request) {
         'tag' => $tag,
         'start' => $start,
         'title' => $title,
+        'source_post_id' => $source_post_id,
+        'source_post_type' => $source_post_type,
         'ip' => isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field((string) $_SERVER['REMOTE_ADDR']) : '',
         'ua' => isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field((string) $_SERVER['HTTP_USER_AGENT']) : '',
     ];

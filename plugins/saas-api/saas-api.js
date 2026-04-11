@@ -449,6 +449,8 @@ function createBookingForm(widget, slot, tag) {
   const startISO = slot._date ? slot._date.toISOString() : (slot.start || '');
   const hasBookUrl = !!(window.IS_TOUR_CALENDAR && window.IS_TOUR_CALENDAR.bookUrl);
   const mollieDisabledAttr = 'disabled aria-disabled="true"';
+  const sourcePostId = (widget && widget.dataset && widget.dataset.sourcePostId) ? widget.dataset.sourcePostId : '';
+  const sourcePostType = (widget && widget.dataset && widget.dataset.sourcePostType) ? widget.dataset.sourcePostType : '';
 
   const wrap = document.createElement('div');
   wrap.innerHTML = `
@@ -457,6 +459,8 @@ function createBookingForm(widget, slot, tag) {
       <input type="hidden" name="tag" value="${escapeHtml(tag)}">
       <input type="hidden" name="start" value="${escapeHtml(startISO)}">
       <input type="hidden" name="title" value="${escapeHtml(slot.title || '')}">
+      <input type="hidden" name="source_post_id" value="${escapeHtml(sourcePostId)}">
+      <input type="hidden" name="source_post_type" value="${escapeHtml(sourcePostType)}">
       <div class="is-tour-calendar__form-row">
         <label>Ihr Name<br><input required name="name" type="text"></label>
       </div>
