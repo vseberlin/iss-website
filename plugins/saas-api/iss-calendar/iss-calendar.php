@@ -8,3 +8,4 @@ require_once __DIR__ . '/includes/calendar-query.php';
 require_once __DIR__ . '/includes/calendar-render.php';
 
 require_once __DIR__ . '/includes/blocks.php';
+require_once __DIR__ . '/includes/calendar-editor.php';
