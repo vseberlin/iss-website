@@ -65,7 +65,7 @@ function iss_calendar_render_tag_metabox($post) {
 
     echo '<p><label for="iss_calendar_tag_field"><strong>Calendar Tag</strong></label></p>';
     echo '<p><input id="iss_calendar_tag_field" name="iss_calendar_tag_field" type="text" value="' . esc_attr($value) . '" class="widefat" placeholder="ELEKTRO" /></p>';
-    echo '<p class="description">Use the same value as the SuperSaaS slot <code>location</code> (recommended), or legacy <code>[TAG]</code> prefix in titles.</p>';
+    echo '<p class="description">Use the same value as your SuperSaaS tag marker (recommended: add <code>TAG=ELEKTRO</code> in the slot <code>description</code>; legacy: <code>[TAG]</code> prefix in slot titles). The SuperSaaS <code>location</code> field can stay as the venue.</p>';
 
     if (function_exists('iss_calendar_get_source_map_entry') && $value !== '') {
         $entry = iss_calendar_get_source_map_entry($value);
@@ -114,4 +114,3 @@ add_action('save_post', function ($post_id) {
         iss_calendar_remember_source_mapping($tag, '', (int) $post_id, (string) $post_type);
     }
 }, 10, 1);
-

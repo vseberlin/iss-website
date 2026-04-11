@@ -198,6 +198,45 @@ function iss_calendar_parse_supersaas_title($raw_title) {
     ];
 }
 
+function iss_calendar_extract_tag_from_text($text) {
+    $text = trim((string) $text);
+    if ($text === '') return '';
+
+    // Example: "TAG=ELEKTRO" or "tag: elektro"
+    if (preg_match('/\\bTAG\\s*[:=]\\s*([A-Z0-9_-]{2,})\\b/i', $text, $m)) {
+        return strtoupper(trim((string) $m[1]));
+    }
+
+    // Example: "[ELEKTRO] some note"
+    if (preg_match('/^\\s*\\[([^\\]]{2,})\\]/u', $text, $m)) {
+        return strtoupper(trim((string) $m[1]));
+    }
+
+    return '';
+}
+
+function iss_calendar_extract_supersaas_slot_tag($slot) {
+    if (!is_array($slot)) return '';
+
+    // Preferred: keep public title clean, store tag in description.
+    $desc = isset($slot['description']) ? (string) $slot['description'] : '';
+    $tag = iss_calendar_extract_tag_from_text($desc);
+    if ($tag !== '') return $tag;
+
+    // Back-compat: legacy "[TAG] Title" prefix in title.
+    $raw_title = isset($slot['title']) ? (string) $slot['title'] : '';
+    $parsed = iss_calendar_parse_supersaas_title($raw_title);
+    $tag = isset($parsed['tag']) ? strtoupper((string) $parsed['tag']) : '';
+    if ($tag !== '') return $tag;
+
+    // Optional: allow tagging via location only if it matches our tag pattern.
+    $loc = isset($slot['location']) ? (string) $slot['location'] : '';
+    $tag = iss_calendar_extract_tag_from_text($loc);
+    if ($tag !== '') return $tag;
+
+    return '';
+}
+
 /**
  * Normalize SuperSaaS free slots for a specific tag to the REST "slots" shape.
  *
@@ -228,22 +267,13 @@ function iss_calendar_get_supersaas_slots_for_tag($tag, $settings = null) {
             continue;
         }
 
-        // Prefer a structured tag stored in SuperSaaS "location".
-        // This lets us avoid encoding [TAG] into the public title.
-        $loc = isset($slot['location']) ? strtoupper(trim((string) $slot['location'])) : '';
-        $parsed = null;
-        $clean_title = $raw_title;
-
-        if ($loc !== '' && $loc === $tag) {
-            // Title is already clean.
-        } else {
-            // Back-compat: support legacy "[TAG] Title" format in the title string.
-            $parsed = iss_calendar_parse_supersaas_title($raw_title);
-            if (empty($parsed['tag']) || strtoupper((string) $parsed['tag']) !== $tag) {
-                continue;
-            }
-            $clean_title = (string) ($parsed['title'] ?? $raw_title);
+        $slot_tag = iss_calendar_extract_supersaas_slot_tag($slot);
+        if ($slot_tag === '' || $slot_tag !== $tag) {
+            continue;
         }
+
+        $parsed = iss_calendar_parse_supersaas_title($raw_title);
+        $clean_title = !empty($parsed['title']) ? (string) $parsed['title'] : $raw_title;
 
         $start = $slot['start'] ?? null;
         if (!$start) {
@@ -435,14 +465,7 @@ function iss_calendar_sync_supersaas_to_cpt() {
 
         $raw_title = isset($slot['title']) ? (string) $slot['title'] : '';
         $parsed = iss_calendar_parse_supersaas_title($raw_title);
-
-        $loc_tag = isset($slot['location']) ? strtoupper(trim((string) $slot['location'])) : '';
-        $tag = '';
-        if ($loc_tag !== '' && in_array($loc_tag, $mapped_tags, true)) {
-            $tag = $loc_tag;
-        } else {
-            $tag = isset($parsed['tag']) ? strtoupper((string) $parsed['tag']) : '';
-        }
+        $tag = iss_calendar_extract_supersaas_slot_tag($slot);
 
         if ($tag === '' || !in_array($tag, $mapped_tags, true)) {
             continue;
