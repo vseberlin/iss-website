@@ -1,0 +1,95 @@
+<?php
+get_header();
+
+function industriesalon_get_booking_url($booking_type, $product) {
+	if (!$booking_type || !$product) {
+		return '';
+	}
+
+	if (is_object($product) && isset($product->ID)) {
+		return get_permalink($product->ID);
+	}
+
+	if (is_numeric($product)) {
+		return get_permalink((int) $product);
+	}
+
+	if (is_string($product) && filter_var($product, FILTER_VALIDATE_URL)) {
+		return $product;
+	}
+
+	return '';
+}
+
+if (have_posts()) :
+	while (have_posts()) : the_post();
+
+		$dauer        = get_field('dauer');
+		$treffpunkt   = get_field('treffpunkt');
+		$kurztext     = get_field('kurztext');
+		$booking_type = get_field('booking_type');
+		$product      = get_field('product');
+		$image        = get_field('image');
+
+		$booking_url = industriesalon_get_booking_url($booking_type, $product);
+
+		$image_html = '';
+
+		if (is_array($image) && !empty($image['ID'])) {
+			$image_html = wp_get_attachment_image($image['ID'], 'full');
+		} elseif (is_numeric($image)) {
+			$image_html = wp_get_attachment_image((int) $image, 'full');
+		} elseif (has_post_thumbnail()) {
+			$image_html = get_the_post_thumbnail(get_the_ID(), 'full');
+		}
+		?>
+
+		<main class="wp-block-group">
+			<div class="wp-block-group alignwide fuehrung-layout">
+				<header class="fuehrung-header">
+					<h1><?php the_title(); ?></h1>
+
+					<?php if ($kurztext) : ?>
+						<p class="fuehrung-intro"><?php echo esc_html($kurztext); ?></p>
+					<?php endif; ?>
+
+					<?php if ($dauer || $treffpunkt) : ?>
+						<div class="fuehrung-meta">
+							<?php if ($dauer) : ?>
+								<p><strong>Dauer:</strong> <?php echo esc_html($dauer); ?></p>
+							<?php endif; ?>
+
+							<?php if ($treffpunkt) : ?>
+								<p><strong>Treffpunkt:</strong> <?php echo esc_html($treffpunkt); ?></p>
+							<?php endif; ?>
+						</div>
+					<?php endif; ?>
+
+					<?php if ($booking_url) : ?>
+						<div class="wp-block-buttons">
+							<div class="wp-block-button">
+								<a class="wp-block-button__link wp-element-button" href="<?php echo esc_url($booking_url); ?>">
+									Termin buchen
+								</a>
+							</div>
+						</div>
+					<?php endif; ?>
+				</header>
+
+				<?php if ($image_html) : ?>
+					<figure class="fuehrung-image">
+						<?php echo $image_html; ?>
+					</figure>
+				<?php endif; ?>
+
+				<div class="fuehrung-content entry-content">
+					<?php the_content(); ?>
+				</div>
+			</div>
+		</main>
+
+		<?php
+	endwhile;
+endif;
+
+get_footer();

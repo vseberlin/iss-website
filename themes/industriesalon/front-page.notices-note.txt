@@ -1,0 +1,23 @@
+Front page + notices plugin
+
+Applied
+- front page now renders the banner from Industriesalon Notices
+- source is [iss_notice area="front_page_banner"]
+- banner is placed in its own slot before the hero and visually overlaps the hero
+- banner text, badge, button text and target now come from the notices plugin, not from hardcoded front-page text
+
+Kept as-is
+- hero heading and kicker stay in template
+- practical visitor data still comes from Industriesalon Steuerung
+
+Editorial use
+- create one notice in area: Startseiten-Banner
+- scope: Nur Startseite
+- audience: Öffentlich
+- set active
+- optional badge, headline, body text, button
+
+Why this route
+- no extra plugin fields required
+- keeps banner editorial and time-based
+- avoids mixing temporary campaign text into permanent front-page template

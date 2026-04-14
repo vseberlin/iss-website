@@ -1,0 +1,56 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "customTemplates": [
+    {
+      "name": "page-hero-overlay",
+      "title": "Page Hero Overlay",
+      "postTypes": ["page"]
+    }
+  ],
+
+  "settings": {
+    "appearanceTools": true,
+    "layout": {
+      "contentSize": "1280px",
+      "wideSize": "1280px"
+    },
+    "typography": {
+      "fontFamilies": [
+        {
+          "name": "IBM Plex Sans",
+          "slug": "plex",
+          "fontFamily": "\"IBM Plex Sans\", system-ui, sans-serif"
+        }
+      ]
+    },
+    "color": {
+      "defaultPalette": false,
+      "palette": [
+        { "slug": "text", "name": "Text", "color": "#1E1A1E" },
+        { "slug": "text-muted", "name": "Muted", "color": "#5A5559" },
+        { "slug": "border", "name": "Border", "color": "#D6D2D4" },
+        { "slug": "bg", "name": "Background", "color": "#FFFFFF" },
+        { "slug": "bg-soft", "name": "Soft Background", "color": "#F5F4F5" },
+        { "slug": "accent", "name": "Accent", "color": "#A02A2A" },
+        { "slug": "accent-hover", "name": "Accent Hover", "color": "#7F2020" },
+        { "slug": "steel", "name": "Steel Blue", "color": "#4A6470" }
+      ]
+    }
+  },
+
+  "styles": {
+    "typography": {
+      "fontFamily": "var(--wp--preset--font-family--plex)"
+    },
+
+    "spacing": {
+      "blockGap": "1.5rem"
+    },
+
+    "color": {
+      "text": "var(--wp--preset--color--text)",
+      "background": "var(--wp--preset--color--bg)"
+    }
+  }
+}

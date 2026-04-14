@@ -1,0 +1,237 @@
+<!-- wp:template-part {"slug":"header","tagName":"header","theme":"industriesalon"} /-->
+
+<!-- wp:group {"tagName":"main","className":"site-main iss-front-page","layout":{"type":"default"}} -->
+<main class="wp-block-group site-main iss-front-page">
+	<!-- wp:cover {"url":"https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1800&q=80","dimRatio":45,"overlayColor":"eerie-black","isUserOverlayColor":true,"minHeight":100,"minHeightUnit":"vh","contentPosition":"center center","className":"iss-front-hero iss-front-hero--mik"} -->
+	<div class="wp-block-cover iss-front-hero iss-front-hero--mik" style="min-height:100vh"><span aria-hidden="true" class="wp-block-cover__background has-eerie-black-background-color has-background-dim-45 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1800&q=80" data-object-fit="cover"/><div class="wp-block-cover__inner-container">
+		<!-- wp:group {"className":"iss-front-hero__shell","layout":{"type":"constrained"}} -->
+		<div class="wp-block-group iss-front-hero__shell">
+			<!-- wp:group {"className":"iss-front-banner-slot iss-front-banner-slot--overlay","layout":{"type":"constrained"}} -->
+			<div class="wp-block-group iss-front-banner-slot iss-front-banner-slot--overlay">
+				<!-- wp:shortcode -->
+				[iss_notice area="front_page_banner"]
+				<!-- /wp:shortcode -->
+			</div>
+			<!-- /wp:group -->
+
+			<!-- wp:group {"className":"iss-front-hero__content","layout":{"type":"constrained"}} -->
+			<div class="wp-block-group iss-front-hero__content">
+				<!-- wp:paragraph {"className":"iss-kicker"} -->
+				<p class="iss-kicker">Besucherzentrum für Industriegeschichte</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:heading {"level":1,"className":"iss-front-hero__title"} -->
+				<h1 class="iss-front-hero__title">Geschichte sehen. Orte verstehen. Schöneweide neu lesen.</h1>
+				<!-- /wp:heading -->
+
+				<!-- wp:shortcode -->
+				[iss_field key="general.tagline" tag="p"]
+				<!-- /wp:shortcode -->
+
+				<!-- wp:group {"className":"iss-front-hero__meta","layout":{"type":"flex","flexWrap":"wrap"}} -->
+				<div class="wp-block-group iss-front-hero__meta">
+					<!-- wp:shortcode -->
+					[iss_field key="general.street" tag="span"]
+					<!-- /wp:shortcode -->
+					<!-- wp:shortcode -->
+					[iss_field key="general.postal_code" tag="span"]
+					<!-- /wp:shortcode -->
+					<!-- wp:shortcode -->
+					[iss_field key="general.city" tag="span"]
+					<!-- /wp:shortcode -->
+				</div>
+				<!-- /wp:group -->
+			</div>
+			<!-- /wp:group -->
+		</div>
+		<!-- /wp:group -->
+	</div></div>
+	<!-- /wp:cover -->
+
+	<!-- wp:group {"tagName":"section","anchor":"programm","className":"section","layout":{"type":"constrained"}} -->
+	<section id="programm" class="wp-block-group section">
+		<!-- wp:group {"className":"container","layout":{"type":"constrained"}} -->
+		<div class="wp-block-group container">
+			<!-- wp:heading {"level":2} -->
+			<h2>Programm</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:columns -->
+			<div class="wp-block-columns">
+				<!-- wp:column -->
+				<div class="wp-block-column">
+					<!-- wp:group {"className":"iss-front-card","layout":{"type":"constrained"}} -->
+					<div class="wp-block-group iss-front-card">
+						<!-- wp:heading {"level":3} -->
+						<h3>Führungen</h3>
+						<!-- /wp:heading -->
+						<!-- wp:paragraph -->
+						<p>Öffentliche Termine, Gruppenangebote und Sonderformate mit direktem Einstieg zur Buchung.</p>
+						<!-- /wp:paragraph -->
+						<!-- wp:buttons {"className":"iss-front-card__actions"} -->
+						<div class="wp-block-buttons iss-front-card__actions">
+							<!-- wp:button -->
+							<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/fuehrungen/">Zu den Führungen</a></div>
+							<!-- /wp:button -->
+							<!-- wp:shortcode -->
+							[iss_field key="contact.booking_url" tag="div" link="url" label="" ]
+							<!-- /wp:shortcode -->
+						</div>
+						<!-- /wp:buttons -->
+					</div>
+					<!-- /wp:group -->
+				</div>
+				<!-- /wp:column -->
+
+				<!-- wp:column -->
+				<div class="wp-block-column">
+					<!-- wp:group {"className":"iss-front-card","layout":{"type":"constrained"}} -->
+					<div class="wp-block-group iss-front-card">
+						<!-- wp:heading {"level":3} -->
+						<h3>Veranstaltungen</h3>
+						<!-- /wp:heading -->
+						<!-- wp:paragraph -->
+						<p>Kalender, einzelne Highlights und Formate für Besuchende, Nachbarschaft und Partner.</p>
+						<!-- /wp:paragraph -->
+						<!-- wp:buttons {"className":"iss-front-card__actions"} -->
+						<div class="wp-block-buttons iss-front-card__actions">
+							<!-- wp:button -->
+							<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/veranstaltungen/">Zum Kalender</a></div>
+							<!-- /wp:button -->
+						</div>
+						<!-- /wp:buttons -->
+					</div>
+					<!-- /wp:group -->
+				</div>
+				<!-- /wp:column -->
+
+				<!-- wp:column -->
+				<div class="wp-block-column">
+					<!-- wp:group {"className":"iss-front-card","layout":{"type":"constrained"}} -->
+					<div class="wp-block-group iss-front-card">
+						<!-- wp:heading {"level":3} -->
+						<h3>Archiv &amp; Mediathek</h3>
+						<!-- /wp:heading -->
+						<!-- wp:paragraph -->
+						<p>Kurzer Einstieg in Sammlungen, Themen und digitale Zugänge ohne Informationsüberladung.</p>
+						<!-- /wp:paragraph -->
+						<!-- wp:buttons {"className":"iss-front-card__actions"} -->
+						<div class="wp-block-buttons iss-front-card__actions">
+							<!-- wp:button -->
+							<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/archiv/">Ins Archiv</a></div>
+							<!-- /wp:button -->
+						</div>
+						<!-- /wp:buttons -->
+					</div>
+					<!-- /wp:group -->
+				</div>
+				<!-- /wp:column -->
+			</div>
+		</div>
+	</section>
+
+	<!-- wp:group {"tagName":"section","anchor":"besuch","className":"section","layout":{"type":"constrained"}} -->
+	<section id="besuch" class="wp-block-group section">
+		<!-- wp:group {"className":"container","layout":{"type":"constrained"}} -->
+		<div class="wp-block-group container">
+			<!-- wp:heading {"level":2} -->
+			<h2>Ihr Besuch</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:columns -->
+			<div class="wp-block-columns iss-front-grid">
+				<!-- wp:column -->
+				<div class="wp-block-column">
+					<!-- wp:group {"className":"iss-front-card iss-front-card--hours","layout":{"type":"constrained"}} -->
+					<div class="wp-block-group iss-front-card iss-front-card--hours">
+						<!-- wp:heading {"level":3} -->
+						<h3>Öffnungszeiten</h3>
+						<!-- /wp:heading -->
+						<!-- wp:shortcode -->
+						[iss_hours type="public"]
+						<!-- /wp:shortcode -->
+					</div>
+				</div>
+
+				<!-- wp:column -->
+				<div class="wp-block-column">
+					<!-- wp:group {"className":"iss-front-card iss-front-card--arrival","layout":{"type":"constrained"}} -->
+					<div class="wp-block-group iss-front-card iss-front-card--arrival">
+						<!-- wp:heading {"level":3} -->
+						<h3>Anfahrt</h3>
+						<!-- /wp:heading -->
+						<!-- wp:shortcode -->
+						[iss_field key="general.street" tag="p"]
+						<!-- /wp:shortcode -->
+						<!-- wp:group {"className":"iss-front-card__address-row","layout":{"type":"flex","flexWrap":"wrap"}} -->
+						<div class="wp-block-group iss-front-card__address-row">
+							<!-- wp:shortcode -->
+							[iss_field key="general.postal_code" tag="span"]
+							<!-- /wp:shortcode -->
+							<!-- wp:shortcode -->
+							[iss_field key="general.city" tag="span"]
+							<!-- /wp:shortcode -->
+						</div>
+						<!-- /wp:group -->
+						<!-- wp:shortcode -->
+						[iss_field key="general.arrival" tag="p"]
+						<!-- /wp:shortcode -->
+						<!-- wp:shortcode -->
+						[iss_field key="maps.google_maps_url" tag="p" link="url"]
+						<!-- /wp:shortcode -->
+					</div>
+				</div>
+
+				<!-- wp:column -->
+				<div class="wp-block-column">
+					<!-- wp:group {"className":"iss-front-card iss-front-card--prices","layout":{"type":"constrained"}} -->
+					<div class="wp-block-group iss-front-card iss-front-card--prices">
+						<!-- wp:heading {"level":3} -->
+						<h3>Tickets &amp; Preise</h3>
+						<!-- /wp:heading -->
+						<!-- wp:shortcode -->
+						[iss_prices]
+						<!-- /wp:shortcode -->
+					</div>
+				</div>
+			</div>
+
+			<!-- wp:group {"className":"iss-front-visit-note","layout":{"type":"constrained"}} -->
+			<div class="wp-block-group iss-front-visit-note">
+				<!-- wp:shortcode -->
+				[iss_field key="general.visit_note" tag="p"]
+				<!-- /wp:shortcode -->
+			</div>
+		</div>
+	</section>
+
+	<!-- wp:group {"tagName":"section","anchor":"kontakt","className":"section section--contact","layout":{"type":"constrained"}} -->
+	<section id="kontakt" class="wp-block-group section section--contact">
+		<!-- wp:group {"className":"container","layout":{"type":"constrained"}} -->
+		<div class="wp-block-group container">
+			<!-- wp:columns {"verticalAlignment":"top"} -->
+			<div class="wp-block-columns are-vertically-aligned-top">
+				<!-- wp:column {"width":"55%"} -->
+				<div class="wp-block-column" style="flex-basis:55%">
+					<!-- wp:heading {"level":2} -->
+					<h2>Kontakt</h2>
+					<!-- /wp:heading -->
+					<!-- wp:shortcode -->
+					[iss_contact]
+					<!-- /wp:shortcode -->
+				</div>
+
+				<!-- wp:column {"width":"45%"} -->
+				<div class="wp-block-column" style="flex-basis:45%">
+					<!-- wp:heading {"level":2} -->
+					<h2>Fragen vor dem Besuch</h2>
+					<!-- /wp:heading -->
+					<!-- wp:shortcode -->
+					[iss_faq]
+					<!-- /wp:shortcode -->
+				</div>
+			</div>
+		</div>
+	</section>
+</main>
+<!-- /wp:group -->

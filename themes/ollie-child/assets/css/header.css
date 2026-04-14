@@ -1,0 +1,71 @@
+.site-header-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 50;
+  background: transparent;
+}
+
+body.admin-bar .site-header-overlay {
+  top: 32px;
+}
+
+.site-header-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(30, 26, 30, 0.55) 0%,
+    rgba(30, 26, 30, 0.24) 55%,
+    rgba(30, 26, 30, 0) 100%
+  );
+}
+
+.site-header-overlay__inner {
+  position: relative;
+  z-index: 1;
+  min-height: var(--site-header-height);
+  align-items: center;
+}
+
+.site-header-overlay .wp-block-site-logo img,
+.site-header-overlay .custom-logo {
+  display: block;
+  width: auto;
+  max-height: 56px;
+}
+
+.site-header-overlay .wp-block-navigation a,
+.site-header-overlay .wp-block-navigation-item__content,
+.site-header-overlay .wp-block-pages-list__item__link {
+  color: #fff !important;
+  text-decoration: none;
+}
+
+.site-header-overlay .wp-block-navigation a:hover,
+.site-header-overlay .wp-block-navigation-item__content:hover,
+.site-header-overlay .wp-block-pages-list__item__link:hover {
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+
+.site-header-overlay .wp-block-navigation__responsive-container-open,
+.site-header-overlay .wp-block-navigation__responsive-container-open svg {
+  color: #fff !important;
+  fill: #fff !important;
+}
+
+@media (max-width: 782px) {
+  body.admin-bar .site-header-overlay {
+    top: 46px;
+  }
+}
+
+@media (max-width: 767px) {
+  .site-header-overlay .wp-block-site-logo img,
+  .site-header-overlay .custom-logo {
+    max-height: 44px;
+  }
+}

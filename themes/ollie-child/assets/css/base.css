@@ -1,0 +1,68 @@
+:root {
+  --site-header-height: 112px;
+}
+
+body {
+  min-height: 100vh;
+}
+
+.wp-site-blocks {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.wp-site-blocks > main {
+  flex: 1 0 auto;
+}
+
+.container-1280 {
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.section-soft {
+  background: var(--wp--preset--color--bg-soft);
+}
+
+.section-accent {
+  width: 60px;
+  height: 3px;
+  background: var(--wp--preset--color--accent);
+  margin: 0 0 1.25rem;
+}
+
+.section-divider--fade {
+  height: 1px;
+  margin: 3rem auto;
+  max-width: 1280px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--wp--preset--color--border),
+    transparent
+  );
+}
+
+.tour-ratio {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+}
+
+.tour-ratio iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --site-header-height: 84px;
+  }
+}

@@ -1,0 +1,42 @@
+Front page review against current plugin
+
+Already usable with existing plugin fields
+- general.tagline
+- general.street
+- general.postal_code
+- general.city
+- general.arrival
+- general.visit_note
+- maps.google_maps_url
+- contact.booking_url
+- [iss_hours]
+- [iss_contact]
+- [iss_prices]
+- [iss_faq]
+
+Not required now
+No plugin change is required for the current front page revision.
+
+Useful later if you want the whole front page centrally editable
+- home.hero_kicker
+- home.hero_title
+- home.hero_text
+- home.hero_primary_label
+- home.hero_primary_url
+- home.hero_secondary_label
+- home.hero_secondary_url
+- home.program_intro
+- home.program_card_1_title
+- home.program_card_1_text
+- home.program_card_1_url
+- home.program_card_2_title
+- home.program_card_2_text
+- home.program_card_2_url
+- home.program_card_3_title
+- home.program_card_3_text
+- home.program_card_3_url
+
+Recommendation
+Leave hero headline and program teaser copy in the template for now.
+Use the plugin for practical visitor data first.
+Extend plugin fields only when editors actually need to change marketing copy often.

@@ -1,0 +1,180 @@
+/* Unused (orphan) CSS rules extracted on split */
+/* =============================================================
+   Two‑Page Minimal Styles
+   -------------------------------------------------------------
+   This stylesheet intentionally contains only the CSS needed by:
+   - Home page (/)
+   - Führungen page (/fuhrungen/)
+
+   Notes
+   - No global Gutenberg overrides; selectors are scoped under the
+     custom classes used on these two pages.
+   - A full backup of the previous stylesheet is saved as
+     themes/iss-theme/style.css.before-two-pages-20260407
+   ============================================================= */
+
+/* =============================================================
+   1) TOKENS & BASE
+   -------------------------------------------------------------
+   Minimal tokens and resets used by both pages.
+   ============================================================= */
+
+:root{
+  /* layout */
+  --site-header-height: 112px; /* adjusted on mobile via media query */
+
+  /* semantic colors from theme.json */
+  --site-color-bg: var(--wp--preset--color--bg);
+  --site-color-surface: var(--wp--preset--color--bg-soft);
+  --site-color-text: var(--wp--preset--color--text);
+  --site-color-text-inverse: var(--wp--preset--color--bg);
+  --site-color-accent: var(--wp--preset--color--accent);
+  --site-color-accent-2: var(--wp--preset--color--steel);
+  --site-color-border: color-mix(in srgb, var(--site-color-text) 14%, transparent);
+  --site-color-overlay: color-mix(in srgb, var(--site-color-text) 42%, transparent);
+
+  /* typography */
+  --site-font-body: var(--wp--preset--font-family--plex);
+  --site-font-heading: var(--wp--preset--font-family--plex);
+
+  /* spacing */
+  --site-space-1: 0.5rem;
+  --site-space-2: 0.75rem;
+  --site-space-3: 1rem;
+  --site-space-4: 1.5rem;
+  --site-space-5: 2rem;
+  --site-space-6: 3rem;
+  --site-space-7: 4rem;
+  --site-space-8: 6rem;
+
+  /* radii & shadows */
+  --site-radius-s: 0.75rem;
+  --site-radius-m: 1.25rem;
+  --site-radius-l: 1.75rem;
+  --site-shadow-card: 0 8px 28px rgba(0,0,0,.08);
+
+  /* widths */
+  --site-width-wide: 1280px;
+
+  /* components */
+  --tour-card-height: 19rem;
+  --tour-card-min-width-mobile: 18.5rem;
+}
+
+/* Site wrapper from core, used strictly as layout container, not visual override */
+.wp-site-blocks{
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.wp-site-blocks > main{ flex: 1 0 auto; }
+
+/* Utilities used on these pages */
+.section-divider--fade{ height: 1px; margin: 3rem auto; max-width: 1280px; background: linear-gradient(to right, transparent, var(--wp--preset--color--border), transparent); }
+
+.container-1280{ max-width: 1280px; margin: 0 auto; width: 100%; padding-left: 2rem; padding-right: 2rem; }
+
+.site-footer-shell{ max-width: 100%; box-sizing: border-box; overflow-x: hidden; }
+
+.tour-ratio{ position: relative; width: 100%; padding-top: 56.25%; }
+
+.tour-ratio iframe{ position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+.iss-header__brand img, .iss-header__brand .custom-logo{ display: block; width: auto; max-height: 44px; }
+
+.iss-header__nav{ margin-left: 0; }
+
+.iss-header__nav .wp-block-navigation__container{ gap: 0.8rem; }
+
+.iss-header__nav a, .iss-header__nav .wp-block-navigation-item__content, .iss-header__nav .wp-block-pages-list__item__link{ text-decoration: none; }
+
+/* =============================================================
+   3) HERO CTA SECTION (.hero-cta)
+   -------------------------------------------------------------
+   Apply the class .hero-cta to a Cover block. Any button inside the
+   hero can keep using core Button block; styles are scoped here only.
+   ============================================================= */
+
+.hero-cta{ position: relative; min-height: 60vh; overflow: hidden; max-width: 100%; box-sizing: border-box; }
+
+.hero-cta > img, .hero-cta > .wp-block-cover__image-background{ position: absolute !important; inset: 0; width: 100% !important; height: 100% !important; object-fit: cover !important; }
+
+.hero-cta::before{ content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(to bottom, rgba(30, 26, 30, 0.18) 0%, rgba(30, 26, 30, 0.14) 35%, rgba(30, 26, 30, 0.30) 100%); }
+
+.hero-cta__inner{ position: relative; z-index: 2; max-width: 1280px; width: 100%; box-sizing: border-box; margin: 0 auto; padding: calc(var(--site-header-height) + 1.5rem) 2rem 2rem; color: #fff; overflow-x: clip; }
+
+.hero-cta__copy{ position: relative; max-width: 720px; }
+
+.hero-cta__copy::before{ content: ""; position: absolute; inset: -2rem; z-index: 0; pointer-events: none; background: radial-gradient(ellipse at center, rgba(30, 26, 30, 0.18) 0%, rgba(30, 26, 30, 0.10) 45%, rgba(30, 26, 30, 0) 100%); filter: blur(20px); }
+
+.hero-cta__copy > *{ position: relative; z-index: 1; }
+
+.hero-cta__inner :is(h1, h2, h3, h4, p, li){ color: #fff; max-width: 100%; overflow-wrap: anywhere; word-break: break-word; hyphens: auto; }
+
+.hero-cta__copy, .hero-cta__copy > *{ max-width: 100%; min-width: 0; }
+
+.tours-scroll{ max-width: 100%; overflow-x: clip; }
+
+.tour-card__body{ display: flex; flex-direction: column; flex: 1 1 auto; gap: 0.7rem; padding: 0.75rem 1rem 1.15rem !important; }
+
+.tour-card__body > *{ margin-top: 0 !important; margin-bottom: 0 !important; }
+
+/* (Removed unused hero full‑bleed utilities) */
+
+/* (Removed unused featured layouts) */
+
+/* =============================================================
+   9) TOURS SECTIONS PATTERN (Opt‑in)
+   -------------------------------------------------------------
+   Classes used by the reusable Tours Sections pattern. These are
+   all custom prefixed classes and do not change core block styles.
+   ============================================================= */
+
+.no-rules-here-for-iss-tours-section{ /* removed: Tours Sections pattern not used on home or /fuhrungen */ }
+
+/* =============================================================
+   10) SINGLE TOUR STORY (Opt‑in)
+   -------------------------------------------------------------
+   Classes for the single Fuehrung layout and narrative panels.
+   ============================================================= */
+
+.no-rules-here-for-single-tour-story{ /* removed: Single tour story layout not used by the two target pages */ }
+
+/* =============================================================
+   6) FOOTER (Multi-column)
+   ------------------------------------------------------------- */
+.iss-footer{ background: var(--site-color-bg); border-top: 1px solid var(--site-color-border); }
+
+.iss-footer__inner{ width: min(var(--site-width-wide), calc(100% - 2rem)); margin: 0 auto; padding: var(--site-space-7) 0; display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr 0.9fr 0.9fr; gap: var(--site-space-6); align-items: start; }
+
+/* Columns */
+.iss-footer__brand{ display: grid; gap: var(--site-space-3); }
+
+.iss-footer__tagline{ max-width: 22ch; margin: 0; opacity: .9; }
+
+.iss-footer__social{ list-style: none; margin: 0; padding: 0; display: flex; gap: .9rem; }
+
+.iss-footer__social a{ display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: 1px solid var(--site-color-border); border-radius: 999px; text-decoration: none; color: var(--site-color-text); font-size: 12px; }
+
+.iss-footer__social a:hover{ background: var(--site-color-surface); }
+
+.iss-footer__copyright{ margin: 0; font-size: .9rem; opacity: .8; }
+
+.iss-footer__heading{ margin: 0 0 .5rem; font-size: 0.98rem; text-transform: none; letter-spacing: .02em; }
+
+.iss-footer__subheading{ margin: .75rem 0 .25rem; font-size: .9rem; font-weight: 600; }
+
+.iss-footer__list{ list-style: none; margin: 0; padding: 0; display: grid; gap: .35rem; }
+
+.iss-footer__list a{ color: var(--site-color-text); text-decoration: none; }
+
+.iss-footer__list a:hover{ color: var(--site-color-accent); }
+
+.iss-footer__contact p{ margin: 0; }
+
+.iss-footer__access{ margin: .5rem 0; font-size: .95rem; }
+
+@media (max-width: 760px) { .iss-footer__inner { grid-template-columns: 1fr; gap: var(--site-space-5); } .iss-footer__tagline { max-width: 100%; } }
