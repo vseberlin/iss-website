@@ -8,6 +8,11 @@
 - Timezone: Europe/Berlin
 - Context window note: Prepared to survive context reset; this file is the continuity anchor.
 
+## Auto-Handoff Policy
+- If context usage goes above 80%, update this file immediately.
+- At end of each task, update this file again.
+- On new/reset session, first instruction is: read `handoff_CURRENT.md`.
+
 ## Branch / Commit
 - Branch: `master`
 - HEAD: `39d47c6`
@@ -52,6 +57,7 @@
 1. If requested, align German/English READMEs with final `0.2.2` UI labels exactly.
 2. If requested, wire a dedicated “Hilfe” admin subpage with expanded docs.
 3. If requested, tag/release workflow for ZIP artifacts.
+4. Keep this handoff updated automatically by policy.
 
 ## Next Step (first command)
 - `cd /home/vladimir/wp && sed -n '1,220p' handoff_CURRENT.md`

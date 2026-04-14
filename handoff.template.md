@@ -8,6 +8,11 @@
 - Timezone:
 - Context window note:
 
+## Auto-Handoff Policy
+- When context usage is above 80%, refresh `handoff_CURRENT.md`.
+- At task completion, refresh `handoff_CURRENT.md` again.
+- Next session must start by reading `handoff_CURRENT.md`.
+
 ## Branch / Commit
 - Branch:
 - HEAD:
