@@ -1,5 +1,4 @@
 <!-- wp:group {"className":"iss-site-header","layout":{"type":"default"}} -->
-
 <div class="wp-block-group iss-site-header">
 	<!-- wp:group {"className":"iss-site-header__inner","layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center","justifyContent":"space-between"}} -->
 	<div class="wp-block-group iss-site-header__inner">
@@ -7,145 +6,51 @@
 		<div class="wp-block-group iss-site-brand">
 			<!-- wp:site-logo {"width":56,"shouldSyncIcon":true} /-->
 
-```
-		<!-- wp:group {"className":"iss-site-brand__text","layout":{"type":"constrained"}} -->
-		<div class="wp-block-group iss-site-brand__text">
-			<!-- wp:site-title {"level":0,"className":"iss-site-brand__title"} /-->
-			<!-- wp:shortcode -->
-			[iss_field key="general.tagline" tag="p" link="none"]
-			<!-- /wp:shortcode -->
+			<!-- wp:group {"className":"iss-site-brand__text","layout":{"type":"constrained"}} -->
+			<div class="wp-block-group iss-site-brand__text">
+				<!-- wp:site-title {"level":0,"className":"iss-site-brand__title"} /-->
+				<!-- wp:shortcode -->
+				[iss_field key="general.tagline" tag="p" link="none"]
+				<!-- /wp:shortcode -->
+			</div>
+			<!-- /wp:group -->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:buttons {"className":"iss-header-actions"} -->
+		<div class="wp-block-buttons iss-header-actions">
+			<!-- wp:button {"className":"iss-nav-toggle"} -->
+			<div class="wp-block-button iss-nav-toggle"><a class="wp-block-button__link wp-element-button" href="#iss-menu-shell">Menü</a></div>
+			<!-- /wp:button -->
+		</div>
+		<!-- /wp:buttons -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:group {"className":"iss-nav-overlay","layout":{"type":"default"}} -->
+	<div class="wp-block-group iss-nav-overlay"></div>
+	<!-- /wp:group -->
+
+	<!-- wp:group {"className":"iss-menu-shell","layout":{"type":"default"}} -->
+	<div id="iss-menu-shell" class="wp-block-group iss-menu-shell">
+		<!-- wp:group {"className":"iss-menu-shell__inner","layout":{"type":"default"}} -->
+		<div class="wp-block-group iss-menu-shell__inner">
+			<!-- wp:group {"className":"iss-menu-shell__topbar","layout":{"type":"flex","justifyContent":"right"}} -->
+			<div class="wp-block-group iss-menu-shell__topbar">
+				<!-- wp:buttons -->
+				<div class="wp-block-buttons">
+					<!-- wp:button {"className":"iss-menu-shell__close"} -->
+					<div class="wp-block-button iss-menu-shell__close"><a class="wp-block-button__link wp-element-button" href="#">Schließen</a></div>
+					<!-- /wp:button -->
+				</div>
+				<!-- /wp:buttons -->
+			</div>
+			<!-- /wp:group -->
+
+			<!-- wp:navigation {"className":"iss-header-nav","overlayMenu":"never","layout":{"type":"flex","orientation":"vertical","justifyContent":"left","flexWrap":"nowrap"}} /-->
 		</div>
 		<!-- /wp:group -->
 	</div>
 	<!-- /wp:group -->
-
-	<!-- wp:html -->
-	<button class="iss-nav-toggle" type="button" aria-expanded="false" aria-label="Navigation öffnen">
-		<span class="iss-nav-toggle__label">Menü</span>
-		<span class="iss-nav-toggle__icon" aria-hidden="true"><span></span><span></span><span></span></span>
-	</button>
-	<!-- /wp:html -->
-</div>
-<!-- /wp:group -->
-
-<!-- wp:html -->
-<div class="iss-nav-overlay"></div>
-<!-- /wp:html -->
-
-<!-- wp:group {"className":"iss-menu-shell","layout":{"type":"default"}} -->
-<div class="wp-block-group iss-menu-shell">
-	<!-- wp:group {"className":"iss-menu-shell__inner","layout":{"type":"default"}} -->
-	<div class="wp-block-group iss-menu-shell__inner">
-		<!-- wp:html -->
-		<div class="iss-menu-shell__topbar">
-			<button class="iss-menu-shell__close" type="button" aria-label="Navigation schließen">
-				<span aria-hidden="true">×</span>
-			</button>
-		</div>
-		<!-- /wp:html -->
-
-		<!-- wp:navigation {"className":"iss-header-nav","overlayMenu":"never","layout":{"type":"flex","orientation":"vertical","justifyContent":"left","flexWrap":"nowrap"}} /-->
-	</div>
-	<!-- /wp:group -->
-</div>
-<!-- /wp:group -->
-
-<!-- wp:html -->
-<script>
-(function () {
-	if (window.__issNavInit) return;
-	window.__issNavInit = true;
-
-	function init() {
-		var header = document.querySelector('.iss-site-header');
-		if (!header) return;
-
-		var toggle = header.querySelector('.iss-nav-toggle');
-		var panel = header.querySelector('.iss-menu-shell');
-		var overlay = document.querySelector('.iss-nav-overlay');
-		var close = header.querySelector('.iss-menu-shell__close');
-
-		if (!toggle || !panel || !overlay || !close) return;
-
-		var focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
-
-		function getFocusable() {
-			return Array.prototype.slice.call(panel.querySelectorAll(focusableSelector)).filter(function (el) {
-				return el.offsetParent !== null;
-			});
-		}
-
-		function openNav() {
-			document.documentElement.classList.add('iss-nav-open');
-			document.body.classList.add('iss-nav-open');
-			panel.classList.add('is-open');
-			overlay.classList.add('is-open');
-			toggle.setAttribute('aria-expanded', 'true');
-
-			var items = getFocusable();
-			if (items.length) {
-				window.setTimeout(function () {
-					items[0].focus();
-				}, 20);
-			}
-		}
-
-		function closeNav() {
-			document.documentElement.classList.remove('iss-nav-open');
-			document.body.classList.remove('iss-nav-open');
-			panel.classList.remove('is-open');
-			overlay.classList.remove('is-open');
-			toggle.setAttribute('aria-expanded', 'false');
-			toggle.focus();
-		}
-
-		function onKeydown(event) {
-			if (!panel.classList.contains('is-open')) return;
-
-			if (event.key === 'Escape') {
-				event.preventDefault();
-				closeNav();
-				return;
-			}
-
-			if (event.key !== 'Tab') return;
-
-			var items = getFocusable();
-			if (!items.length) return;
-
-			var first = items[0];
-			var last = items[items.length - 1];
-
-			if (event.shiftKey && document.activeElement === first) {
-				event.preventDefault();
-				last.focus();
-			} else if (!event.shiftKey && document.activeElement === last) {
-				event.preventDefault();
-				first.focus();
-			}
-		}
-
-		toggle.addEventListener('click', function () {
-			if (panel.classList.contains('is-open')) closeNav();
-			else openNav();
-		});
-
-		close.addEventListener('click', closeNav);
-		overlay.addEventListener('click', closeNav);
-		document.addEventListener('keydown', onKeydown);
-
-		panel.addEventListener('click', function (event) {
-			var link = event.target.closest('a');
-			if (link) closeNav();
-		});
-	}
-
-	if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-	else init();
-})();
-</script>
-<!-- /wp:html -->
-```
-
 </div>
 <!-- /wp:group -->
