@@ -42,6 +42,10 @@
   - Added `0.2.2` release entry.
 - Artifact: `plugins/industriesalon-steuerung-v0.2.2.zip`
   - Fresh packaged plugin ZIP.
+- Artifact refreshed: `plugins/industriesalon-steuerung-v0.2.2.zip`
+  - Rebuilt so ZIP now includes `CHANGELOG.md` and matches live plugin folder.
+- Deploy step completed:
+  - Synced `plugins/industriesalon-steuerung` to `wp_app` and reactivated plugin.
 
 ## Validation
 - Command: `docker exec wp_app php -l /var/www/html/wp-content/plugins/industriesalon-steuerung/industriesalon-steuerung.php`
