@@ -67,16 +67,16 @@ function is_saas_register_settings() {
 
     add_settings_section(
         'is_saas_main',
-        'SuperSaaS Configuration',
+        'SuperSaaS Verbindung',
         '__return_false',
         IS_SAAS_OPTION_GROUP
     );
 
-    add_settings_field('schedule_id', 'Schedule ID', 'is_saas_field_schedule_id', IS_SAAS_OPTION_GROUP, 'is_saas_main');
-    add_settings_field('api_key', 'API Key', 'is_saas_field_api_key', IS_SAAS_OPTION_GROUP, 'is_saas_main');
-    add_settings_field('base_url', 'API Base URL', 'is_saas_field_base_url', IS_SAAS_OPTION_GROUP, 'is_saas_main');
-    add_settings_field('account_name', 'Account Name', 'is_saas_field_account_name', IS_SAAS_OPTION_GROUP, 'is_saas_main');
-    add_settings_field('schedule_path', 'Schedule Path', 'is_saas_field_schedule_path', IS_SAAS_OPTION_GROUP, 'is_saas_main');
+    add_settings_field('schedule_id', 'Kalender-ID', 'is_saas_field_schedule_id', IS_SAAS_OPTION_GROUP, 'is_saas_main');
+    add_settings_field('api_key', 'API-Schlüssel', 'is_saas_field_api_key', IS_SAAS_OPTION_GROUP, 'is_saas_main');
+    add_settings_field('base_url', 'SuperSaaS-URL', 'is_saas_field_base_url', IS_SAAS_OPTION_GROUP, 'is_saas_main');
+    add_settings_field('account_name', 'Konto-Name', 'is_saas_field_account_name', IS_SAAS_OPTION_GROUP, 'is_saas_main');
+    add_settings_field('schedule_path', 'Kalender-Pfad', 'is_saas_field_schedule_path', IS_SAAS_OPTION_GROUP, 'is_saas_main');
 }
 add_action('admin_init', 'is_saas_register_settings');
 
@@ -112,7 +112,8 @@ function is_saas_render_settings_page() {
             submit_button();
             ?>
         </form>
-        <p><strong>Shortcode:</strong> <code>[is_tour_calendar tag="ELEKTRO" title="Termine wählen" fallback_url="https://example.com"]</code></p>
+        <p><strong>Hinweis:</strong> Kalender-Einbindung erfolgt ausschließlich über den Block <code>iss/tour-calendar</code>.</p>
+        <p>Bitte nur Felder ändern, die bekannt sind. Nach Änderungen unten speichern.</p>
     </div>
     <?php
 }
@@ -145,6 +146,7 @@ function is_saas_field_schedule_id() {
         esc_attr(IS_SAAS_OPTION_NAME),
         esc_attr($settings['schedule_id'])
     );
+    echo '<p class="description">Numerische ID des SuperSaaS-Kalenders.</p>';
 }
 
 function is_saas_field_api_key() {
@@ -154,6 +156,7 @@ function is_saas_field_api_key() {
         esc_attr(IS_SAAS_OPTION_NAME),
         esc_attr($settings['api_key'])
     );
+    echo '<p class="description">Schlüssel für den sicheren Zugriff auf SuperSaaS.</p>';
 }
 
 function is_saas_field_base_url() {
@@ -163,7 +166,7 @@ function is_saas_field_base_url() {
         esc_attr(IS_SAAS_OPTION_NAME),
         esc_attr($settings['base_url'])
     );
-    echo '<p class="description">Example: https://www.supersaas.de</p>';
+    echo '<p class="description">Adresse von SuperSaaS, z. B. https://www.supersaas.de</p>';
 }
 
 function is_saas_field_account_name() {
@@ -173,7 +176,7 @@ function is_saas_field_account_name() {
         esc_attr(IS_SAAS_OPTION_NAME),
         esc_attr($settings['account_name'])
     );
-    echo '<p class="description">Used for booking links.</p>';
+    echo '<p class="description">Kontoname aus SuperSaaS; wird für Buchungslinks verwendet.</p>';
 }
 
 function is_saas_field_schedule_path() {
@@ -183,7 +186,7 @@ function is_saas_field_schedule_path() {
         esc_attr(IS_SAAS_OPTION_NAME),
         esc_attr($settings['schedule_path'])
     );
-    echo '<p class="description">Required for booking links. Example: Fuehrungen_%28oeffentlich%29</p>';
+    echo '<p class="description">Pfad des Kalenders in SuperSaaS; nötig für direkte Buchungslinks.</p>';
 }
 
 add_action('rest_api_init', function () {
@@ -317,72 +320,6 @@ function is_tours_get_slots(WP_REST_Request $request) {
     $res->header('Cache-Control', 'no-store');
     return $res;
 }
-
-	add_shortcode('is_tour_calendar', function ($atts) {
-	    $atts = shortcode_atts([
-	        'tag'          => '',
-	        'title'        => 'Termine wählen',
-	        'fallback_url' => '',
-	    ], $atts);
-
-	    $tag = esc_attr(strtoupper($atts['tag']));
-	    $title = esc_html($atts['title']);
-	    $fallback = esc_url($atts['fallback_url']);
-	    $source_post_id = get_the_ID();
-	    $source_post_type = $source_post_id ? get_post_type($source_post_id) : '';
-	    if (!$source_post_id) {
-	        $source_post_id = '';
-	    }
-	    $slot_select_id = 'is-tour-slot-' . sanitize_key($tag) . '-' . wp_rand(1000, 9999);
-
-	    iss_calendar_remember_source_mapping($tag, $fallback, $source_post_id, $source_post_type);
-
-	    ob_start();
-	    ?>
-	    <section class="is-tour-calendar wp-block-group alignwide has-global-padding is-layout-constrained" data-tag="<?php echo $tag; ?>" data-fallback="<?php echo $fallback; ?>" data-source-post-id="<?php echo esc_attr($source_post_id); ?>" data-source-post-type="<?php echo esc_attr($source_post_type); ?>">
-	        <div class="is-tour-calendar__inner wp-block-group is-layout-constrained">
-	            <div class="is-tour-calendar__header wp-block-group is-layout-constrained">
-	                <p class="is-tour-calendar__eyebrow has-small-font-size">Kalender</p>
-	                <h3 class="is-tour-calendar__heading wp-block-heading"><?php echo $title; ?></h3>
-	                <p class="is-tour-calendar__status has-small-font-size">Termine werden geladen …</p>
-	                <?php if (!empty($fallback)) : ?>
-	                    <p class="is-tour-calendar__fallback has-small-font-size">
-	                        <a class="is-tour-calendar__fallback-link" href="<?php echo esc_url($fallback); ?>">Direkt buchen</a>
-	                    </p>
-	                <?php endif; ?>
-	            </div>
-
-		            <div class="is-tour-calendar__layout">
-		                <div class="is-tour-calendar__calendar">
-		                    <input type="text" class="is-tour-calendar__date-input" aria-label="Datum auswählen" />
-
-		                    <div class="is-tour-calendar__slots-panel">
-		                        <p class="is-tour-calendar__selected-date has-small-font-size">Bitte wählen Sie einen Tag.</p>
-		                        <div class="is-tour-calendar__appointments">
-		                            <p class="is-tour-calendar__appointments-title">
-		                                <span class="is-tour-calendar__appointments-title-label">Verfügbare Termine am</span>
-		                                <span class="is-tour-calendar__appointments-title-date"></span>
-		                            </p>
-		                            <div class="is-tour-calendar__appointments-divider" aria-hidden="true"></div>
-		                            <div class="is-tour-calendar__appointments-list"></div>
-		                        </div>
-		                        <div class="is-tour-calendar__slot-select-wrap">
-		                            <label class="is-tour-calendar__slot-label" for="<?php echo esc_attr($slot_select_id); ?>">
-		                                Uhrzeit
-		                            </label>
-		                            <select id="<?php echo esc_attr($slot_select_id); ?>" class="is-tour-calendar__slot-select" disabled>
-		                                <option value="">Bitte zuerst ein Datum wählen</option>
-		                            </select>
-		                        </div>
-		                        <div class="is-tour-calendar__booking"></div>
-		                    </div>
-		                </div>
-		            </div>
-		        </div>
-		    </section>
-	    <?php
-    return ob_get_clean();
-});
 
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style(

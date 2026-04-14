@@ -5,19 +5,21 @@ if (!defined('ABSPATH')) exit;
 define('ISS_CALENDAR_ITEM_POST_TYPE', 'iss_calendar_item');
 define('ISS_CALENDAR_SOURCE_MAP_OPTION', 'iss_calendar_source_map');
 define('ISS_CALENDAR_SOURCE_MAP_VERSION', 2);
+if (!defined('ISS_CALENDAR_TAG_META_KEY')) define('ISS_CALENDAR_TAG_META_KEY', 'calendar_tag');
+if (!defined('ISS_CALENDAR_SAAS_TITLE_META_KEY')) define('ISS_CALENDAR_SAAS_TITLE_META_KEY', 'calendar_saas_title');
 
 add_action('init', function () {
     $labels = [
-        'name'               => 'Calendar Items',
-        'singular_name'      => 'Calendar Item',
-        'add_new_item'       => 'Add Calendar Item',
-        'edit_item'          => 'Edit Calendar Item',
-        'new_item'           => 'New Calendar Item',
-        'view_item'          => 'View Calendar Item',
-        'search_items'       => 'Search Calendar Items',
-        'not_found'          => 'No calendar items found',
-        'not_found_in_trash' => 'No calendar items found in Trash',
-        'menu_name'          => 'Calendar Items',
+        'name'               => 'Kalender-Termine',
+        'singular_name'      => 'Kalender-Termin',
+        'add_new_item'       => 'Kalender-Termin hinzufügen',
+        'edit_item'          => 'Kalender-Termin bearbeiten',
+        'new_item'           => 'Neuer Kalender-Termin',
+        'view_item'          => 'Kalender-Termin ansehen',
+        'search_items'       => 'Kalender-Termine suchen',
+        'not_found'          => 'Keine Kalender-Termine gefunden',
+        'not_found_in_trash' => 'Keine Kalender-Termine im Papierkorb gefunden',
+        'menu_name'          => 'Kalender-Termine',
     ];
 
     register_post_type(ISS_CALENDAR_ITEM_POST_TYPE, [
@@ -139,6 +141,55 @@ function iss_calendar_remember_source_mapping($tag, $fallback_url, $source_post_
     update_option(ISS_CALENDAR_SOURCE_MAP_OPTION, $map, false);
 }
 
+/**
+ * Upsert one source-map entry.
+ *
+ * Allows automatic map generation during sync even when no source post exists yet.
+ *
+ * @param string $tag
+ * @param array<string,mixed> $data
+ */
+function iss_calendar_upsert_source_map_entry($tag, $data = []) {
+    $tag = strtoupper(sanitize_text_field((string) $tag));
+    if ($tag === '') return;
+
+    $data = is_array($data) ? $data : [];
+    $map = get_option(ISS_CALENDAR_SOURCE_MAP_OPTION, []);
+    if (!is_array($map)) {
+        $map = [];
+    }
+
+    $prev = isset($map[$tag]) && is_array($map[$tag]) ? $map[$tag] : [];
+
+    $source_post_id = isset($data['source_post_id'])
+        ? max(0, (int) $data['source_post_id'])
+        : (int) ($prev['source_post_id'] ?? 0);
+    $source_post_type = isset($data['source_post_type'])
+        ? sanitize_key((string) $data['source_post_type'])
+        : sanitize_key((string) ($prev['source_post_type'] ?? ''));
+
+    $fallback_url = array_key_exists('fallback_url', $data)
+        ? esc_url_raw((string) $data['fallback_url'])
+        : esc_url_raw((string) ($prev['fallback_url'] ?? ''));
+
+    $supersaas_title = isset($data['supersaas_title'])
+        ? sanitize_text_field((string) $data['supersaas_title'])
+        : sanitize_text_field((string) ($prev['supersaas_title'] ?? ''));
+
+    $next = [
+        'source_post_id' => $source_post_id,
+        'source_post_type' => $source_post_type,
+        'fallback_url' => $fallback_url,
+        'supersaas_title' => $supersaas_title,
+        'version' => ISS_CALENDAR_SOURCE_MAP_VERSION,
+        'last_seen_at' => current_time('mysql'),
+    ];
+
+    if ($next === $prev) return;
+    $map[$tag] = $next;
+    update_option(ISS_CALENDAR_SOURCE_MAP_OPTION, $map, false);
+}
+
 function iss_calendar_get_source_map() {
     $map = get_option(ISS_CALENDAR_SOURCE_MAP_OPTION, []);
     if (!is_array($map)) return [];
@@ -164,6 +215,96 @@ function iss_calendar_get_source_map_entry($tag) {
     $map = iss_calendar_get_source_map();
     if (!isset($map[$tag]) || !is_array($map[$tag])) return null;
     return $map[$tag];
+}
+
+function iss_calendar_get_source_post_types() {
+    $types = get_post_types(['public' => true], 'names');
+    if (!is_array($types)) {
+        $types = [];
+    }
+
+    return array_values(array_filter($types, function ($t) {
+        return $t && $t !== 'attachment' && $t !== ISS_CALENDAR_ITEM_POST_TYPE;
+    }));
+}
+
+/**
+ * Resolve linked source post by explicit `calendar_tag` field.
+ *
+ * Returns array with:
+ * - post_id (int)
+ * - post_type (string)
+ * - ambiguous (bool)
+ */
+function iss_calendar_resolve_source_by_tag($tag) {
+    $tag = strtoupper(sanitize_text_field((string) $tag));
+    if ($tag === '') {
+        return ['post_id' => 0, 'post_type' => '', 'ambiguous' => false];
+    }
+
+    $q = new WP_Query([
+        'post_type' => iss_calendar_get_source_post_types(),
+        'post_status' => ['publish', 'draft', 'pending', 'private', 'future'],
+        'posts_per_page' => 2,
+        'fields' => 'ids',
+        'no_found_rows' => true,
+        'meta_query' => [
+            [
+                'key' => ISS_CALENDAR_TAG_META_KEY,
+                'value' => $tag,
+                'compare' => '=',
+            ],
+        ],
+    ]);
+
+    $ids = array_map('intval', (array) $q->posts);
+    if (count($ids) === 1) {
+        $pid = (int) $ids[0];
+        return [
+            'post_id' => $pid,
+            'post_type' => (string) get_post_type($pid),
+            'ambiguous' => false,
+        ];
+    }
+
+    return ['post_id' => 0, 'post_type' => '', 'ambiguous' => count($ids) > 1];
+}
+
+/**
+ * Resolve linked source post by explicit `calendar_saas_title` field.
+ */
+function iss_calendar_resolve_source_by_saas_title($title) {
+    $title = sanitize_text_field((string) $title);
+    if ($title === '') {
+        return ['post_id' => 0, 'post_type' => '', 'ambiguous' => false];
+    }
+
+    $q = new WP_Query([
+        'post_type' => iss_calendar_get_source_post_types(),
+        'post_status' => ['publish', 'draft', 'pending', 'private', 'future'],
+        'posts_per_page' => 2,
+        'fields' => 'ids',
+        'no_found_rows' => true,
+        'meta_query' => [
+            [
+                'key' => ISS_CALENDAR_SAAS_TITLE_META_KEY,
+                'value' => $title,
+                'compare' => '=',
+            ],
+        ],
+    ]);
+
+    $ids = array_map('intval', (array) $q->posts);
+    if (count($ids) === 1) {
+        $pid = (int) $ids[0];
+        return [
+            'post_id' => $pid,
+            'post_type' => (string) get_post_type($pid),
+            'ambiguous' => false,
+        ];
+    }
+
+    return ['post_id' => 0, 'post_type' => '', 'ambiguous' => count($ids) > 1];
 }
 
 /**
@@ -192,10 +333,10 @@ add_filter('manage_' . ISS_CALENDAR_ITEM_POST_TYPE . '_posts_columns', function 
     foreach ($cols as $key => $label) {
         $out[$key] = $label;
         if ($key === 'title') {
-            $out['event_start'] = 'Start';
+            $out['event_start'] = 'Beginn';
             $out['availability_state'] = 'Status';
-            $out['source_post_id'] = 'Source';
-            $out['sync_status'] = 'Sync';
+            $out['source_post_id'] = 'Verknüpfter Inhalt';
+            $out['sync_status'] = 'Abgleich';
         }
     }
     return $out;

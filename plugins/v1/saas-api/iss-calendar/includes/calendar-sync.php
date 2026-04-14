@@ -7,11 +7,36 @@ define('ISS_CALENDAR_LAST_SYNC_OPTION', 'iss_calendar_last_sync_at');
 
 add_action('admin_menu', function () {
     add_management_page(
-        'SaaS Calendar Sync',
-        'SaaS Calendar Sync',
+        'SaaS-Kalenderabgleich',
+        'SaaS-Kalenderabgleich',
         'manage_options',
         'iss-calendar-sync',
         'iss_calendar_render_sync_page'
+    );
+});
+
+add_action('admin_notices', function () {
+    if (!is_admin() || !current_user_can('manage_options')) return;
+
+    $screen = function_exists('get_current_screen') ? get_current_screen() : null;
+    if (!$screen || strpos((string) $screen->id, ISS_CALENDAR_ITEM_POST_TYPE) === false) {
+        return;
+    }
+
+    $count = (int) get_option('iss_calendar_unmapped_count', 0);
+    if ($count <= 0) {
+        $count = iss_calendar_count_unmapped_upcoming_items();
+        update_option('iss_calendar_unmapped_count', (int) $count, false);
+    }
+    if ($count <= 0) return;
+
+    $link = admin_url('edit.php?post_type=' . ISS_CALENDAR_ITEM_POST_TYPE . '&iss_needs_linking=1');
+    printf(
+        '<div class="notice notice-warning"><p><strong>%1$s</strong> %2$s <a href="%3$s">%4$s</a></p></div>',
+        esc_html__('SaaS-Einträge ohne Inhaltszuordnung erkannt.', 'saas-api'),
+        esc_html(sprintf(__('%d kommende Einträge sind bereits aus SuperSaaS importiert und in der Timeline sichtbar. Bitte Quelle nachtragen.', 'saas-api'), $count)),
+        esc_url($link),
+        esc_html__('Jetzt prüfen', 'saas-api')
     );
 });
 
@@ -57,31 +82,50 @@ function iss_calendar_render_sync_page() {
     $map = function_exists('iss_calendar_get_source_map') ? iss_calendar_get_source_map() : [];
 
     echo '<div class="wrap">';
-    echo '<h1>SaaS Calendar Sync</h1>';
+    echo '<h1>SaaS-Kalenderabgleich</h1>';
 
     if (is_array($result)) {
         $created = (int) ($result['created'] ?? 0);
         $updated = (int) ($result['updated'] ?? 0);
         $errors = (int) ($result['errors'] ?? 0);
+        $conflicts = (int) ($result['conflicts'] ?? 0);
         printf(
-            '<div class="notice notice-success"><p>Sync done. Created: %d, Updated: %d, Errors: %d.</p></div>',
+            '<div class="notice notice-success"><p>Abgleich abgeschlossen. Neu: %d, Aktualisiert: %d, Fehler: %d, Konflikte: %d.</p></div>',
             $created,
             $updated,
-            $errors
+            $errors,
+            $conflicts
         );
     }
 
     echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
     echo '<input type="hidden" name="action" value="iss_calendar_sync" />';
     wp_nonce_field('iss_calendar_sync');
-    submit_button('Sync now');
+    submit_button('Jetzt abgleichen');
     echo '</form>';
 
-    echo '<h2>Source map</h2>';
+    $unmapped_count = (int) get_option('iss_calendar_unmapped_count', 0);
+    $conflict_count = (int) get_option('iss_calendar_mapping_conflicts', 0);
+    if ($unmapped_count > 0) {
+        printf(
+            '<div class="notice notice-warning"><p><strong>%s</strong> %s</p></div>',
+            esc_html__('Warnung:', 'saas-api'),
+            esc_html(sprintf(__('%d kommende SaaS-Einträge haben noch keine verknüpfte Inhaltsseite.', 'saas-api'), $unmapped_count))
+        );
+    }
+    if ($conflict_count > 0) {
+        printf(
+            '<div class="notice notice-warning"><p><strong>%s</strong> %s</p></div>',
+            esc_html__('Konflikt:', 'saas-api'),
+            esc_html(sprintf(__('%d Einträge hatten mehrdeutige Zuordnungen (mehrere mögliche Quellen). Bitte prüfen.', 'saas-api'), $conflict_count))
+        );
+    }
+
+    echo '<h2>Zuordnungstabelle</h2>';
     if (empty($map)) {
-        echo '<p>No tags mapped yet. Render pages containing the calendar shortcode to populate the map automatically.</p>';
+        echo '<p>' . esc_html__('Noch keine Zuordnungen vorhanden. Die Map wird automatisch beim Sync aus SuperSaaS aufgebaut.', 'saas-api') . '</p>';
     } else {
-        echo '<table class="widefat striped"><thead><tr><th>Tag</th><th>Source Post</th><th>Fallback URL</th><th>Last Seen</th></tr></thead><tbody>';
+        echo '<table class="widefat striped"><thead><tr><th>Tag</th><th>Verknüpfter Inhalt</th><th>Buchungslink</th><th>Zuletzt gesehen</th></tr></thead><tbody>';
         foreach ($map as $tag => $entry) {
             if (!is_array($entry)) continue;
             $post_id = isset($entry['source_post_id']) ? (int) $entry['source_post_id'] : 0;
@@ -97,12 +141,17 @@ function iss_calendar_render_sync_page() {
                 $post_label = esc_html($post_label);
             }
 
+            $ptype_obj = $post_type !== '' ? get_post_type_object($post_type) : null;
+            $ptype_label = ($ptype_obj && !empty($ptype_obj->labels->singular_name))
+                ? (string) $ptype_obj->labels->singular_name
+                : $post_type;
+            $type_line = $ptype_label !== '' ? '<br><small>' . esc_html($ptype_label) . '</small>' : '';
+
             printf(
-                '<tr><td>%s</td><td>%s<br><code>%s</code></td><td>%s</td><td>%s</td></tr>',
+                '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>',
                 esc_html((string) $tag),
-                $post_label,
-                esc_html($post_type),
-                $fallback_url ? ('<a href="' . esc_url($fallback_url) . '" target="_blank" rel="noopener">link</a>') : '—',
+                $post_label . $type_line,
+                $fallback_url ? ('<a href="' . esc_url($fallback_url) . '" target="_blank" rel="noopener">' . esc_html__('Öffnen', 'saas-api') . '</a>') : '—',
                 esc_html($last_seen_at)
             );
         }
@@ -537,13 +586,13 @@ function iss_calendar_get_slots_fallback_for_tag($tag) {
 /**
  * Sync SuperSaaS slots into the local CPT for fallback and internal use.
  *
- * @return array{created:int,updated:int,errors:int}
+ * @return array{created:int,updated:int,errors:int,conflicts:int}
  */
 function iss_calendar_sync_supersaas_to_cpt() {
     $settings = function_exists('is_saas_get_settings') ? is_saas_get_settings() : [];
     $slot_items = iss_calendar_supersaas_fetch_free_slots($settings);
     if (is_wp_error($slot_items)) {
-        return ['created' => 0, 'updated' => 0, 'errors' => 1];
+        return ['created' => 0, 'updated' => 0, 'errors' => 1, 'conflicts' => 0];
     }
 
     $source_calendar = function_exists('is_saas_get_schedule_path')
@@ -553,8 +602,6 @@ function iss_calendar_sync_supersaas_to_cpt() {
 
     $schedule_url = iss_calendar_build_schedule_url($settings);
     $map = function_exists('iss_calendar_get_source_map') ? iss_calendar_get_source_map() : [];
-    $mapped_tags = array_keys($map);
-    $mapped_tags = array_filter(array_map(function ($t) { return strtoupper(sanitize_text_field((string) $t)); }, $mapped_tags));
 
     $title_index = [];
     foreach ($map as $map_tag => $entry) {
@@ -569,6 +616,7 @@ function iss_calendar_sync_supersaas_to_cpt() {
     $created = 0;
     $updated = 0;
     $errors = 0;
+    $conflicts = 0;
     $slots_by_tag = [];
 
     foreach ($slot_items as $slot) {
@@ -587,13 +635,17 @@ function iss_calendar_sync_supersaas_to_cpt() {
             }
         }
 
-        if ($tag === '' || !in_array($tag, $mapped_tags, true)) {
-            continue;
-        }
-
         $clean_title = isset($parsed['title']) ? (string) $parsed['title'] : '';
         if ($clean_title === '') {
             $clean_title = trim((string) $raw_title);
+        }
+
+        if ($tag === '' && $clean_title !== '' && function_exists('iss_calendar_generate_tag_from_title')) {
+            $tag = iss_calendar_generate_tag_from_title($clean_title);
+        }
+
+        if ($tag === '') {
+            continue;
         }
 
         $start = isset($slot['start']) ? trim((string) $slot['start']) : '';
@@ -620,9 +672,52 @@ function iss_calendar_sync_supersaas_to_cpt() {
         }
 
         $map_entry = isset($map[$tag]) && is_array($map[$tag]) ? $map[$tag] : [];
-        $source_post_id = isset($map_entry['source_post_id']) ? (int) $map_entry['source_post_id'] : 0;
-        $source_post_type = isset($map_entry['source_post_type']) ? sanitize_key((string) $map_entry['source_post_type']) : '';
-        $fallback_url = isset($map_entry['fallback_url']) ? esc_url_raw((string) $map_entry['fallback_url']) : '';
+        $resolved = ['post_id' => 0, 'post_type' => '', 'ambiguous' => false];
+        if (function_exists('iss_calendar_resolve_source_by_tag')) {
+            $resolved = iss_calendar_resolve_source_by_tag($tag);
+        }
+        if ((int) ($resolved['post_id'] ?? 0) <= 0 && $clean_title !== '' && function_exists('iss_calendar_resolve_source_by_saas_title')) {
+            $resolved2 = iss_calendar_resolve_source_by_saas_title($clean_title);
+            if (!empty($resolved2['ambiguous'])) {
+                $resolved['ambiguous'] = true;
+            }
+            if ((int) ($resolved2['post_id'] ?? 0) > 0) {
+                $resolved = $resolved2;
+            }
+        }
+
+        if (!empty($resolved['ambiguous'])) {
+            $conflicts++;
+        }
+
+        $source_post_id = (int) ($resolved['post_id'] ?? 0);
+        $source_post_type = sanitize_key((string) ($resolved['post_type'] ?? ''));
+
+        if (function_exists('iss_calendar_upsert_source_map_entry')) {
+            $fallback_for_map = isset($map_entry['fallback_url']) && (string) $map_entry['fallback_url'] !== ''
+                ? (string) $map_entry['fallback_url']
+                : $schedule_url;
+
+            iss_calendar_upsert_source_map_entry($tag, [
+                'source_post_id' => $source_post_id,
+                'source_post_type' => $source_post_type,
+                'fallback_url' => $fallback_for_map,
+                'supersaas_title' => $clean_title,
+            ]);
+        }
+
+        // keep local map in sync for this run
+        if (!isset($map[$tag]) || !is_array($map[$tag])) {
+            $map[$tag] = [];
+        }
+        $map[$tag]['source_post_id'] = $source_post_id;
+        $map[$tag]['source_post_type'] = $source_post_type;
+        $map[$tag]['supersaas_title'] = $clean_title;
+        if (empty($map[$tag]['fallback_url']) && $schedule_url !== '') {
+            $map[$tag]['fallback_url'] = $schedule_url;
+        }
+
+        $fallback_url = isset($map[$tag]['fallback_url']) ? esc_url_raw((string) $map[$tag]['fallback_url']) : '';
 
         $booking_url = $fallback_url ?: $schedule_url;
 
@@ -671,11 +766,13 @@ function iss_calendar_sync_supersaas_to_cpt() {
         if ($capacity_total !== null) update_post_meta($post_id, 'capacity_total', (int) $capacity_total);
         if ($available !== null) update_post_meta($post_id, 'capacity_available', (int) $available);
         update_post_meta($post_id, 'is_public', 1);
+        update_post_meta($post_id, 'is_visible', 1);
         update_post_meta($post_id, 'sync_status', 'ok');
         update_post_meta($post_id, 'last_synced_at', $now);
         update_post_meta($post_id, 'last_seen_at', $now);
         update_post_meta($post_id, 'origin_mode', 'supersaas');
         update_post_meta($post_id, 'sort_date', $start);
+        update_post_meta($post_id, 'calendar_tag', $tag);
 
         // Prime the REST/tag cache from the same normalized shape as the REST endpoint.
         if (!isset($slots_by_tag[$tag])) {
@@ -713,11 +810,49 @@ function iss_calendar_sync_supersaas_to_cpt() {
 
     update_option(ISS_CALENDAR_LAST_SYNC_OPTION, $now, false);
 
+    $unmapped_count = iss_calendar_count_unmapped_upcoming_items();
+    update_option('iss_calendar_unmapped_count', (int) $unmapped_count, false);
+    update_option('iss_calendar_mapping_conflicts', (int) $conflicts, false);
+
     return [
         'created' => $created,
         'updated' => $updated,
         'errors' => $errors,
+        'conflicts' => $conflicts,
     ];
+}
+
+/**
+ * Count upcoming imported items with no linked source post.
+ */
+function iss_calendar_count_unmapped_upcoming_items() {
+    $q = new WP_Query([
+        'post_type' => ISS_CALENDAR_ITEM_POST_TYPE,
+        'post_status' => 'publish',
+        'posts_per_page' => 1,
+        'fields' => 'ids',
+        'meta_query' => [
+            [
+                'key' => 'source_system',
+                'value' => 'supersaas',
+                'compare' => '=',
+            ],
+            [
+                'key' => 'event_start',
+                'value' => current_time('mysql'),
+                'compare' => '>=',
+                'type' => 'DATETIME',
+            ],
+            [
+                'key' => 'source_post_id',
+                'value' => 0,
+                'compare' => '=',
+                'type' => 'NUMERIC',
+            ],
+        ],
+    ]);
+
+    return (int) ($q->found_posts ?? 0);
 }
 
 function iss_calendar_build_schedule_url($settings) {
