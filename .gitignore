@@ -4,14 +4,16 @@
 
 # Keep this ignore file.
 !.gitignore
+!/docker-compose.yml
 
 # Keep only the SaaS API plugin.
 !/plugins/
 /plugins/*
 !/plugins/saas-api/
 !/plugins/saas-api/**
+!/plugins/industriesalon-notices/
+!/plugins/industriesalon-notices/**
 
 # Keep themes (note: `themes/` is its own git repo here).
 !/themes/
 !/themes/**
-
