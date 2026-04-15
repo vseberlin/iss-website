@@ -1,25 +1,20 @@
+<!-- MARKER: THEME_FILE_FRONT_PAGE_V2 -->
 <!-- wp:template-part {"slug":"header","theme":"industriesalon","tagName":"header"} /-->
 
-<!-- wp:group {"tagName":"main","className":"site-main iss-front-page","layout":{"type":"default"}} -->
-<main class="wp-block-group site-main iss-front-page"><!-- wp:cover {"url":"https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format\u0026amp;fit=crop\u0026amp;w=1800\u0026amp;q=80","dimRatio":45,"overlayColor":"eerie-black","isUserOverlayColor":true,"minHeight":100,"minHeightUnit":"vh","contentPosition":"center center","className":"has-custom-content-position is-position-center-center iss-front-hero iss-front-hero\u002d\u002dmik iss-front-hero\u002d\u002dwith-banner"} -->
-<div class="wp-block-cover has-custom-content-position is-position-center-center iss-front-hero iss-front-hero--mik iss-front-hero--with-banner" style="min-height:100vh"><img class="wp-block-cover__image-background" alt="" src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&amp;fit=crop&amp;w=1800&amp;q=80" data-object-fit="cover"/><span aria-hidden="true" class="wp-block-cover__background has-eerie-black-background-color has-background-dim-50 has-background-dim"></span><div class="wp-block-cover__inner-container"><!-- wp:group {"className":"iss-front-hero__shell has-global-padding is-layout-constrained wp-block-group-is-layout-constrained","layout":{"type":"constrained"}} -->
-<div class="wp-block-group iss-front-hero__shell has-global-padding is-layout-constrained wp-block-group-is-layout-constrained"><!-- wp:group {"className":"iss-front-banner-slot iss-front-banner-slot\u002d\u002doverlay has-global-padding is-layout-constrained wp-block-group-is-layout-constrained","layout":{"type":"constrained"}} -->
-<div class="wp-block-group iss-front-banner-slot iss-front-banner-slot--overlay has-global-padding is-layout-constrained wp-block-group-is-layout-constrained"><!-- wp:shortcode -->
-[iss_notice area="front_page_banner"]
-<!-- /wp:shortcode --></div>
+<!-- wp:group {"tagName":"main","className":"site-main iss-front-page-main","layout":{"type":"default"}} -->
+<main class="wp-block-group site-main iss-front-page-main"><!-- wp:cover {"url":"https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format\u0026amp;fit=crop\u0026amp;w=1800\u0026amp;q=80","dimRatio":0,"minHeight":80,"minHeightUnit":"vh","contentPosition":"center center","className":"iss-front-hero"} -->
+<div class="wp-block-cover iss-front-hero" style="min-height:80vh"><img class="wp-block-cover__image-background" alt="" src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&amp;fit=crop&amp;w=1800&amp;q=80" data-object-fit="cover"/><span aria-hidden="true" class="wp-block-cover__background has-background-dim-0 has-background-dim"></span><div class="wp-block-cover__inner-container"><!-- wp:group {"className":"iss-front-hero__shell has-global-padding is-layout-constrained wp-block-group-is-layout-constrained","layout":{"type":"constrained"}} -->
+<div class="wp-block-group iss-front-hero__shell has-global-padding is-layout-constrained wp-block-group-is-layout-constrained"><!-- wp:group {"className":"iss-front-banner-slot","layout":{"type":"constrained"}} -->
+<div class="wp-block-group iss-front-banner-slot"><!-- wp:industriesalon/notice-banner {"area":"front_page_banner"} /--></div>
 <!-- /wp:group -->
 
 <!-- wp:group {"className":"iss-front-hero__content has-global-padding is-layout-constrained wp-block-group-is-layout-constrained","layout":{"type":"constrained"}} -->
-<div class="wp-block-group iss-front-hero__content has-global-padding is-layout-constrained wp-block-group-is-layout-constrained"><!-- wp:paragraph {"className":"iss-kicker"} -->
-<p class="iss-kicker">Besucherzentrum für Industriegeschichte</p>
+<div class="wp-block-group iss-front-hero__content has-global-padding is-layout-constrained wp-block-group-is-layout-constrained"><!-- wp:paragraph {"className":"iss-kicker iss-kicker--light"} -->
+<p class="iss-kicker iss-kicker--light">Besucherzentrum für Industriegeschichte</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:heading {"level":1,"className":"iss-front-hero__title"} -->
-<h1 class="wp-block-heading iss-front-hero__title">Geschichte sehen. Orte verstehen. Schöneweide neu lesen.</h1>
-<!-- /wp:heading -->
-
 <!-- wp:shortcode -->
-[iss_field key="general.tagline" tag="p"]
+[iss_field key="general.tagline" tag="h1"]
 <!-- /wp:shortcode -->
 
 <!-- wp:group {"className":"iss-front-hero__meta is-layout-flex wp-block-group-is-layout-flex","layout":{"type":"flex","flexWrap":"wrap"}} -->

@@ -1,686 +1,108 @@
-/* Front page additions with notices plugin integration */
+/* =====================================================================
+   FRONT PAGE LAYOUT FIXES
+   --------------------------------------------------------------------- */
+
+html, body, .wp-site-blocks {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* 
+   GUTENBERG OVERRIDE: 
+   The cover inner container must fill the height to allow bottom alignment.
+*/
+.wp-block-cover.iss-front-hero .wp-block-cover__inner-container {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important; /* Move cluster to bottom */
+  align-items: flex-start !important;    /* Move cluster to left */
+  width: 100% !important;
+  height: 100% !important; /* Critical for flex-end to work */
+  min-height: 80vh !important;
+  max-width: var(--iss-content-width) !important;
+  margin: 0 auto !important;
+  padding: 0 var(--iss-container-pad) 0 !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+}
+
+.wp-block-cover.iss-front-hero {
+  min-height: 80vh !important;
+  height: 80vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  position: relative; /* Add this line */
+}
+
+/* =====================================================================
+   FRONT PAGE NOTICES (Overlapping Card)
+   --------------------------------------------------------------------- */
 
 .iss-front-banner-slot {
-  position: relative;
-  z-index: 3;
-  margin-bottom: -3rem;
-  padding-top: 1rem;
-  pointer-events: none;
-}
-
-.iss-front-banner-slot .container {
-  pointer-events: auto;
-}
-
-.iss-front-banner-slot .iss-notice {
-  margin: 0;
-}
-
-.iss-front-banner-slot .iss-notice__inner {
-  display: grid;
-  gap: 0.65rem;
-  padding: 1rem 1.25rem;
-  border: 1px solid rgba(30, 30, 30, 0.08);
-  border-radius: var(--is--radius-lg);
-  background: rgba(249, 249, 250, 0.96);
-  box-shadow: var(--is--shadow);
-  backdrop-filter: blur(10px);
-}
-
-.iss-front-banner-slot .iss-notice__badge {
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  min-height: 2rem;
-  margin: 0;
-  padding: 0.35rem 0.7rem;
-  border-radius: var(--is--radius-pill);
-  background: var(--is--color-red);
-  color: var(--is--color-white);
-  font-size: 0.78rem;
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
-
-.iss-front-banner-slot .iss-notice__headline {
-  margin: 0;
-  color: var(--is--color-black);
-  font-size: clamp(1.1rem, 2vw, 1.5rem);
-  font-weight: 700;
-  line-height: 1.1;
-}
-
-.iss-front-banner-slot .iss-notice__text {
-  color: rgba(30, 30, 30, 0.82);
-  font-size: 0.98rem;
-  line-height: 1.55;
-}
-
-.iss-front-banner-slot .iss-notice__text > *:last-child {
-  margin-bottom: 0;
-}
-
-.iss-front-banner-slot .iss-notice__actions {
-  margin: 0.1rem 0 0;
-}
-
-.iss-front-banner-slot .iss-notice__button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.8rem;
-  padding: 0.75rem 1.1rem;
-  border-radius: var(--is--radius-pill);
-  background: var(--is--color-black);
-  color: var(--is--color-white);
-  font-size: 0.96rem;
-  font-weight: 600;
-  line-height: 1;
-  text-decoration: none;
-  transition: background-color var(--is--transition), color var(--is--transition), transform var(--is--transition);
-}
-
-.iss-front-banner-slot .iss-notice__button:hover,
-.iss-front-banner-slot .iss-notice__button:focus-visible {
-  background: var(--is--color-red);
-  color: var(--is--color-white);
-  transform: translateY(-1px);
-}
-
-.iss-front-hero--with-banner {
-  padding-top: clamp(5rem, 8vw, 7rem);
-}
-
-.iss-front-hero .iss-control-field {
-  margin: 0;
-  color: var(--is--color-white);
-}
-
-.iss-front-hero .iss-control-field a {
-  color: inherit;
-  text-decoration-color: rgba(255,255,255,0.5);
-}
-
-.iss-front-hero__meta {
-  gap: 0.65rem 1rem;
-  margin-top: 0.35rem;
-  color: rgba(249, 249, 250, 0.9);
-  font-size: 0.95rem;
-  font-weight: 600;
-}
-
-.iss-front-hero__meta .iss-control-field {
-  display: inline;
-}
-
-.iss-front-hero__meta .iss-control-field + .iss-control-field::before {
-  content: "•";
-  margin-right: 1rem;
-  color: rgba(249, 249, 250, 0.5);
-}
-
-.iss-front-card__actions {
-  margin-top: 1rem;
-}
-
-.iss-front-card__actions .iss-control-field {
-  margin: 0;
-}
-
-.iss-front-card__actions .iss-control-field a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 3rem;
-  padding: 0.9rem 1.3rem;
-  border: 1px solid rgba(30, 30, 30, 0.12);
-  border-radius: var(--is--radius-pill);
-  background: transparent;
-  color: var(--is--color-black);
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1;
-  text-decoration: none;
-  transition: background-color var(--is--transition), color var(--is--transition), transform var(--is--transition), border-color var(--is--transition);
-}
-
-.iss-front-card__actions .iss-control-field a:hover,
-.iss-front-card__actions .iss-control-field a:focus-visible {
-  background: var(--is--color-black);
-  color: var(--is--color-white);
-  border-color: var(--is--color-black);
-  transform: translateY(-1px);
-}
-
-.iss-front-card__address-row {
-  gap: 0.35rem 0.5rem;
-}
-
-.iss-front-card__address-row .iss-control-field,
-.iss-front-card__address-row .iss-control-field span,
-.iss-front-card__address-row .iss-control-field a {
-  display: inline;
-  margin: 0;
-}
-
-.iss-front-card--hours .iss-hours,
-.iss-front-card--prices .iss-prices,
-.section--contact .iss-contact-card,
-.section--contact .iss-faq-list {
-  margin: 0;
-}
-
-.iss-front-card--hours .iss-hours__title,
-.iss-front-card--prices .iss-prices__title,
-.section--contact .iss-contact-card__title,
-.section--contact .iss-faq-list__title {
-  display: none;
-}
-
-.iss-front-card--hours .iss-hours__list,
-.iss-front-card--prices .iss-prices__list,
-.section--contact .iss-contact-card__list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.iss-front-card--hours .iss-hours__item,
-.iss-front-card--prices .iss-prices__item,
-.section--contact .iss-contact-card__list li {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.55rem 0;
-  border-bottom: 1px solid rgba(30, 30, 30, 0.08);
-}
-
-.iss-front-card--hours .iss-hours__item:last-child,
-.iss-front-card--prices .iss-prices__item:last-child,
-.section--contact .iss-contact-card__list li:last-child {
-  border-bottom: 0;
-}
-
-.iss-front-card--hours .iss-hours__special {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(30, 30, 30, 0.08);
-}
-
-.iss-front-card--hours .iss-hours__special-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.iss-front-card--hours .iss-hours__special-item {
-  display: grid;
-  gap: 0.15rem;
-  padding: 0.45rem 0;
-}
-
-.iss-front-card--prices .iss-prices__label {
-  font-weight: 600;
-}
-
-.iss-front-card--prices .iss-prices__value {
-  text-align: right;
-}
-
-.iss-front-card--prices .iss-prices__note,
-.section--contact .iss-faq-item__answer p:last-child,
-.section--contact .iss-contact-card__address p:last-child {
-  margin-bottom: 0;
-}
-
-.iss-front-visit-note {
-  margin-top: 1rem;
-  padding: 1rem 1.25rem;
-  border-left: 4px solid var(--is--color-red);
-  background: rgba(232, 29, 37, 0.05);
-  border-radius: 0 var(--is--radius-md) var(--is--radius-md) 0;
-}
-
-.section--contact .iss-contact-card,
-.section--contact .iss-faq-list {
-  padding: 1.25rem;
-  border: 1px solid rgba(30, 30, 30, 0.08);
-  border-radius: var(--is--radius-lg);
-  background: #fff;
-}
-
-.section--contact .iss-contact-card__address {
-  margin-bottom: 1rem;
-}
-
-.section--contact .iss-contact-card__address p {
-  margin: 0;
-}
-
-.section--contact .iss-faq-item {
-  border-bottom: 1px solid rgba(30, 30, 30, 0.08);
-}
-
-.section--contact .iss-faq-item:last-child {
-  border-bottom: 0;
-}
-
-.section--contact .iss-faq-item__question {
-  padding: 0.85rem 0;
-  font-weight: 600;
-  cursor: pointer;
-  list-style: none;
-}
-
-.section--contact .iss-faq-item__answer {
-  padding: 0 0 1rem;
+  position: absolute; /* Changed from relative */
+  bottom: 0; /* Align banner's bottom with hero's bottom */
+  transform: translateY(33.33%); /* Push down by 1/3 of its own height */
+  width: 100% !important;
+  max-width: 460px !important;
+  margin-left: 0 !important; /* Keep original centering */
+  margin-right: auto !important;
+  z-index: 50 !important;
 }
 
 @media (max-width: 782px) {
   .iss-front-banner-slot {
-    margin-bottom: -2rem;
-    padding-top: 0.75rem;
-  }
-
-  .iss-front-banner-slot .iss-notice__inner {
-    padding: 0.9rem 1rem;
-  }
-
-  .iss-front-hero--with-banner {
-    padding-top: 4.5rem;
-  }
-
-  .iss-front-hero__meta {
-    display: grid;
-    gap: 0.35rem;
-  }
-
-  .iss-front-hero__meta .iss-control-field + .iss-control-field::before {
-    content: "";
-    margin: 0;
-  }
-
-  .iss-front-card--hours .iss-hours__item,
-  .iss-front-card--prices .iss-prices__item,
-  .section--contact .iss-contact-card__list li {
-    display: grid;
-    gap: 0.15rem;
+    max-width: 90% !important;
+    /* Adjust transform for smaller screens if needed, but 33.33% is relative to its own height */
   }
 }
 
-
-/* MIK-style hero layer for front page
-   Keep existing plugin/content styles above. Apply by adding class "iss-front-page" to the main wrapper,
-   or rely on body.home .site-main on the front page.
-*/
-
-:where(.iss-front-page, body.home .site-main) {
-  --iss-red: #e81d25;
-  --iss-white: #f9f9fa;
-  --iss-black: #1e1e1e;
-  --iss-grey: #c0b8b5;
-  --iss-green: #579e7d;
-  --iss-blue: #869fba;
-  --iss-shadow-hero: 0 24px 60px rgba(0, 0, 0, 0.22);
-  --iss-radius-hero: 1.5rem;
-}
-
-:where(.iss-front-page, body.home .site-main),
-:where(.iss-front-page, body.home .site-main) * {
-  box-sizing: border-box;
-}
-
-:where(.iss-front-page, body.home .site-main) .section {
-  padding: clamp(3.5rem, 6vw, 6rem) 1.25rem;
-}
-
-:where(.iss-front-page, body.home .site-main) .container,
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__shell {
-  width: min(1280px, calc(100% - 2rem));
-  margin-inline: auto;
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-hero {
-  position: relative;
-  isolation: isolate;
-  padding: 1.25rem;
-  color: var(--is--color-white, var(--iss-white));
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, rgba(30, 30, 30, 0.88) 0%, rgba(30, 30, 30, 0.62) 34%, rgba(30, 30, 30, 0.22) 68%, rgba(30, 30, 30, 0.12) 100%),
-    linear-gradient(180deg, rgba(30, 30, 30, 0.30) 0%, rgba(30, 30, 30, 0.08) 22%, rgba(30, 30, 30, 0.42) 100%);
-  pointer-events: none;
-  z-index: 1;
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-hero .wp-block-cover__inner-container {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: stretch;
-  width: 100%;
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__shell {
-  min-height: calc(100vh - 2.5rem);
+.iss-front-banner-slot .iss-notice__inner {
   display: grid;
-  grid-template-rows: auto auto 1fr;
-  gap: clamp(1.25rem, 2.8vw, 2rem);
+  gap: 0.75rem;
+  padding: 2.5rem 3rem;
+  background: white !important;
+  color: #1e1e1e !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(30, 30, 30, 0.1) !important;
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.3) !important;
+  border-left: 10px solid #e81d25 !important;
 }
 
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__top {
-  display: flex;
-  align-items: start;
-  gap: 1rem;
+/* =====================================================================
+   FRONT PAGE HERO CONTENT (Title & Cluster)
+   ===================================================================== */
+
+.iss-front-hero__shell {
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 2.5rem !important;
+  margin-top: auto !important; /* Force cluster to bottom */
+  margin-bottom: 2.5rem !important; /* Space from the absolute bottom edge of 80vh */
 }
 
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__brand {
-  padding-top: 0.25rem;
+.iss-front-hero .iss-control-field--general-tagline {
+  max-width: 18ch !important;
+  margin: 0 !important;
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  color: white !important;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
 }
 
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__logo img,
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__brand img {
-  display: block;
-  width: clamp(120px, 12vw, 170px);
-  height: auto;
-  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.32));
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__controls {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  margin-left: auto;
-  padding: 0.45rem 0.6rem;
-  border-radius: 999px;
-  background: rgba(249, 249, 250, 0.10);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(249, 249, 250, 0.16);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__nav-link,
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__nav-link a,
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__icon-link {
-  color: var(--is--color-white, var(--iss-white));
-  text-decoration: none;
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__nav-link--text a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.85rem;
-  padding: 0 1rem;
-  border-radius: 999px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  transition: background-color var(--is--transition), color var(--is--transition), transform var(--is--transition);
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__nav-link--text a:hover,
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__nav-link--text a:focus-visible {
-  background: rgba(249, 249, 250, 0.16);
-  transform: translateY(-1px);
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__icon-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.85rem;
-  height: 2.85rem;
-  border-radius: 999px;
-  background: rgba(249, 249, 250, 0.08);
-  border: 1px solid rgba(249, 249, 250, 0.12);
-  transition: background-color var(--is--transition), transform var(--is--transition);
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__icon-link:hover,
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__icon-link:focus-visible {
-  background: var(--is--color-red, var(--iss-red));
-  transform: translateY(-1px);
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__icon-link svg {
-  width: 1.15rem;
-  height: 1.15rem;
-  fill: currentColor;
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-banner-slot--overlay {
-  max-width: 36rem;
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-banner-slot--overlay .iss-notice {
-  margin: 0;
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-banner-slot--overlay .iss-notice__inner {
-  padding: 1rem 1.1rem;
-  border-radius: 1.25rem;
-  background: rgba(249, 249, 250, 0.96);
-  color: var(--is--color-black, var(--iss-black));
-  box-shadow: var(--iss-shadow-hero);
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-banner-slot--overlay .iss-notice__badge {
-  margin: 0 0 0.45rem;
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--is--color-red, var(--iss-red));
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-banner-slot--overlay .iss-notice__headline {
-  margin: 0;
-  font-size: clamp(1rem, 1.2vw, 1.15rem);
-  line-height: 1.25;
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__content {
-  align-self: end;
-  max-width: 44rem;
-  padding-bottom: clamp(1rem, 3vh, 2.5rem);
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-kicker {
-  margin: 0 0 0.9rem;
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(249, 249, 250, 0.82);
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__title,
-:where(.iss-front-page, body.home .site-main) .iss-front-hero h1 {
-  margin: 0;
-  max-width: 12ch;
-  font-size: clamp(2.6rem, 6vw, 5.9rem);
-  line-height: 0.94;
-  font-weight: 700;
-  letter-spacing: -0.04em;
-  text-wrap: balance;
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__content > p {
-  margin: 1.25rem 0 0;
-  max-width: 38rem;
-  font-size: clamp(1rem, 1.35vw, 1.2rem);
-  line-height: 1.55;
-  color: rgba(249, 249, 250, 0.9);
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__meta {
-  gap: 0.5rem 0.8rem;
-  margin-top: 1.1rem;
-  font-size: 0.92rem;
-  font-weight: 600;
-  color: rgba(249, 249, 250, 0.88);
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__meta > *:not(:last-child)::after {
-  content: "•";
-  margin-left: 0.8rem;
-  color: rgba(249, 249, 250, 0.48);
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__actions,
-:where(.iss-front-page, body.home .site-main) .wp-block-buttons {
-  gap: 0.8rem;
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-hero__actions {
-  margin-top: 1.6rem;
-}
-
-:where(.iss-front-page, body.home .site-main) .wp-block-button__link {
-  min-height: 3rem;
-  padding: 0.9rem 1.35rem;
-  border-radius: 999px;
-  font-weight: 700;
-  text-decoration: none;
-  box-shadow: none;
-}
-
-:where(.iss-front-page, body.home .site-main) .is-style-fill .wp-block-button__link,
-:where(.iss-front-page, body.home .site-main) .wp-block-button:not(.iss-button--ghost) .wp-block-button__link {
-  background: var(--is--color-red, var(--iss-red));
-  color: var(--is--color-white, var(--iss-white));
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-button--ghost .wp-block-button__link {
-  background: transparent;
-  color: var(--is--color-white, var(--iss-white));
-  border: 1px solid rgba(249, 249, 250, 0.42);
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-front-card,
-:where(.iss-front-page, body.home .site-main) .iss-front-visit-note,
-:where(.iss-front-page, body.home .site-main) .section--contact .wp-block-column {
-  border-radius: var(--iss-radius-hero);
-}
-
-:where(.iss-front-page, body.home .site-main) .section--contact {
-  background: #f2f1f0;
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-hours__list,
-:where(.iss-front-page, body.home .site-main) .iss-prices__list,
-:where(.iss-front-page, body.home .site-main) .iss-faq__list,
-:where(.iss-front-page, body.home .site-main) .iss-contact__list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-hours__item,
-:where(.iss-front-page, body.home .site-main) .iss-prices__item,
-:where(.iss-front-page, body.home .site-main) .iss-contact__item {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.45rem 0;
-  border-bottom: 1px solid rgba(30, 30, 30, 0.08);
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-hours__item:last-child,
-:where(.iss-front-page, body.home .site-main) .iss-prices__item:last-child,
-:where(.iss-front-page, body.home .site-main) .iss-contact__item:last-child {
-  border-bottom: 0;
-}
-
-:where(.iss-front-page, body.home .site-main) .iss-control-field a,
-:where(.iss-front-page, body.home .site-main) .iss-contact a,
-:where(.iss-front-page, body.home .site-main) .iss-faq a {
-  color: var(--is--color-red, var(--iss-red));
-}
-
-@media (max-width: 980px) {
-  :where(.iss-front-page, body.home .site-main) .iss-front-hero__shell {
-    grid-template-rows: auto auto 1fr;
-  }
-
-  :where(.iss-front-page, body.home .site-main) .iss-front-hero__top {
-    flex-wrap: wrap;
-  }
-
-  :where(.iss-front-page, body.home .site-main) .iss-front-hero__controls {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  :where(.iss-front-page, body.home .site-main) .iss-front-hero__nav-link--text {
-    display: none;
-  }
-
-  :where(.iss-front-page, body.home .site-main) .iss-front-banner-slot--overlay {
-    max-width: 100%;
-  }
-
-  :where(.iss-front-page, body.home .site-main) .iss-front-hero__content,
-  :where(.iss-front-page, body.home .site-main) .iss-front-hero__title,
-  :where(.iss-front-page, body.home .site-main) .iss-front-hero h1 {
-    max-width: 100%;
-  }
-
-  :where(.iss-front-page, body.home .site-main) .iss-front-hero__title,
-  :where(.iss-front-page, body.home .site-main) .iss-front-hero h1 {
-    font-size: clamp(2.3rem, 10vw, 4.6rem);
+@media (min-width: 782px) {
+  .iss-front-hero .iss-control-field--general-tagline {
+    font-size: 4.8rem !important;
   }
 }
 
-@media (max-width: 640px) {
-  :where(.iss-front-page, body.home .site-main) .iss-front-hero {
-    padding: 0.85rem;
-  }
-
-  :where(.iss-front-page, body.home .site-main) .iss-front-hero__shell {
-    width: min(100%, calc(100% - 0.25rem));
-    min-height: calc(100vh - 1.7rem);
-    gap: 1rem;
-  }
-
-  :where(.iss-front-page, body.home .site-main) .iss-front-hero__controls {
-    padding: 0.35rem 0.45rem;
-    gap: 0.35rem;
-  }
-
-  :where(.iss-front-page, body.home .site-main) .iss-front-hero__icon-link {
-    width: 2.65rem;
-    height: 2.65rem;
-  }
-
-  :where(.iss-front-page, body.home .site-main) .iss-front-hero__meta {
-    gap: 0.3rem 0.6rem;
-  }
-
-  :where(.iss-front-page, body.home .site-main) .iss-front-hero__meta > *::after {
-    display: none;
-  }
-
-  :where(.iss-front-page, body.home .site-main) .iss-front-hero__actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  :where(.iss-front-page, body.home .site-main) .iss-front-hero__actions .wp-block-button {
-    width: 100%;
-  }
-
-  :where(.iss-front-page, body.home .site-main) .iss-front-hero__actions .wp-block-button__link {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-  }
+/* Clearance for the section below */
+#programm {
+  padding-top: 200px !important;
+  background: white !important;
+  position: relative;
+  z-index: 10;
 }

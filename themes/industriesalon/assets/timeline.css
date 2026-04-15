@@ -6,70 +6,63 @@
    - The theme defines the visual language (hero → editorial rhythm).
    ===================================================================== */
 
-/* Softer transition when timeline is the first content block after hero. */
-.wp-block-post-content > .iss-timeline:first-child,
-.wp-block-post-content > .iss-timeline-sections:first-child {
-  margin-top: var(--site-space-6, 3rem);
-}
-
 .iss-timeline {
-  /* Two-column editorial rail layout */
+  /* Rail layout variables */
   --iss-tl-rail: 140px;
   --iss-tl-gap: 32px;
   --iss-tl-line-w: 2px;
-  --iss-tl-marker: 11px;
+  --iss-tl-marker: 12px;
   --iss-tl-line-x: calc(var(--iss-tl-rail) - 10px);
-  --iss-tl-stripe: color-mix(in srgb, var(--site-color-surface) 92%, var(--site-color-accent-2) 8%);
+  --iss-tl-stripe: rgba(30, 30, 30, 0.04);
 
-  margin-block: var(--site-space-7, 4rem);
+  margin-top: 4rem;
+  margin-bottom: 4rem;
 }
 
 .iss-timeline__intro {
-  margin-bottom: var(--site-space-5, 2rem);
+  margin-bottom: 2rem;
 }
 
 .iss-timeline__title-heading {
   margin: 0;
-  font-size: clamp(1.4rem, 2.2vw, 1.9rem);
-  letter-spacing: -0.01em;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+@media (min-width: 782px) {
+  .iss-timeline__title-heading {
+    font-size: 1.875rem;
+  }
 }
 
 .iss-timeline__intro-text {
   margin-top: 0.85rem;
-  color: var(--site-color-text-muted, #666);
-  max-width: 60ch;
-}
-
-.iss-timeline__intro-text p {
-  margin: 0 0 0.75rem;
-}
-
-.iss-timeline__intro-text p:last-child {
-  margin-bottom: 0;
+  color: rgba(30, 30, 30, 0.7);
+  max-width: 65ch;
 }
 
 .iss-timeline__year {
   position: relative;
-  display: flow-root;
-  margin-top: clamp(4.5rem, 7vw, 6rem);
+  display: block;
+  margin-top: 4rem;
 }
 
 .iss-timeline__year::before {
   content: "";
   position: absolute;
   left: var(--iss-tl-line-x);
-  top: 3.25rem;
+  top: 3rem;
   bottom: 0;
   width: var(--iss-tl-line-w);
-  background: var(--site-color-border, rgba(0, 0, 0, 0.12));
+  background: var(--iss-border);
 }
 
 .iss-timeline__year-label {
   width: var(--iss-tl-rail);
-  margin: 0 0 32px;
-  font-size: clamp(1.375rem, 2.2vw, 1.625rem);
-  letter-spacing: -0.01em;
-  color: var(--site-color-text, #1e1a1e);
+  margin: 0 0 24px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--iss-black);
   text-align: right;
 }
 
@@ -78,27 +71,21 @@
   display: grid;
   grid-template-columns: var(--iss-tl-rail) minmax(0, 1fr);
   column-gap: var(--iss-tl-gap);
-  margin: 0 0 36px;
+  margin: 0 0 32px;
   padding: 0;
 }
 
-/* Alternating stripe, constrained to section/container width */
+/* Alternating stripe */
 .iss-timeline .iss-timeline__item:nth-of-type(even)::before {
   content: "";
   position: absolute;
-  top: -14px;
-  bottom: -14px;
-  left: 0;
-  right: 0;
+  top: -12px;
+  bottom: -12px;
+  left: -12px;
+  right: -12px;
   background: var(--iss-tl-stripe);
   z-index: 0;
-  border-radius: 0.85rem;
-}
-
-.iss-timeline__section--next .iss-timeline .iss-timeline__item:nth-of-type(even)::before {
-  left: calc(-1 * var(--iss-tl-next-pad, 0px));
-  right: calc(-1 * var(--iss-tl-next-pad, 0px));
-  border-radius: 0.9rem;
+  border-radius: var(--iss-radius-md);
 }
 
 .iss-timeline__marker,
@@ -111,243 +98,134 @@
 .iss-timeline__marker {
   position: absolute;
   left: calc(var(--iss-tl-line-x) - (var(--iss-tl-marker) / 2));
-  top: 0.35rem;
+  top: 0.4rem;
   width: var(--iss-tl-marker);
   height: var(--iss-tl-marker);
-  border-radius: 999px;
-  background: var(--site-color-accent, currentColor);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--site-color-bg, #fff) 80%, transparent);
+  border-radius: var(--iss-radius-pill);
+  background: var(--iss-red);
+  box-shadow: 0 0 0 4px var(--iss-white);
 }
 
 .iss-timeline__date {
   font-weight: 600;
-  color: var(--site-color-text-muted, #666);
-  font-size: 0.95rem;
+  color: rgba(30, 30, 30, 0.6);
+  font-size: 0.9rem;
   text-align: right;
-  justify-self: end;
-  padding-right: 22px;
+  padding-right: 20px;
 }
 
 .iss-timeline__content {
-  max-width: 52rem;
+  max-width: 800px;
 }
 
 .iss-timeline__type {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--site-color-text-muted, #666);
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(30, 30, 30, 0.5);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 0.4rem;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
 }
 
 .iss-timeline__title {
   margin: 0;
-  font-size: clamp(1.25rem, 1.8vw, 1.5rem);
-  letter-spacing: -0.01em;
+  font-size: 1.25rem;
+  font-weight: 600;
 }
 
 .iss-timeline__summary {
-  margin-top: 0.55rem;
-  color: var(--site-color-text, #1e1a1e);
-  font-size: 1.05rem;
+  margin-top: 0.5rem;
+  color: var(--iss-black);
+  font-size: 1rem;
   line-height: 1.6;
 }
 
 .iss-timeline__actions {
-  margin-top: 0.9rem;
+  margin-top: 1rem;
 }
 
 .iss-timeline__link {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  text-decoration: none;
   font-weight: 600;
-  color: var(--site-color-accent, #a02a2a);
-  font-size: 0.98rem;
+  color: var(--iss-red);
+  text-decoration: none;
 }
 
 .iss-timeline__link::after {
-  content: "→";
-  transition: transform 150ms ease;
+  content: " →";
+  transition: transform var(--iss-transition);
 }
 
-.iss-timeline__link:hover::after,
-.iss-timeline__link:focus::after {
-  transform: translateX(2px);
-}
-
-.iss-timeline__empty {
-  color: var(--site-color-text-muted, #666);
-  margin: 0;
+.iss-timeline__link:hover::after {
+  transform: translateX(3px);
 }
 
 /* =====================================================================
-   TIMELINE SECTIONS (industriesalon/timeline-sections)
+   TIMELINE SECTIONS
    ===================================================================== */
 
 .iss-timeline-sections {
-  margin-block: var(--site-space-7, 4rem);
-}
-
-.iss-timeline-sections .section-divider--fade {
-  margin: clamp(4.5rem, 8vw, 6rem) auto;
+  margin-top: 4rem;
+  margin-bottom: 4rem;
 }
 
 .iss-timeline__section-title {
-  margin: 0 0 var(--site-space-4, 1.5rem);
-  font-size: clamp(1.35rem, 2.2vw, 1.7rem);
-  letter-spacing: -0.01em;
+  margin: 0 0 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
-/* 1) NEXT */
 .iss-timeline__section--next {
-  --iss-tl-next-pad: clamp(1.25rem, 2.5vw, 2rem);
-  padding: var(--iss-tl-next-pad);
-  border: 1px solid var(--site-color-border, rgba(0, 0, 0, 0.12));
-  border-radius: 1rem;
-  background: var(--site-color-surface);
-}
-
-.iss-timeline--next {
-  margin-top: var(--site-space-4, 1.5rem);
-  position: relative;
-}
-
-.iss-timeline--next::before {
-  content: "";
-  position: absolute;
-  left: var(--iss-tl-line-x);
-  width: var(--iss-tl-line-w);
-  background: var(--site-color-border, rgba(0, 0, 0, 0.12));
-  top: 0.75rem;
-  bottom: 0;
-}
-
-.iss-timeline--next .iss-timeline__item {
-  margin-bottom: 44px;
-}
-
-.iss-timeline--next .iss-timeline__title {
-  font-size: clamp(1.5rem, 2.4vw, 1.75rem);
-}
-
-/* 2) MONTHLY */
-.iss-timeline--monthly {
-  position: relative;
-}
-
-.iss-timeline--monthly::before {
-  content: "";
-  position: absolute;
-  left: var(--iss-tl-line-x);
-  width: var(--iss-tl-line-w);
-  background: var(--site-color-border, rgba(0, 0, 0, 0.12));
-  top: 3.25rem;
-  bottom: 0;
+  padding: 2rem;
+  border: 1px solid var(--iss-border);
+  border-radius: var(--iss-radius-lg);
+  background: rgba(249, 249, 250, 0.5);
 }
 
 .iss-timeline__filters {
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: 0.75rem 1rem;
-  align-items: end;
-  margin: 0 0 var(--site-space-4, 1.5rem);
-  padding: 1rem;
-  border: 1px solid var(--site-color-border, rgba(0, 0, 0, 0.12));
-  border-radius: 0.9rem;
-  background: color-mix(in srgb, var(--site-color-bg, #fff) 96%, #000);
-  margin-left: calc(var(--iss-tl-rail) + var(--iss-tl-gap));
-  max-width: 52rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.25rem;
+  background: #fff;
+  border: 1px solid var(--iss-border);
+  border-radius: var(--iss-radius-md);
 }
 
-.iss-timeline__filter-label {
-  display: block;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--site-color-text-muted, #666);
-  margin-bottom: 0.35rem;
+.iss-timeline__filter {
+  flex: 1;
+  min-width: 200px;
 }
 
-.iss-timeline__filters select {
-  width: 100%;
-  padding: 0.6rem 0.7rem;
-  border: 1px solid var(--site-color-border, rgba(0, 0, 0, 0.16));
-  border-radius: 0.65rem;
-  background: var(--site-color-bg, #fff);
-  font: inherit;
-}
-
-.iss-timeline__apply {
-  white-space: nowrap;
-}
-
-.iss-timeline__month-label {
-  margin: 0 0 var(--site-space-4, 1.5rem);
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--site-color-text-muted, #666);
-  padding-left: calc(var(--iss-tl-rail) + var(--iss-tl-gap));
-}
-
-/* 3) ARCHIVE */
-.iss-timeline--archive .iss-timeline__title {
-  font-size: clamp(1.125rem, 1.6vw, 1.35rem);
-}
-
-.iss-timeline--archive .iss-timeline__item {
-  margin-bottom: 28px;
-}
-
-/* =====================================================================
-   Responsive
-   ===================================================================== */
-
-@media (max-width: 900px) {
-  .iss-timeline__year::before,
-  .iss-timeline--next::before,
-  .iss-timeline--monthly::before {
-    left: 0.55rem;
+/* Responsive Mobile Fix */
+@media (max-width: 782px) {
+  .iss-timeline__year::before {
+    left: 10px;
   }
 
   .iss-timeline__year-label {
     width: auto;
     text-align: left;
-    padding-left: 1.75rem;
+    padding-left: 2rem;
+    margin-bottom: 1rem;
   }
 
   .iss-timeline__item {
     grid-template-columns: 1fr;
-    column-gap: 0;
-    row-gap: 0;
-    padding-left: 1.75rem;
-    margin-bottom: 32px;
-  }
-
-  .iss-timeline__marker {
-    left: 0.55rem;
-    top: 0.55rem;
+    padding-left: 2rem;
+    margin-bottom: 2rem;
   }
 
   .iss-timeline__date {
     text-align: left;
-    justify-self: start;
-    margin-bottom: 0.35rem;
     padding-right: 0;
+    margin-bottom: 0.25rem;
   }
 
-  .iss-timeline__filters {
-    grid-template-columns: 1fr;
-    margin-left: 0;
-    max-width: none;
-  }
-
-  .iss-timeline__month-label {
-    padding-left: 1.75rem;
+  .iss-timeline__marker {
+    left: calc(10px - (var(--iss-tl-marker) / 2));
   }
 }
-

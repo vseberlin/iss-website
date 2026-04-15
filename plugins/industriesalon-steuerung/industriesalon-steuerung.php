@@ -669,7 +669,7 @@ final class Industriesalon_Steuerung {
         }
 
         $tag = isset($args['tag']) ? strtolower((string) $args['tag']) : 'div';
-        $allowed_tags = ['div', 'p', 'span', 'strong', 'h2', 'h3'];
+        $allowed_tags = ['div', 'p', 'span', 'strong', 'h1', 'h2', 'h3'];
         if (! in_array($tag, $allowed_tags, true)) {
             $tag = 'div';
         }

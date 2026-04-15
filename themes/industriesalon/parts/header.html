@@ -1,56 +1,47 @@
 <!-- wp:group {"className":"iss-site-header","layout":{"type":"default"}} -->
 <div class="wp-block-group iss-site-header">
-	<!-- wp:group {"className":"iss-site-header__inner","layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center","justifyContent":"space-between"}} -->
-	<div class="wp-block-group iss-site-header__inner">
-		<!-- wp:group {"className":"iss-site-brand","layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
-		<div class="wp-block-group iss-site-brand">
-			<!-- wp:site-logo {"width":56,"shouldSyncIcon":true} /-->
+        <!-- wp:group {"className":"iss-site-header__inner","layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center","justifyContent":"space-between"}} -->
+        <div class="wp-block-group iss-site-header__inner">
+                <!-- wp:group {"className":"iss-site-brand","layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+                <div class="wp-block-group iss-site-brand">
+                        <!-- wp:site-logo {"width":80,"shouldSyncIcon":true} /-->
+                </div>
+                <!-- /wp:group -->
 
-			<!-- wp:group {"className":"iss-site-brand__text","layout":{"type":"constrained"}} -->
-			<div class="wp-block-group iss-site-brand__text">
-				<!-- wp:site-title {"level":0,"className":"iss-site-brand__title"} /-->
-				<!-- wp:shortcode -->
-				[iss_field key="general.tagline" tag="p" link="none"]
-				<!-- /wp:shortcode -->
-			</div>
-			<!-- /wp:group -->
-		</div>
-		<!-- /wp:group -->
+                <!-- wp:buttons {"className":"iss-header-actions"} -->
+                <div class="wp-block-buttons iss-header-actions">
+                        <!-- wp:button {"className":"iss-nav-toggle"} -->
+                        <div class="wp-block-button iss-nav-toggle"><a class="wp-block-button__link wp-element-button" href="#iss-menu-shell">Menü</a></div>
+                        <!-- /wp:button -->
+                </div>
+                <!-- /wp:buttons -->
+        </div>
+        <!-- /wp:group -->
 
-		<!-- wp:buttons {"className":"iss-header-actions"} -->
-		<div class="wp-block-buttons iss-header-actions">
-			<!-- wp:button {"className":"iss-nav-toggle"} -->
-			<div class="wp-block-button iss-nav-toggle"><a class="wp-block-button__link wp-element-button" href="#iss-menu-shell">Menü</a></div>
-			<!-- /wp:button -->
-		</div>
-		<!-- /wp:buttons -->
-	</div>
-	<!-- /wp:group -->
+        <!-- wp:group {"className":"iss-nav-overlay","layout":{"type":"default"}} -->
+        <div class="wp-block-group iss-nav-overlay"></div>
+        <!-- /wp:group -->
 
-	<!-- wp:group {"className":"iss-nav-overlay","layout":{"type":"default"}} -->
-	<div class="wp-block-group iss-nav-overlay"></div>
-	<!-- /wp:group -->
+        <!-- wp:group {"className":"iss-menu-shell","layout":{"type":"default"}} -->
+        <div id="iss-menu-shell" class="wp-block-group iss-menu-shell">
+                <!-- wp:group {"className":"iss-menu-shell__inner","layout":{"type":"default"}} -->
+                <div class="wp-block-group iss-menu-shell__inner">
+                        <!-- wp:group {"className":"iss-menu-shell__topbar","layout":{"type":"flex","justifyContent":"right"}} -->
+                        <div class="wp-block-group iss-menu-shell__topbar">
+                                <!-- wp:buttons -->
+                                <div class="wp-block-buttons">
+                                        <!-- wp:button {"className":"iss-menu-shell__close"} -->
+                                        <div class="wp-block-button iss-menu-shell__close"><a class="wp-block-button__link wp-element-button" href="#">Schließen</a></div>
+                                        <!-- /wp:button -->
+                                </div>
+                                <!-- /wp:buttons -->
+                        </div>
+                        <!-- /wp:group -->
 
-	<!-- wp:group {"className":"iss-menu-shell","layout":{"type":"default"}} -->
-	<div id="iss-menu-shell" class="wp-block-group iss-menu-shell">
-		<!-- wp:group {"className":"iss-menu-shell__inner","layout":{"type":"default"}} -->
-		<div class="wp-block-group iss-menu-shell__inner">
-			<!-- wp:group {"className":"iss-menu-shell__topbar","layout":{"type":"flex","justifyContent":"right"}} -->
-			<div class="wp-block-group iss-menu-shell__topbar">
-				<!-- wp:buttons -->
-				<div class="wp-block-buttons">
-					<!-- wp:button {"className":"iss-menu-shell__close"} -->
-					<div class="wp-block-button iss-menu-shell__close"><a class="wp-block-button__link wp-element-button" href="#">Schließen</a></div>
-					<!-- /wp:button -->
-				</div>
-				<!-- /wp:buttons -->
-			</div>
-			<!-- /wp:group -->
-
-			<!-- wp:navigation {"className":"iss-header-nav","overlayMenu":"never","layout":{"type":"flex","orientation":"vertical","justifyContent":"left","flexWrap":"nowrap"}} /-->
-		</div>
-		<!-- /wp:group -->
-	</div>
-	<!-- /wp:group -->
+                        <!-- wp:navigation {"className":"iss-header-nav","overlayMenu":"never","layout":{"type":"flex","orientation":"vertical","justifyContent":"left","flexWrap":"nowrap"}} /-->
+                </div>
+                <!-- /wp:group -->
+        </div>
+        <!-- /wp:group -->
 </div>
 <!-- /wp:group -->
