@@ -63,12 +63,22 @@ function iss_calendar_render_sync_page() {
         $created = (int) ($result['created'] ?? 0);
         $updated = (int) ($result['updated'] ?? 0);
         $errors = (int) ($result['errors'] ?? 0);
+        $imported_unmapped = (int) ($result['imported_unmapped'] ?? 0);
+        $preserved_title = (int) ($result['preserved_title'] ?? 0);
+        $preserved_description = (int) ($result['preserved_description'] ?? 0);
+        $error_message = isset($result['error_message']) ? trim((string) $result['error_message']) : '';
         printf(
-            '<div class="notice notice-success"><p>Sync done. Created: %d, Updated: %d, Errors: %d.</p></div>',
+            '<div class="notice notice-success"><p>Sync done. Created: %d, Updated: %d, Errors: %d, Imported (unmapped): %d, Preserved title: %d, Preserved description: %d.</p></div>',
             $created,
             $updated,
-            $errors
+            $errors,
+            $imported_unmapped,
+            $preserved_title,
+            $preserved_description
         );
+        if ($error_message !== '') {
+            echo '<div class="notice notice-error"><p>' . esc_html($error_message) . '</p></div>';
+        }
     }
 
     echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
@@ -537,13 +547,21 @@ function iss_calendar_get_slots_fallback_for_tag($tag) {
 /**
  * Sync SuperSaaS slots into the local CPT for fallback and internal use.
  *
- * @return array{created:int,updated:int,errors:int}
+ * @return array{created:int,updated:int,errors:int,imported_unmapped:int,preserved_title:int,preserved_description:int,error_message:string}
  */
 function iss_calendar_sync_supersaas_to_cpt() {
     $settings = function_exists('is_saas_get_settings') ? is_saas_get_settings() : [];
     $slot_items = iss_calendar_supersaas_fetch_free_slots($settings);
     if (is_wp_error($slot_items)) {
-        return ['created' => 0, 'updated' => 0, 'errors' => 1];
+        return [
+            'created' => 0,
+            'updated' => 0,
+            'errors' => 1,
+            'imported_unmapped' => 0,
+            'preserved_title' => 0,
+            'preserved_description' => 0,
+            'error_message' => (string) $slot_items->get_error_message(),
+        ];
     }
 
     $source_calendar = function_exists('is_saas_get_schedule_path')
@@ -569,6 +587,9 @@ function iss_calendar_sync_supersaas_to_cpt() {
     $created = 0;
     $updated = 0;
     $errors = 0;
+    $imported_unmapped = 0;
+    $preserved_title = 0;
+    $preserved_description = 0;
     $slots_by_tag = [];
 
     foreach ($slot_items as $slot) {
@@ -587,9 +608,7 @@ function iss_calendar_sync_supersaas_to_cpt() {
             }
         }
 
-        if ($tag === '' || !in_array($tag, $mapped_tags, true)) {
-            continue;
-        }
+        $is_mapped_tag = ($tag !== '' && in_array($tag, $mapped_tags, true));
 
         $clean_title = isset($parsed['title']) ? (string) $parsed['title'] : '';
         if ($clean_title === '') {
@@ -619,7 +638,11 @@ function iss_calendar_sync_supersaas_to_cpt() {
             $availability_state = $available > 0 ? 'available' : 'sold_out';
         }
 
-        $map_entry = isset($map[$tag]) && is_array($map[$tag]) ? $map[$tag] : [];
+        if (!$is_mapped_tag) {
+            $imported_unmapped++;
+        }
+
+        $map_entry = ($is_mapped_tag && isset($map[$tag]) && is_array($map[$tag])) ? $map[$tag] : [];
         $source_post_id = isset($map_entry['source_post_id']) ? (int) $map_entry['source_post_id'] : 0;
         $source_post_type = isset($map_entry['source_post_type']) ? sanitize_key((string) $map_entry['source_post_type']) : '';
         $fallback_url = isset($map_entry['fallback_url']) ? esc_url_raw((string) $map_entry['fallback_url']) : '';
@@ -627,19 +650,60 @@ function iss_calendar_sync_supersaas_to_cpt() {
         $booking_url = $fallback_url ?: $schedule_url;
 
         $post_id = iss_calendar_find_item_post_id($external_id, $source_calendar);
+        $incoming_title = $clean_title !== '' ? wp_strip_all_tags($clean_title) : 'Calendar Item';
+        $incoming_description = '';
+        if (!empty($slot['description'])) {
+            $incoming_description = sanitize_textarea_field((string) $slot['description']);
+        } elseif (!empty($slot['details'])) {
+            $incoming_description = sanitize_textarea_field((string) $slot['details']);
+        } elseif (!empty($slot['comment'])) {
+            $incoming_description = sanitize_textarea_field((string) $slot['comment']);
+        } elseif (!empty($slot['note'])) {
+            $incoming_description = sanitize_textarea_field((string) $slot['note']);
+        } elseif (!empty($slot['notes'])) {
+            $incoming_description = sanitize_textarea_field((string) $slot['notes']);
+        }
+
         $postarr = [
             'post_type' => ISS_CALENDAR_ITEM_POST_TYPE,
             'post_status' => 'publish',
-            'post_title' => $clean_title !== '' ? wp_strip_all_tags($clean_title) : 'Calendar Item',
+            'post_title' => $incoming_title,
+            'post_content' => $incoming_description,
         ];
 
         if ($post_id) {
-            $postarr['ID'] = $post_id;
-            $res = wp_update_post($postarr, true);
-            if (is_wp_error($res)) {
+            $existing = get_post($post_id);
+            if (!($existing instanceof WP_Post)) {
                 $errors++;
                 continue;
             }
+
+            $post_update = ['ID' => $post_id];
+            $needs_post_update = false;
+            $existing_title = trim((string) $existing->post_title);
+            if ($existing_title === '' && $incoming_title !== '') {
+                $post_update['post_title'] = $incoming_title;
+                $needs_post_update = true;
+            } else {
+                $preserved_title++;
+            }
+
+            $existing_content = trim((string) $existing->post_content);
+            if ($existing_content === '' && $incoming_description !== '') {
+                $post_update['post_content'] = $incoming_description;
+                $needs_post_update = true;
+            } elseif ($existing_content !== '') {
+                $preserved_description++;
+            }
+
+            if ($needs_post_update) {
+                $res = wp_update_post($post_update, true);
+                if (is_wp_error($res)) {
+                    $errors++;
+                    continue;
+                }
+            }
+
             $updated++;
         } else {
             $res = wp_insert_post($postarr, true);
@@ -678,18 +742,20 @@ function iss_calendar_sync_supersaas_to_cpt() {
         update_post_meta($post_id, 'sort_date', $start);
 
         // Prime the REST/tag cache from the same normalized shape as the REST endpoint.
-        if (!isset($slots_by_tag[$tag])) {
+        if ($tag !== '' && !isset($slots_by_tag[$tag])) {
             $slots_by_tag[$tag] = [];
         }
-        $slots_by_tag[$tag][] = [
-            'id' => (string) $external_id,
-            'title' => $clean_title !== '' ? $clean_title : $raw_title,
-            'start' => $start,
-            'end' => $end,
-            'capacity' => $capacity_total !== null ? (int) $capacity_total : null,
-            'available' => $available,
-            'booking_url' => $booking_url ? (string) $booking_url : null,
-        ];
+        if ($tag !== '') {
+            $slots_by_tag[$tag][] = [
+                'id' => (string) $external_id,
+                'title' => $clean_title !== '' ? $clean_title : $raw_title,
+                'start' => $start,
+                'end' => $end,
+                'capacity' => $capacity_total !== null ? (int) $capacity_total : null,
+                'available' => $available,
+                'booking_url' => $booking_url ? (string) $booking_url : null,
+            ];
+        }
     }
 
     // Keep the REST endpoint cache and the CPT in sync.
@@ -717,6 +783,10 @@ function iss_calendar_sync_supersaas_to_cpt() {
         'created' => $created,
         'updated' => $updated,
         'errors' => $errors,
+        'imported_unmapped' => $imported_unmapped,
+        'preserved_title' => $preserved_title,
+        'preserved_description' => $preserved_description,
+        'error_message' => '',
     ];
 }
 
