@@ -423,6 +423,13 @@ add_action('wp_enqueue_scripts', function () {
         IS_SAAS_VERSION
     );
 
+    wp_enqueue_style(
+        'iss-timeline',
+        plugin_dir_url(__FILE__) . 'iss-timeline/timeline.css',
+        [],
+        IS_SAAS_VERSION
+    );
+
     // Feed config to JS (internal endpoints only)
     wp_add_inline_script(
         'is-tour-calendar',

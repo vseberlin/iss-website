@@ -17,5 +17,11 @@ add_action('init', function () {
             'render_callback' => 'iss_timeline_render_sections',
         ]);
     }
-});
 
+    $dir_latest = __DIR__ . '/../blocks/timeline-latest';
+    if (file_exists($dir_latest . '/block.json')) {
+        register_block_type($dir_latest, [
+            'render_callback' => 'iss_timeline_render_latest',
+        ]);
+    }
+});

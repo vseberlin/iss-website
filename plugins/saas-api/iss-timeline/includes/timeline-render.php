@@ -96,10 +96,12 @@ function iss_timeline_prepare_item($item_id) {
     $cta_mode = (string) get_post_meta($item_id, 'cta_mode', true);
     $cta_url = (string) get_post_meta($item_id, 'cta_url', true);
     $cta_label = (string) get_post_meta($item_id, 'cta_label', true);
+    $booking_url = (string) get_post_meta($item_id, 'booking_url', true);
 
     $source_post_id = (int) get_post_meta($item_id, 'source_post_id', true);
 
     $ts = null;
+    $end_ts = null;
     try {
         if ($sort_date !== '') {
             $ts = (new DateTimeImmutable($sort_date, wp_timezone()))->getTimestamp();
@@ -107,8 +109,25 @@ function iss_timeline_prepare_item($item_id) {
     } catch (Throwable $e) {
         $ts = null;
     }
+    try {
+        if ($event_end !== '') {
+            $end_ts = (new DateTimeImmutable($event_end, wp_timezone()))->getTimestamp();
+        }
+    } catch (Throwable $e) {
+        $end_ts = null;
+    }
 
     $date_label = $ts ? wp_date('j. F Y', $ts) : $sort_date;
+    $day_label = $ts ? wp_date('D. d.m.', $ts) : $date_label;
+
+    $time_label = '';
+    if ($ts) {
+        $time_label = wp_date('H:i', $ts);
+        if ($end_ts) {
+            $time_label .= ' – ' . wp_date('H:i', $end_ts);
+        }
+        $time_label .= ' Uhr';
+    }
 
     $title = trim($public_title);
     if ($title === '' && $source_post_id > 0) {
@@ -127,51 +146,139 @@ function iss_timeline_prepare_item($item_id) {
         'title' => $title,
         'date_raw' => $sort_date,
         'date_label' => $date_label,
+        'day_label' => $day_label,
+        'time_label' => $time_label,
         'end_raw' => $event_end,
         'type' => $item_type,
         'summary' => $summary,
         'cta_mode' => $cta_mode,
         'cta_url' => $cta_url,
         'cta_label' => $cta_label !== '' ? $cta_label : __('Mehr erfahren', 'iss-timeline'),
+        'booking_url' => $booking_url,
         'source_post_id' => $source_post_id,
         'year' => $ts ? (int) wp_date('Y', $ts) : null,
     ];
 }
 
-function iss_timeline_build_action($row) {
-    if (!is_array($row)) return null;
+function iss_timeline_build_render_options($attributes = []) {
+    $attributes = is_array($attributes) ? $attributes : [];
+
+    return [
+        'showDetailsButton' => !array_key_exists('showDetailsButton', $attributes) || (bool) $attributes['showDetailsButton'],
+        'showRecommendButton' => !array_key_exists('showRecommendButton', $attributes) || (bool) $attributes['showRecommendButton'],
+        'showTicketsButton' => !array_key_exists('showTicketsButton', $attributes) || (bool) $attributes['showTicketsButton'],
+        'detailsButtonUrl' => isset($attributes['detailsButtonUrl']) ? (string) $attributes['detailsButtonUrl'] : '',
+        'recommendButtonUrl' => isset($attributes['recommendButtonUrl']) ? (string) $attributes['recommendButtonUrl'] : '',
+        'ticketsButtonUrl' => isset($attributes['ticketsButtonUrl']) ? (string) $attributes['ticketsButtonUrl'] : '',
+        'detailsButtonText' => isset($attributes['detailsButtonText']) ? (string) $attributes['detailsButtonText'] : '',
+        'recommendButtonText' => isset($attributes['recommendButtonText']) ? (string) $attributes['recommendButtonText'] : '',
+        'ticketsButtonText' => isset($attributes['ticketsButtonText']) ? (string) $attributes['ticketsButtonText'] : '',
+        'showBottomButton' => !empty($attributes['showBottomButton']) && (bool) $attributes['showBottomButton'],
+        'bottomButtonUrl' => isset($attributes['bottomButtonUrl']) ? (string) $attributes['bottomButtonUrl'] : '',
+        'bottomButtonText' => isset($attributes['bottomButtonText']) ? (string) $attributes['bottomButtonText'] : '',
+    ];
+}
+
+function iss_timeline_render_bottom_button($opts = []) {
+    $opts = is_array($opts) ? $opts : [];
+    $url = isset($opts['bottomButtonUrl']) ? esc_url_raw((string) $opts['bottomButtonUrl']) : '';
+    $show_bottom = !empty($opts['showBottomButton']) || $url !== '';
+    if (!$show_bottom) return '';
+    if ($url === '') return '';
+
+    $label = isset($opts['bottomButtonText']) ? trim(sanitize_text_field((string) $opts['bottomButtonText'])) : '';
+    if ($label === '') {
+        $label = __('Zum gesamten Kalender', 'iss-timeline');
+    }
+
+    return '<div class="iss-timeline__footer"><a class="iss-timeline__btn iss-timeline__btn--primary iss-timeline__btn--bottom" href="'
+        . esc_url($url) . '">' . esc_html($label) . '</a></div>';
+}
+
+function iss_timeline_build_actions($row, $opts = []) {
+    if (!is_array($row)) return [];
+    $opts = is_array($opts) ? $opts : [];
     $mode = isset($row['cta_mode']) ? sanitize_key((string) $row['cta_mode']) : '';
     $source_post_id = isset($row['source_post_id']) ? (int) $row['source_post_id'] : 0;
+    $show_details = !array_key_exists('showDetailsButton', $opts) || (bool) $opts['showDetailsButton'];
+    $show_recommend = !array_key_exists('showRecommendButton', $opts) || (bool) $opts['showRecommendButton'];
+    $show_tickets = !array_key_exists('showTicketsButton', $opts) || (bool) $opts['showTicketsButton'];
 
-    $label = isset($row['cta_label']) ? trim((string) $row['cta_label']) : '';
-    if ($label === '') $label = __('Mehr erfahren', 'iss-timeline');
+    $details_override = isset($opts['detailsButtonUrl']) ? esc_url_raw((string) $opts['detailsButtonUrl']) : '';
+    $recommend_override = isset($opts['recommendButtonUrl']) ? esc_url_raw((string) $opts['recommendButtonUrl']) : '';
+    $tickets_override = isset($opts['ticketsButtonUrl']) ? esc_url_raw((string) $opts['ticketsButtonUrl']) : '';
+    $details_label = isset($opts['detailsButtonText']) ? trim(sanitize_text_field((string) $opts['detailsButtonText'])) : '';
+    $recommend_label = isset($opts['recommendButtonText']) ? trim(sanitize_text_field((string) $opts['recommendButtonText'])) : '';
+    $tickets_label = isset($opts['ticketsButtonText']) ? trim(sanitize_text_field((string) $opts['ticketsButtonText'])) : '';
+    if ($details_label === '') $details_label = __('Details anschauen', 'iss-timeline');
+    if ($recommend_label === '') $recommend_label = __('Empfehlen', 'iss-timeline');
+    if ($tickets_label === '') $tickets_label = __('Tickets kaufen', 'iss-timeline');
 
-    if ($mode === 'details' && $source_post_id > 0) {
-        $url = get_permalink($source_post_id);
-        return $url ? ['url' => $url, 'label' => $label] : null;
+    $details_url = '';
+    if ($source_post_id > 0) {
+        $permalink = get_permalink($source_post_id);
+        if (is_string($permalink) && $permalink !== '') {
+            $details_url = $permalink;
+        }
     }
 
-    if ($mode === 'booking' && $source_post_id > 0 && function_exists('iss_calendar_get_next_item_for_post')) {
+    $booking_url = isset($row['booking_url']) ? trim((string) $row['booking_url']) : '';
+    if ($booking_url === '' && $mode === 'booking' && $source_post_id > 0 && function_exists('iss_calendar_get_next_item_for_post')) {
         $next = iss_calendar_get_next_item_for_post($source_post_id);
         if ($next instanceof WP_Post) {
-            $booking = (string) get_post_meta($next->ID, 'booking_url', true);
-            return $booking !== '' ? ['url' => $booking, 'label' => $label] : null;
+            $booking_url = trim((string) get_post_meta($next->ID, 'booking_url', true));
         }
-        return null;
     }
 
-    if ($mode === 'external') {
-        $url = isset($row['cta_url']) ? (string) $row['cta_url'] : '';
-        return $url !== '' ? ['url' => $url, 'label' => $label] : null;
+    $fallback_url = trim((string) ($row['cta_url'] ?? ''));
+    if ($mode === 'external' && $fallback_url !== '') {
+        $details_url = $fallback_url;
+    } elseif ($details_url === '' && $fallback_url !== '') {
+        $details_url = $fallback_url;
     }
 
-    // auto/default
-    if ($source_post_id > 0) {
-        $url = get_permalink($source_post_id);
-        if ($url) return ['url' => $url, 'label' => $label];
+    $share_target = $details_url !== '' ? $details_url : $booking_url;
+    $recommend_url = '';
+    if ($share_target !== '') {
+        $subject = rawurlencode(sprintf(__('Empfehlung: %s', 'iss-timeline'), (string) ($row['title'] ?? '')));
+        $body = rawurlencode($share_target);
+        $recommend_url = 'mailto:?subject=' . $subject . '&body=' . $body;
     }
-    $url = isset($row['cta_url']) ? (string) $row['cta_url'] : '';
-    return $url !== '' ? ['url' => $url, 'label' => $label] : null;
+
+    if ($details_override !== '') {
+        $details_url = $details_override;
+    }
+    if ($recommend_override !== '') {
+        $recommend_url = $recommend_override;
+    }
+    if ($tickets_override !== '') {
+        $booking_url = $tickets_override;
+    }
+
+    $actions = [];
+    if ($show_details && $details_url !== '') {
+        $actions[] = [
+            'url' => $details_url,
+            'label' => $details_label,
+            'variant' => 'secondary',
+        ];
+    }
+    if ($show_recommend && $recommend_url !== '') {
+        $actions[] = [
+            'url' => $recommend_url,
+            'label' => $recommend_label,
+            'variant' => 'secondary',
+        ];
+    }
+    if ($show_tickets && $booking_url !== '') {
+        $actions[] = [
+            'url' => $booking_url,
+            'label' => $tickets_label,
+            'variant' => 'primary',
+        ];
+    }
+
+    return $actions;
 }
 
 function iss_timeline_render_items_list($items, $opts = []) {
@@ -214,22 +321,34 @@ function iss_timeline_render_items_list($items, $opts = []) {
 
         foreach ($groupRows as $row) {
             $out .= '<article class="iss-timeline__item">';
-            $out .= '<div class="iss-timeline__marker" aria-hidden="true"></div>';
-            $out .= '<div class="iss-timeline__date">' . esc_html((string) ($row['date_label'] ?? '')) . '</div>';
-            $out .= '<div class="iss-timeline__content">';
-            if (!empty($row['type'])) {
-                $out .= '<div class="iss-timeline__type">' . esc_html((string) $row['type']) . '</div>';
+            $out .= '<div class="iss-timeline__date">';
+            $out .= '<div class="iss-timeline__day">' . esc_html((string) ($row['day_label'] ?? '')) . '</div>';
+            if (!empty($row['time_label'])) {
+                $out .= '<div class="iss-timeline__time">' . esc_html((string) $row['time_label']) . '</div>';
             }
+            $out .= '</div>';
+            $out .= '<div class="iss-timeline__content">';
             $out .= '<h4 class="iss-timeline__title">' . esc_html((string) ($row['title'] ?? '')) . '</h4>';
             if (!empty($row['summary'])) {
                 $out .= '<div class="iss-timeline__summary">' . esc_html((string) $row['summary']) . '</div>';
+            } elseif (!empty($row['type'])) {
+                $out .= '<div class="iss-timeline__summary">' . esc_html((string) $row['type']) . '</div>';
             }
 
-            $action = iss_timeline_build_action($row);
-            if (is_array($action) && !empty($action['url'])) {
-                $out .= '<p class="iss-timeline__actions">';
-                $out .= '<a class="iss-timeline__link" href="' . esc_url((string) $action['url']) . '">' . esc_html((string) ($action['label'] ?? '')) . '</a>';
-                $out .= '</p>';
+            $actions = iss_timeline_build_actions($row, $opts);
+            if (!empty($actions)) {
+                $out .= '<div class="iss-timeline__actions">';
+                foreach ($actions as $action) {
+                    if (!is_array($action) || empty($action['url'])) continue;
+                    $variant = isset($action['variant']) ? sanitize_key((string) $action['variant']) : 'secondary';
+                    if (!in_array($variant, ['secondary', 'primary'], true)) {
+                        $variant = 'secondary';
+                    }
+                    $out .= '<a class="iss-timeline__btn iss-timeline__btn--' . esc_attr($variant) . '" href="'
+                        . esc_url((string) $action['url']) . '">'
+                        . esc_html((string) ($action['label'] ?? '')) . '</a>';
+                }
+                $out .= '</div>';
             }
             $out .= '</div></article>';
         }
@@ -246,6 +365,9 @@ function iss_timeline_render($attributes = [], $content = '', $block = null) {
     $attributes = is_array($attributes) ? $attributes : [];
 
     $title = isset($attributes['title']) ? sanitize_text_field((string) $attributes['title']) : '';
+    $kicker = isset($attributes['kicker']) ? sanitize_text_field((string) $attributes['kicker']) : '';
+    $show_title = !array_key_exists('showTitle', $attributes) || (bool) $attributes['showTitle'];
+    $show_kicker = !empty($attributes['showKicker']) && (bool) $attributes['showKicker'];
     $intro = isset($attributes['intro']) ? sanitize_textarea_field((string) $attributes['intro']) : '';
     $limit = isset($attributes['limit']) ? (int) $attributes['limit'] : 50;
     $group = isset($attributes['group']) ? sanitize_text_field((string) $attributes['group']) : '';
@@ -254,21 +376,88 @@ function iss_timeline_render($attributes = [], $content = '', $block = null) {
     $items = function_exists('iss_timeline_get_items_advanced')
         ? iss_timeline_get_items_advanced(['limit' => $limit, 'order' => 'ASC', 'group' => $group])
         : [];
+    $render_opts = iss_timeline_build_render_options($attributes);
 
     $use_block_wrapper = function_exists('get_block_wrapper_attributes') && ($block instanceof WP_Block);
     $attrs = $use_block_wrapper
-        ? get_block_wrapper_attributes(['class' => 'iss-timeline'])
-        : 'class="iss-timeline"';
+        ? get_block_wrapper_attributes(['class' => 'iss-timeline iss-container'])
+        : 'class="iss-timeline iss-container"';
 
     $out = '<section ' . $attrs . '>';
-    if ($title !== '' || $intro !== '') {
+    if (($show_kicker && $kicker !== '') || ($show_title && $title !== '') || $intro !== '') {
         $out .= '<header class="iss-timeline__intro">';
-        if ($title !== '') $out .= '<h2 class="iss-timeline__title-heading">' . esc_html($title) . '</h2>';
+        if ($show_kicker && $kicker !== '') $out .= '<p class="iss-kicker iss-timeline__kicker">' . esc_html($kicker) . '</p>';
+        if ($show_title && $title !== '') $out .= '<h2 class="iss-timeline__title-heading">' . esc_html($title) . '</h2>';
         if ($intro !== '') $out .= '<div class="iss-timeline__intro-text">' . wp_kses_post(wpautop(esc_html($intro))) . '</div>';
         $out .= '</header>';
     }
-    $out .= iss_timeline_render_items_list($items, ['yearGrouping' => $yearGrouping, 'order' => 'ASC']);
+    $out .= iss_timeline_render_items_list($items, [
+        'yearGrouping' => $yearGrouping,
+        'order' => 'ASC',
+        'showDetailsButton' => (bool) $render_opts['showDetailsButton'],
+        'showRecommendButton' => (bool) $render_opts['showRecommendButton'],
+        'showTicketsButton' => (bool) $render_opts['showTicketsButton'],
+        'detailsButtonUrl' => (string) $render_opts['detailsButtonUrl'],
+        'recommendButtonUrl' => (string) $render_opts['recommendButtonUrl'],
+        'ticketsButtonUrl' => (string) $render_opts['ticketsButtonUrl'],
+        'detailsButtonText' => (string) $render_opts['detailsButtonText'],
+        'recommendButtonText' => (string) $render_opts['recommendButtonText'],
+        'ticketsButtonText' => (string) $render_opts['ticketsButtonText'],
+    ]);
+    $out .= iss_timeline_render_bottom_button($render_opts);
     $out .= '</section>';
+    return $out;
+}
+
+function iss_timeline_render_latest($attributes = [], $content = '', $block = null) {
+    $attributes = is_array($attributes) ? $attributes : [];
+
+    $title = isset($attributes['title']) ? sanitize_text_field((string) $attributes['title']) : '';
+    $kicker = isset($attributes['kicker']) ? sanitize_text_field((string) $attributes['kicker']) : '';
+    $show_title = !array_key_exists('showTitle', $attributes) || (bool) $attributes['showTitle'];
+    $show_kicker = !empty($attributes['showKicker']) && (bool) $attributes['showKicker'];
+    $intro = isset($attributes['intro']) ? sanitize_textarea_field((string) $attributes['intro']) : '';
+    $group = isset($attributes['group']) ? sanitize_text_field((string) $attributes['group']) : '';
+
+    $items = function_exists('iss_timeline_get_items_advanced')
+        ? iss_timeline_get_items_advanced([
+            'range' => 'future',
+            'order' => 'ASC',
+            'limit' => 4,
+            'group' => $group,
+        ])
+        : [];
+    $render_opts = iss_timeline_build_render_options($attributes);
+
+    $use_block_wrapper = function_exists('get_block_wrapper_attributes') && ($block instanceof WP_Block);
+    $attrs = $use_block_wrapper
+        ? get_block_wrapper_attributes(['class' => 'iss-timeline-latest iss-container'])
+        : 'class="iss-timeline-latest iss-container"';
+
+    $out = '<section ' . $attrs . '>';
+    if (($show_kicker && $kicker !== '') || ($show_title && $title !== '') || $intro !== '') {
+        $out .= '<header class="iss-timeline__intro">';
+        if ($show_kicker && $kicker !== '') $out .= '<p class="iss-kicker iss-timeline__kicker">' . esc_html($kicker) . '</p>';
+        if ($show_title && $title !== '') $out .= '<h2 class="iss-timeline__title-heading">' . esc_html($title) . '</h2>';
+        if ($intro !== '') $out .= '<div class="iss-timeline__intro-text">' . wp_kses_post(wpautop(esc_html($intro))) . '</div>';
+        $out .= '</header>';
+    }
+    $out .= '<div class="iss-timeline iss-timeline--latest">';
+    $out .= iss_timeline_render_items_list($items, [
+        'yearGrouping' => false,
+        'order' => 'ASC',
+        'showDetailsButton' => (bool) $render_opts['showDetailsButton'],
+        'showRecommendButton' => (bool) $render_opts['showRecommendButton'],
+        'showTicketsButton' => (bool) $render_opts['showTicketsButton'],
+        'detailsButtonUrl' => (string) $render_opts['detailsButtonUrl'],
+        'recommendButtonUrl' => (string) $render_opts['recommendButtonUrl'],
+        'ticketsButtonUrl' => (string) $render_opts['ticketsButtonUrl'],
+        'detailsButtonText' => (string) $render_opts['detailsButtonText'],
+        'recommendButtonText' => (string) $render_opts['recommendButtonText'],
+        'ticketsButtonText' => (string) $render_opts['ticketsButtonText'],
+    ]);
+    $out .= iss_timeline_render_bottom_button($render_opts);
+    $out .= '</div></section>';
     return $out;
 }
 
@@ -327,8 +516,8 @@ function iss_timeline_render_sections($attributes = [], $content = '', $block = 
 
     $use_block_wrapper = function_exists('get_block_wrapper_attributes') && ($block instanceof WP_Block);
     $attrs = $use_block_wrapper
-        ? get_block_wrapper_attributes(['class' => 'iss-timeline-sections'])
-        : 'class="iss-timeline-sections"';
+        ? get_block_wrapper_attributes(['class' => 'iss-timeline-sections iss-container'])
+        : 'class="iss-timeline-sections iss-container"';
 
     $section_heading_tag = ($title !== '') ? 'h3' : 'h2';
 

@@ -1,11 +1,11 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
-  "name": "industriesalon/timeline",
-  "title": "Timeline",
+  "name": "industriesalon/timeline-latest",
+  "title": "Timeline Latest",
   "category": "widgets",
-  "icon": "schedule",
-  "description": "Server-rendered timeline from calendar items.",
+  "icon": "list-view",
+  "description": "Server-rendered timeline with the next 4 entries.",
   "supports": {
     "html": false,
     "align": ["wide", "full"]
@@ -15,10 +15,6 @@
     "kicker": { "type": "string", "default": "" },
     "showTitle": { "type": "boolean", "default": true },
     "showKicker": { "type": "boolean", "default": false },
-    "intro": { "type": "string", "default": "" },
-    "limit": { "type": "number", "default": 50 },
-    "group": { "type": "string", "default": "" },
-    "yearGrouping": { "type": "boolean", "default": true },
     "showDetailsButton": { "type": "boolean", "default": true },
     "showRecommendButton": { "type": "boolean", "default": true },
     "showTicketsButton": { "type": "boolean", "default": true },
@@ -30,7 +26,9 @@
     "ticketsButtonUrl": { "type": "string", "default": "" },
     "showBottomButton": { "type": "boolean", "default": false },
     "bottomButtonText": { "type": "string", "default": "" },
-    "bottomButtonUrl": { "type": "string", "default": "" }
+    "bottomButtonUrl": { "type": "string", "default": "" },
+    "intro": { "type": "string", "default": "" },
+    "group": { "type": "string", "default": "" }
   },
   "editorScript": "file:./index.js"
 }
