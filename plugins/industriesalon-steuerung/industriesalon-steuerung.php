@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Industriesalon Steuerung
- * Description: Zentrale Seiteneinstellungen für Industriesalon: Öffnungszeiten, Bürozeiten, Kontakt, Adresse, Barrierefreiheit, FAQ und Preise mit wiederverwendbarer Ausgabe per PHP, Shortcodes und Gutenberg-Blöcke.
- * Version: 0.2.2
+ * Description: Zentrale Seiteneinstellungen für Industriesalon: Öffnungszeiten, Bürozeiten, Kontakt, Adresse, Mission Statement, Barrierefreiheit, FAQ und Preise mit wiederverwendbarer Ausgabe per PHP, Shortcodes und Gutenberg-Blöcke.
+ * Version: 0.2.4
  * Author: OpenAI
  * Text Domain: industriesalon-steuerung
  */
@@ -12,7 +12,7 @@ if (! defined('ABSPATH')) {
 }
 
 final class Industriesalon_Steuerung {
-    private const VERSION = '0.2.2';
+    private const VERSION = '0.2.4';
     private const CAPABILITY = 'manage_iss_controls';
 
     private const OPTION_GENERAL = 'iss_control_general';
@@ -22,6 +22,7 @@ final class Industriesalon_Steuerung {
     private const OPTION_ACCESSIBILITY = 'iss_control_accessibility';
     private const OPTION_PRICES = 'iss_control_prices';
     private const OPTION_FAQ = 'iss_control_faq';
+    private const OPTION_MISSION_STATEMENT = 'iss_control_mission_statement';
 
     private static ?Industriesalon_Steuerung $instance = null;
 
@@ -80,6 +81,7 @@ final class Industriesalon_Steuerung {
             'accessibility' => self::OPTION_ACCESSIBILITY,
             'prices'        => self::OPTION_PRICES,
             'faq'           => self::OPTION_FAQ,
+            'mission_statement' => self::OPTION_MISSION_STATEMENT,
         ];
     }
 
@@ -129,6 +131,7 @@ final class Industriesalon_Steuerung {
                 '<p>' . esc_html__('Beispiele für technische Einbindung in Seiten/Theme:', 'industriesalon-steuerung') . '</p>' .
                 '<p><code>[iss_field key="contact.phone"]</code></p>' .
                 '<p><code>[iss_hours type="public"]</code></p>' .
+                '<p><code>[iss_mission_statement title="Mission Statement" heading="Unsere Haltung"]</code></p>' .
                 '<p><code>&lt;?php echo Industriesalon_Steuerung::instance()->render_contact(); ?&gt;</code></p>',
         ]);
 
@@ -201,6 +204,12 @@ final class Industriesalon_Steuerung {
             'sanitize_callback' => [$this, 'sanitize_faq'],
             'default'           => $this->default_faq(),
         ]);
+
+        register_setting('iss_control_group', self::OPTION_MISSION_STATEMENT, [
+            'type'              => 'array',
+            'sanitize_callback' => [$this, 'sanitize_mission_statement'],
+            'default'           => $this->default_mission_statement(),
+        ]);
     }
 
     public function render_admin_page(): void {
@@ -215,6 +224,7 @@ final class Industriesalon_Steuerung {
         $accessibility = get_option(self::OPTION_ACCESSIBILITY, $this->default_accessibility());
         $prices = get_option(self::OPTION_PRICES, $this->default_prices());
         $faq = get_option(self::OPTION_FAQ, $this->default_faq());
+        $mission_statement = get_option(self::OPTION_MISSION_STATEMENT, $this->default_mission_statement());
         $days = $this->days();
         ?>
         <div class="wrap iss-admin">
@@ -231,6 +241,7 @@ final class Industriesalon_Steuerung {
                 <a href="#iss-prices" class="nav-tab"><?php esc_html_e('Preise', 'industriesalon-steuerung'); ?></a>
                 <a href="#iss-accessibility" class="nav-tab"><?php esc_html_e('Barrierefreiheit', 'industriesalon-steuerung'); ?></a>
                 <a href="#iss-faq" class="nav-tab"><?php esc_html_e('Häufige Fragen', 'industriesalon-steuerung'); ?></a>
+                <a href="#iss-mission-statement" class="nav-tab"><?php esc_html_e('Mission Statement', 'industriesalon-steuerung'); ?></a>
                 <a href="#iss-tools" class="nav-tab"><?php esc_html_e('Werkzeuge', 'industriesalon-steuerung'); ?></a>
             </nav>
 
@@ -380,6 +391,14 @@ final class Industriesalon_Steuerung {
                     </p>
                 </section>
 
+                <section id="iss-mission-statement" class="iss-panel" hidden>
+                    <h2><?php esc_html_e('Mission Statement', 'industriesalon-steuerung'); ?></h2>
+                    <p class="iss-panel__hint"><?php esc_html_e('Kurztext für die redaktionelle Selbstbeschreibung auf Seiten und in Inhaltsblöcken.', 'industriesalon-steuerung'); ?></p>
+                    <div class="iss-grid iss-grid--1">
+                        <?php $this->textarea_field(self::OPTION_MISSION_STATEMENT, 'content', __('Mission Statement', 'industriesalon-steuerung'), $mission_statement['content'] ?? '', 8, true, '', __('Kurz und prägnant formulieren.', 'industriesalon-steuerung')); ?>
+                    </div>
+                </section>
+
                 <?php submit_button(__('Änderung speichern', 'industriesalon-steuerung')); ?>
             </form>
 
@@ -520,6 +539,9 @@ final class Industriesalon_Steuerung {
                 case 'faq':
                     update_option($option_name, $this->sanitize_faq($payload));
                     break;
+                case 'mission_statement':
+                    update_option($option_name, $this->sanitize_mission_statement($payload));
+                    break;
             }
         }
 
@@ -537,6 +559,7 @@ final class Industriesalon_Steuerung {
         add_shortcode('iss_contact', [$this, 'shortcode_contact']);
         add_shortcode('iss_prices', [$this, 'shortcode_prices']);
         add_shortcode('iss_faq', [$this, 'shortcode_faq']);
+        add_shortcode('iss_mission_statement', [$this, 'shortcode_mission_statement']);
     }
 
     public function register_blocks(): void {
@@ -600,6 +623,15 @@ final class Industriesalon_Steuerung {
                 'title' => ['type' => 'string', 'default' => ''],
             ],
         ]);
+
+        register_block_type('industriesalon/mission-statement', [
+            'api_version'     => 2,
+            'editor_script'   => 'iss-control-blocks',
+            'render_callback' => [$this, 'render_mission_statement_block'],
+            'attributes'      => [
+                'title' => ['type' => 'string', 'default' => ''],
+            ],
+        ]);
     }
 
     public function render_field_block(array $attributes = []): string {
@@ -625,6 +657,13 @@ final class Industriesalon_Steuerung {
 
     public function render_faq_block(array $attributes = []): string {
         return $this->render_faq((string) ($attributes['title'] ?? ''));
+    }
+
+    public function render_mission_statement_block(array $attributes = []): string {
+        return $this->render_mission_statement(
+            (string) ($attributes['title'] ?? ''),
+            (string) ($attributes['heading'] ?? '')
+        );
     }
 
     public function shortcode_field(array $atts): string {
@@ -660,6 +699,14 @@ final class Industriesalon_Steuerung {
     public function shortcode_faq(array $atts): string {
         $atts = shortcode_atts(['title' => ''], $atts, 'iss_faq');
         return $this->render_faq((string) $atts['title']);
+    }
+
+    public function shortcode_mission_statement(array $atts): string {
+        $atts = shortcode_atts([
+            'title'   => '',
+            'heading' => '',
+        ], $atts, 'iss_mission_statement');
+        return $this->render_mission_statement((string) $atts['title'], (string) $atts['heading']);
     }
 
     public function render_field(array $args): string {
@@ -865,6 +912,28 @@ final class Industriesalon_Steuerung {
                     <div class="iss-faq-item__answer"><?php echo wpautop(wp_kses_post((string) ($item['answer'] ?? ''))); ?></div>
                 </details>
             <?php endforeach; ?>
+        </div>
+        <?php
+        return (string) ob_get_clean();
+    }
+
+    public function render_mission_statement(string $title = '', string $heading = ''): string {
+        $mission_statement = get_option(self::OPTION_MISSION_STATEMENT, $this->default_mission_statement());
+        $content = trim((string) ($mission_statement['content'] ?? ''));
+        if ($content === '') {
+            return '';
+        }
+
+        ob_start();
+        ?>
+        <div class="iss-heading iss-mission-statement">
+            <?php if ($title !== '') : ?>
+                <p class="iss-kicker iss-mission-statement__title"><?php echo esc_html($title); ?></p>
+            <?php endif; ?>
+            <?php if ($heading !== '') : ?>
+                <h2 class="iss-heading__title iss-mission-statement__heading"><?php echo esc_html($heading); ?></h2>
+            <?php endif; ?>
+            <p class="iss-heading__text iss-mission-statement__text"><?php echo nl2br(esc_html($content)); ?></p>
         </div>
         <?php
         return (string) ob_get_clean();
@@ -1159,6 +1228,13 @@ final class Industriesalon_Steuerung {
         return ['items' => $clean];
     }
 
+    public function sanitize_mission_statement($input): array {
+        $input = is_array($input) ? $input : [];
+        return [
+            'content' => sanitize_textarea_field($input['content'] ?? ''),
+        ];
+    }
+
     private function sanitize_time_value($value): string {
         $value = sanitize_text_field((string) $value);
         if (preg_match('/^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/', $value, $m)) {
@@ -1198,6 +1274,7 @@ final class Industriesalon_Steuerung {
             'accessibility' => get_option(self::OPTION_ACCESSIBILITY, $this->default_accessibility()),
             'prices'        => get_option(self::OPTION_PRICES, $this->default_prices()),
             'faq'           => get_option(self::OPTION_FAQ, $this->default_faq()),
+            'mission_statement' => get_option(self::OPTION_MISSION_STATEMENT, $this->default_mission_statement()),
         ];
     }
 
@@ -1333,6 +1410,10 @@ final class Industriesalon_Steuerung {
 
     private function default_faq(): array {
         return ['items' => []];
+    }
+
+    private function default_mission_statement(): array {
+        return ['content' => ''];
     }
 }
 

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Industriesalon Notices
  * Description: Zentrale Hinweise für Startseiten-Banner, Website-Hinweise und Admin-Hinweise.
- * Version: 0.1.2
+ * Version: 0.1.1
  * Author: OpenAI
  * Text Domain: industriesalon-notices
  */
@@ -12,7 +12,7 @@ if (! defined('ABSPATH')) {
 }
 
 final class Industriesalon_Notices {
-    private const VERSION = '0.1.2';
+    private const VERSION = '0.1.1';
     private const POST_TYPE = 'iss_notice';
     private const NONCE = 'iss_notice_meta_nonce';
 
@@ -179,8 +179,6 @@ final class Industriesalon_Notices {
     public function render_content_box(\WP_Post $post): void {
         wp_nonce_field('iss_notice_save_meta', self::NONCE);
 
-        $kicker           = $this->get_meta($post->ID, 'iss_kicker');
-        $kicker_style     = $this->get_meta($post->ID, 'iss_kicker_style', 'default');
         $headline          = $this->get_meta($post->ID, 'iss_headline');
         $badge             = $this->get_meta($post->ID, 'iss_badge', 'none');
         $link_type         = $this->get_meta($post->ID, 'iss_link_type', 'none');
@@ -196,22 +194,6 @@ final class Industriesalon_Notices {
             'order'          => 'ASC',
         ]);
         ?>
-        <p>
-            <label for="iss_kicker"><strong><?php esc_html_e('Kicker', 'industriesalon-notices'); ?></strong></label><br>
-            <input type="text" class="widefat" id="iss_kicker" name="iss_kicker" value="<?php echo esc_attr($kicker); ?>">
-            <span class="description"><?php esc_html_e('Kurze Zeile über der Überschrift. Leer lassen, wenn kein Kicker nötig ist.', 'industriesalon-notices'); ?></span>
-        </p>
-
-        <p>
-            <label for="iss_kicker_style"><strong><?php esc_html_e('Kicker-Stil', 'industriesalon-notices'); ?></strong></label><br>
-            <select class="widefat" id="iss_kicker_style" name="iss_kicker_style">
-                <?php foreach ($this->kicker_style_options() as $value => $label) : ?>
-                    <option value="<?php echo esc_attr($value); ?>" <?php selected($kicker_style, $value); ?>><?php echo esc_html($label); ?></option>
-                <?php endforeach; ?>
-            </select>
-            <span class="description"><?php esc_html_e('Erzeugt Klassen wie iss-kicker oder iss-kicker iss-kicker--light.', 'industriesalon-notices'); ?></span>
-        </p>
-
         <p>
             <label for="iss_headline"><strong><?php esc_html_e('Überschrift', 'industriesalon-notices'); ?></strong></label><br>
             <input type="text" class="widefat" id="iss_headline" name="iss_headline" value="<?php echo esc_attr($headline); ?>">
@@ -372,7 +354,6 @@ final class Industriesalon_Notices {
         }
 
         $text_fields = [
-            'iss_kicker',
             'iss_headline',
             'iss_link_label',
         ];
@@ -383,9 +364,8 @@ final class Industriesalon_Notices {
         }
 
         $select_fields = [
-            'iss_kicker_style' => array_keys($this->kicker_style_options()),
-            'iss_badge'        => array_keys($this->badge_options()),
-            'iss_link_type'    => array_keys($this->link_type_options()),
+            'iss_badge'     => array_keys($this->badge_options()),
+            'iss_link_type' => array_keys($this->link_type_options()),
             'iss_area'      => array_keys($this->area_options()),
             'iss_scope'     => array_keys($this->scope_options()),
             'iss_audience'  => array_keys($this->audience_options()),
@@ -602,8 +582,6 @@ final class Industriesalon_Notices {
     }
 
     public function render_front_notice(\WP_Post $notice): string {
-        $kicker     = get_post_meta($notice->ID, 'iss_kicker', true);
-        $kicker_style = (string) get_post_meta($notice->ID, 'iss_kicker_style', true);
         $headline   = get_post_meta($notice->ID, 'iss_headline', true);
         $badge      = get_post_meta($notice->ID, 'iss_badge', true);
         $link_label = get_post_meta($notice->ID, 'iss_link_label', true);
@@ -613,10 +591,6 @@ final class Industriesalon_Notices {
         ?>
         <div class="iss-notice iss-notice--<?php echo esc_attr(get_post_meta($notice->ID, 'iss_area', true)); ?>">
             <div class="iss-notice__inner">
-                <?php if ($kicker) : ?>
-                    <?php echo $this->render_kicker_markup((string) $kicker, $kicker_style); ?>
-                <?php endif; ?>
-
                 <?php if ($badge && $badge !== 'none') : ?>
                     <p class="iss-notice__badge"><?php echo esc_html($this->badge_options()[$badge] ?? $badge); ?></p>
                 <?php endif; ?>
@@ -633,29 +607,9 @@ final class Industriesalon_Notices {
                     </p>
                 <?php endif; ?>
             </div>
-        </div>
+        </aside>
         <?php
         return (string) ob_get_clean();
-    }
-
-    private function render_kicker_markup(string $text, string $style = 'default'): string {
-        $text = trim($text);
-        if ($text === '') {
-            return '';
-        }
-
-        $classes = ['iss-kicker'];
-        if ($style !== '' && $style !== 'default') {
-            $classes[] = 'iss-kicker--' . sanitize_html_class($style);
-        }
-
-        $class_attr = implode(' ', array_unique($classes));
-
-        return sprintf(
-            "<!-- wp:paragraph {\"className\":\"%1$s\"} -->\n<p class=\"%1$s\">%2$s</p>\n<!-- /wp:paragraph -->",
-            esc_attr($class_attr),
-            esc_html($text)
-        );
     }
 
     private function matches_schedule(int $post_id, int $now): bool {
@@ -854,19 +808,6 @@ final class Industriesalon_Notices {
             return;
         }
         update_post_meta($post_id, $key, $value);
-    }
-
-    private function kicker_style_options(): array {
-        return [
-            'default' => __('Standard', 'industriesalon-notices'),
-            'light'   => __('Hell', 'industriesalon-notices'),
-            'muted'   => __('Gedämpft', 'industriesalon-notices'),
-            'compact' => __('Kompakt', 'industriesalon-notices'),
-            'lg'      => __('Groß', 'industriesalon-notices'),
-            'green'   => __('Grün', 'industriesalon-notices'),
-            'blue'    => __('Blau', 'industriesalon-notices'),
-            'yellow'  => __('Gelb', 'industriesalon-notices'),
-        ];
     }
 
     private function badge_options(): array {

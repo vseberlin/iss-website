@@ -11,98 +11,207 @@ html, body, .wp-site-blocks {
    GUTENBERG OVERRIDE: 
    The cover inner container must fill the height to allow bottom alignment.
 */
-.wp-block-cover.iss-front-hero .wp-block-cover__inner-container {
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: flex-end !important; /* Move cluster to bottom */
-  align-items: flex-start !important;    /* Move cluster to left */
-  width: 100% !important;
-  height: 100% !important; /* Critical for flex-end to work */
-  min-height: 80vh !important;
-  max-width: var(--iss-content-width) !important;
-  margin: 0 auto !important;
-  padding: 0 var(--iss-container-pad) 0 !important;
-  box-sizing: border-box !important;
-  overflow: visible !important;
+.wp-site-blocks .wp-block-cover.iss-front-hero > .wp-block-cover__inner-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  width: 100%;
+  height: 100%;
+  min-height: 80vh;
+  max-width: var(--iss-content-width);
+  margin: 0 auto;
+  padding: 0 var(--iss-container-pad);
+  box-sizing: border-box;
+  overflow: visible;
 }
 
-.wp-block-cover.iss-front-hero {
-  min-height: 80vh !important;
-  height: 80vh !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow: visible !important;
-  position: relative; /* Add this line */
+.wp-site-blocks .wp-block-cover.iss-front-hero {
+  min-height: 80vh;
+  height: 80vh;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  position: relative;
 }
 
 /* =====================================================================
    FRONT PAGE NOTICES (Overlapping Card)
    --------------------------------------------------------------------- */
 
-.iss-front-banner-slot {
-  position: absolute; /* Changed from relative */
-  bottom: 0; /* Align banner's bottom with hero's bottom */
-  transform: translateY(33.33%); /* Push down by 1/3 of its own height */
-  width: 100% !important;
-  max-width: 460px !important;
-  margin-left: 0 !important; /* Keep original centering */
+.iss-front-page-main .wp-block-group.iss-front-banner-slot.has-global-padding.is-layout-constrained.wp-block-group-is-layout-constrained {
+  position: relative;
+  transform: translateY(10%);
+  width: 100%;
+  max-width: 460px;
+  margin-left: 10px !important;
   margin-right: auto !important;
-  z-index: 50 !important;
+  margin-bottom: -100px;
+  z-index: 999;
 }
 
 @media (max-width: 782px) {
-  .iss-front-banner-slot {
-    max-width: 90% !important;
-    /* Adjust transform for smaller screens if needed, but 33.33% is relative to its own height */
+  .iss-front-page-main .wp-block-group.iss-front-banner-slot.has-global-padding.is-layout-constrained.wp-block-group-is-layout-constrained {
+    max-width: 90%;
+    margin-left: 10px !important;
   }
 }
 
-.iss-front-banner-slot .iss-notice__inner {
+.iss-front-page-main .iss-front-banner-slot .iss-notice__inner {
   display: grid;
   gap: 0.75rem;
   padding: 2.5rem 3rem;
-  background: white !important;
-  color: #1e1e1e !important;
-  border-radius: 12px !important;
-  border: 1px solid rgba(30, 30, 30, 0.1) !important;
-  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.3) !important;
-  border-left: 10px solid #e81d25 !important;
+  background: white;
+  color: #1e1e1e;
+  border: 1px solid rgba(30, 30, 30, 0.1);
+  border-left: 10px solid #e81d25;
+  border-radius: 12px;
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.3);
 }
 
 /* =====================================================================
    FRONT PAGE HERO CONTENT (Title & Cluster)
    ===================================================================== */
 
-.iss-front-hero__shell {
-  width: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-start !important;
-  gap: 2.5rem !important;
-  margin-top: auto !important; /* Force cluster to bottom */
-  margin-bottom: 2.5rem !important; /* Space from the absolute bottom edge of 80vh */
+.iss-front-page-main .iss-front-hero__shell.has-global-padding.is-layout-constrained.wp-block-group-is-layout-constrained {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2.5rem;
+  margin-top: 0;
+  margin-bottom: 2.5rem;
+  padding-top: 0;
+  overflow: visible;
 }
 
-.iss-front-hero .iss-control-field--general-tagline {
-  max-width: 18ch !important;
-  margin: 0 !important;
-  font-size: 2.5rem !important;
-  font-weight: 700 !important;
-  line-height: 1 !important;
-  color: white !important;
-  text-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+.iss-front-page-main .iss-front-hero__content.has-global-padding.is-layout-constrained.wp-block-group-is-layout-constrained {
+  padding-top: 0;
+  padding-left: 1px;
+  transform: translateY(10px);
+}
+
+.iss-front-page-main .iss-front-hero .iss-control-field--general-tagline {
+  max-width: 18ch;
+  margin: 0 0 0 4rem;
+  font-size: 3.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: white;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 @media (min-width: 782px) {
-  .iss-front-hero .iss-control-field--general-tagline {
-    font-size: 4.8rem !important;
+  .iss-front-page-main .iss-front-hero .iss-control-field--general-tagline {
+    font-size: 3.5rem;
+     margin-left: 6rem !important;
   }
 }
 
+@media (max-width: 782px) {
+  .iss-front-page-main .iss-front-hero__content.has-global-padding.is-layout-constrained.wp-block-group-is-layout-constrained {
+    padding-top: 10px;
+    padding-left: 6rem;
+  }
+}
+
+
 /* Clearance for the section below */
 #programm {
-  padding-top: 200px !important;
-  background: white !important;
+  padding-top: 200px;
+  background: white;
   position: relative;
   z-index: 10;
+}
+
+.iss-mission-statement {
+    margin-left: 750px !important;
+    margin-right: auto !important;
+    /* Ensure no parent constraints are centering it */
+}
+
+
+/* --- HERO SECTION LAYOUT --- */
+@media (min-width: 1024px) {
+  .iss-front-hero__shell {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    max-width: 1440px !important;
+    margin: 0 auto !important;
+    min-height: 600px !important;
+    overflow: visible !important;
+  }
+
+  .iss-front-banner-slot {
+    order: 1 !important;
+    width: 460px !important;
+    flex-shrink: 0 !important;
+    margin-top: 15rem !important;
+    z-index: 99 !important;
+  }
+
+  .iss-front-hero__content {
+    order: 2 !important;
+    flex: 1 !important;
+    margin-left: 1px !important;
+    margin-top: 1rem !important;
+    z-index: 10 !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  .iss-front-hero__shell {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    padding-top: 100px !important;
+    height: auto !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  .iss-front-hero__content, 
+  .iss-front-banner-slot {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 1.5rem !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  .iss-front-banner-slot {
+    order: 2 !important;
+    margin-top: 2rem !important;
+    margin-bottom: 3rem !important;
+  }
+}
+
+/* --- MISSION STATEMENT BLOCK --- */
+.iss-mission-statement {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  width: 100% !important;
+  max-width: 42rem !important;
+  padding: 0 1.5rem !important;
+  box-sizing: border-box !important;
+}
+
+@media (min-width: 1440px) {
+  .iss-mission-statement {
+    margin-left: 750px !important;
+    margin-right: auto !important;
+    padding-left: 0 !important;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .iss-mission-statement {
+    margin-left: 200px !important;
+    margin-right: auto !important;
+    padding-left: 0 !important;
+  }
 }

@@ -1,102 +1,3 @@
-/*
-Theme Name: industriesalon
-Theme URI: http://192.168.2.31:8082/
-Author: Industriesalon
-Author URI: http://192.168.2.31:8082/
-Description: Base block theme for Industriesalon Schöneweide.
-Version: 1.1.0
-Requires at least: 6.6
-Tested up to: 6.8
-Requires PHP: 8.2
-Text Domain: industriesalon
-Tags: block-theme, full-site-editing, custom-colors, custom-spacing, editor-style
-*/
-
-:root {
-  /* Core Colors - Mapped to theme.json presets */
-  --iss-red: #e81d25;
-  --iss-white: #f9f9fa;
-  --iss-black: #1e1e1e;
-  --iss-grey: #c0b8b5;
-  --iss-green: #579e7d;
-  --iss-blue: #869fba;
-  --iss-yellow: #ebbc1e;
-  --iss-brown: #753a18;
-
-  /* Layout & Spacing */
-  --iss-content-width: 1720px;
-  --iss-container-pad: 1.25rem;
-  --iss-gap: 1.5rem;
-  --iss-header-height: 5.5rem;
-
-  /* Border & Radius */
-  --iss-border: rgba(30, 30, 30, 0.14);
-  --iss-radius-sm: 8px;
-  --iss-radius-md: 16px;
-  --iss-radius-lg: 24px;
-  --iss-radius-pill: 999px;
-
-  /* Effects */
-  --iss-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
-  --iss-transition: 0.2s ease;
-}
-
-/* Backward compatibility for old variable names during transition */
-:root {
-  --is--color-red: var(--iss-red);
-  --is--color-white: var(--iss-white);
-  --is--color-black: var(--iss-black);
-  --is--color-grey: var(--iss-grey);
-  --is--color-green: var(--iss-green);
-  --is--color-blue: var(--iss-blue);
-  --is--color-yellow: var(--iss-yellow);
-  --is--color-brown: var(--iss-brown);
-  --is--radius-sm: var(--iss-radius-sm);
-  --is--radius-md: var(--iss-radius-md);
-  --is--radius-lg: var(--iss-radius-lg);
-  --is--radius-pill: var(--iss-radius-pill);
-  --is--transition: var(--iss-transition);
-  --is--container-pad: var(--iss-container-pad);
-  --is--content-width: var(--iss-content-width);
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  background: var(--iss-white);
-  color: var(--iss-black);
-  font-family: "IBM Plex Sans", system-ui, sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
-}
-
-/* Base Container */
-.iss-container {
-  width: 100%;
-  max-width: var(--iss-content-width);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--iss-container-pad);
-  padding-right: var(--iss-container-pad);
-}
-
-.section {
-  padding-top: 3rem;
-  padding-bottom: 3rem;
-}
-
-@media (min-width: 782px) {
-  .section {
-    padding-top: 5rem;
-    padding-bottom: 5rem;
-  }
-}
-
 /* =====================================================================
    KICKER SYSTEM (Reusable structural block)
    ===================================================================== */
@@ -195,7 +96,7 @@ body {
   margin: 0;
   font-size: 1rem;
   color: var(--iss-grey);
-  
+  max-width: 48ch;
 }
 
 /* alignment helpers */

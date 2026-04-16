@@ -27,11 +27,8 @@ services:
       WORDPRESS_DB_PASSWORD: wp_pass
     volumes:
       - ./wp:/var/www/html
-      - ./plugins/saas-api:/var/www/html/wp-content/plugins/saas-api
-      - ./plugins/saas-api-exp:/var/www/html/wp-content/plugins/saas-api-exp
-      - ./plugins/industriesalon-notices:/var/www/html/wp-content/plugins/industriesalon-notices
-      - ./themes/iss-theme:/var/www/html/wp-content/themes/iss-theme
-      - ./themes/industriesalon:/var/www/html/wp-content/themes/industriesalon
+      - ./plugins:/var/www/html/wp-content/plugins
+      - ./themes:/var/www/html/wp-content/themes
       - ./php.ini:/usr/local/etc/php/conf.d/uploads.ini
       - ./apache/uploads.conf:/etc/apache2/conf-enabled/uploads.conf
     extra_hosts:
@@ -53,11 +50,8 @@ services:
       WORDPRESS_DB_PASSWORD: wp_pass
     volumes:
       - ./wp:/var/www/html
-      - ./plugins/saas-api:/var/www/html/wp-content/plugins/saas-api
-      - ./plugins/saas-api-exp:/var/www/html/wp-content/plugins/saas-api-exp
-      - ./plugins/industriesalon-notices:/var/www/html/wp-content/plugins/industriesalon-notices
-      - ./themes/iss-theme:/var/www/html/wp-content/themes/iss-theme
-      - ./themes/industriesalon:/var/www/html/wp-content/themes/industriesalon
+      - ./plugins:/var/www/html/wp-content/plugins
+      - ./themes:/var/www/html/wp-content/themes
       - ./php.ini:/usr/local/etc/php/conf.d/uploads.ini
 
   phpmyadmin:
