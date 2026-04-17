@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.6 - 2026-04-17
+
+- Added stacked visit-info block output with editable visitor card fields.
+- Added two-column theme hooks and social/address rendering for the visitor card.
+- Exposed visit-info controls in the block editor for labels, links, and visibility.
+
 ## 0.2.5 - 2026-04-17
 
 - Added `industriesalon/visit-info` block and German-only visit info flow.

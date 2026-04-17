@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Industriesalon Steuerung
  * Description: Zentrale Seiteneinstellungen für Industriesalon: Öffnungszeiten, Bürozeiten, Kontakt, Adresse, Mission Statement, Barrierefreiheit, FAQ und Preise mit wiederverwendbarer Ausgabe per PHP, Shortcodes und Gutenberg-Blöcke.
- * Version: 0.2.5
+ * Version: 0.2.6
  * Author: OpenAI
  * Text Domain: industriesalon-steuerung
  */
@@ -12,7 +12,7 @@ if (! defined('ABSPATH')) {
 }
 
 final class Industriesalon_Steuerung {
-    private const VERSION = '0.2.5';
+    private const VERSION = '0.2.6';
     private const CAPABILITY = 'manage_iss_controls';
 
     private const OPTION_GENERAL = 'iss_control_general';
@@ -605,12 +605,30 @@ final class Industriesalon_Steuerung {
             'api_version'     => 2,
             'editor_script'   => 'iss-control-blocks',
             'render_callback' => [$this, 'render_visit_info_block'],
+            'supports'        => [
+                'align' => ['wide', 'full'],
+                'html'  => false,
+            ],
             'attributes'      => [
+                'align'              => ['type' => 'string', 'default' => ''],
                 'show_status'        => ['type' => 'boolean', 'default' => true],
                 'show_museum_hours'  => ['type' => 'boolean', 'default' => true],
                 'show_office_hours'   => ['type' => 'boolean', 'default' => true],
                 'show_exceptions'    => ['type' => 'boolean', 'default' => false],
                 'variant'            => ['type' => 'string', 'default' => 'compact'],
+                'kicker'             => ['type' => 'string', 'default' => ''],
+                'title'              => ['type' => 'string', 'default' => ''],
+                'primary_label'      => ['type' => 'string', 'default' => 'Einfach vorbeikommen'],
+                'primary_url'        => ['type' => 'string', 'default' => ''],
+                'show_upcoming'      => ['type' => 'boolean', 'default' => true],
+                'upcoming_label'     => ['type' => 'string', 'default' => 'Demnächst'],
+                'upcoming_url'       => ['type' => 'string', 'default' => ''],
+                'tour_label'         => ['type' => 'string', 'default' => 'Individuell geführt oder bei einer Tour dabei sein? Auch besondere Führungen für Kinder und Familien. Planen Sie einen Betriebsausflug? Schauen Sie mal rein.'],
+                'tour_url'           => ['type' => 'string', 'default' => ''],
+                'room_label'         => ['type' => 'string', 'default' => 'Feier, Treffen, Party oder Vortrag? Sie brauchen Raum? Wir haben etwas Passendes'],
+                'room_url'           => ['type' => 'string', 'default' => ''],
+                'address_label'      => ['type' => 'string', 'default' => 'Sie finden uns am Spreeufer.'],
+                'show_social'        => ['type' => 'boolean', 'default' => true],
             ],
         ]);
 
@@ -848,6 +866,8 @@ final class Industriesalon_Steuerung {
     }
 
     public function render_visit_info(array $attributes = []): string {
+        $align = isset($attributes['align']) ? (string) $attributes['align'] : '';
+        $align_class = in_array($align, ['wide', 'full'], true) ? ' align' . $align : '';
         $variant = isset($attributes['variant']) ? (string) $attributes['variant'] : 'compact';
         if (! in_array($variant, ['compact', 'full', 'inline'], true)) {
             $variant = 'compact';
@@ -858,29 +878,48 @@ final class Industriesalon_Steuerung {
         $show_office = array_key_exists('show_office_hours', $attributes) ? (bool) $attributes['show_office_hours'] : true;
         $show_exceptions = array_key_exists('show_exceptions', $attributes) ? (bool) $attributes['show_exceptions'] : false;
 
-        $parts = [];
+        $left_parts = [];
         if ($show_status) {
-            $parts[] = $this->render_visit_status('museum');
+            $left_parts[] = $this->render_visit_status('museum');
         }
         if ($show_museum) {
-            $parts[] = $this->render_visit_hours('museum', $variant);
+            $left_parts[] = $this->render_visit_hours('museum', $variant, '', false);
         }
         if ($show_office) {
-            $parts[] = $this->render_visit_hours('office', $variant);
+            $left_parts[] = $this->render_visit_hours('office', $variant, '', false);
         }
         if ($show_exceptions) {
-            $parts[] = $this->render_visit_exceptions('museum');
+            $left_parts[] = $this->render_visit_exceptions('museum');
         }
 
-        $parts = array_filter($parts, static function ($part) {
+        $left_parts = array_filter($left_parts, static function ($part) {
             return trim((string) $part) !== '';
         });
 
-        if (empty($parts)) {
+        $card = $this->render_visit_card($attributes);
+
+        if (empty($left_parts) && $card === '') {
             return '<div class="iss-visit-info iss-visit-info--empty">' . esc_html__('Keine Zeiten eingetragen.', 'industriesalon-steuerung') . '</div>';
         }
 
-        return '<div class="iss-visit-info iss-visit-info--' . esc_attr(sanitize_html_class($variant)) . '">' . implode('', $parts) . '</div>';
+        $left_html = '';
+        if (! empty($left_parts)) {
+            $left_html = '<div class="iss-visit-info__col iss-visit-info__col--hours">' . implode('', $left_parts) . '</div>';
+        }
+
+        $right_html = '';
+        if ($card !== '') {
+            $right_html = '<div class="iss-visit-info__col iss-visit-info__col--card">' . $card . '</div>';
+        }
+
+        $body = '';
+        if ($left_html !== '' && $right_html !== '') {
+            $body = '<div class="iss-visit-info__grid">' . $left_html . $right_html . '</div>';
+        } else {
+            $body = $left_html . $right_html;
+        }
+
+        return '<div class="iss-visit-info iss-visit-info--' . esc_attr(sanitize_html_class($variant)) . $align_class . '">' . $body . '</div>';
     }
 
     public function render_visit_status(string $type = 'museum'): string {
@@ -892,7 +931,7 @@ final class Industriesalon_Steuerung {
         return '<p class="iss-visit-status iss-visit-status--' . esc_attr(sanitize_html_class((string) ($resolved['status'] ?? 'closed'))) . '">' . esc_html((string) ($resolved['label'] ?? '')) . '</p>';
     }
 
-    public function render_visit_hours(string $type = 'museum', string $variant = 'compact', string $title = ''): string {
+    public function render_visit_hours(string $type = 'museum', string $variant = 'compact', string $title = '', bool $show_heading = true): string {
         $type = $this->normalize_visit_type($type);
         $variant = in_array($variant, ['compact', 'full', 'inline'], true) ? $variant : 'compact';
         $group = $this->visit_group_for_type($this->get_visit_schedule(), $type);
@@ -913,7 +952,9 @@ final class Industriesalon_Steuerung {
         ob_start();
         ?>
         <section class="iss-visit-hours iss-visit-hours--<?php echo esc_attr($variant); ?> iss-visit-hours--<?php echo esc_attr($type); ?>">
-            <h3 class="iss-visit-hours__title"><?php echo esc_html($heading); ?></h3>
+            <?php if ($show_heading) : ?>
+                <h3 class="iss-visit-hours__title"><?php echo esc_html($heading); ?></h3>
+            <?php endif; ?>
             <?php if ($variant === 'compact') : ?>
                 <p class="iss-visit-hours__summary"><?php echo esc_html($summary !== '' ? $summary : __('Keine Zeiten eingetragen.', 'industriesalon-steuerung')); ?></p>
             <?php else : ?>
@@ -940,6 +981,62 @@ final class Industriesalon_Steuerung {
         return (string) ob_get_clean();
     }
 
+    public function render_visit_card(array $attributes = []): string {
+        $kicker = trim((string) ($attributes['kicker'] ?? ''));
+        $title = trim((string) ($attributes['title'] ?? ''));
+        $primary_label = trim((string) ($attributes['primary_label'] ?? ''));
+        $primary_url = trim((string) ($attributes['primary_url'] ?? ''));
+        $show_upcoming = ! empty($attributes['show_upcoming']);
+        $upcoming_label = trim((string) ($attributes['upcoming_label'] ?? ''));
+        $upcoming_url = trim((string) ($attributes['upcoming_url'] ?? ''));
+        $tour_label = trim((string) ($attributes['tour_label'] ?? ''));
+        $tour_url = trim((string) ($attributes['tour_url'] ?? ''));
+        $room_label = trim((string) ($attributes['room_label'] ?? ''));
+        $room_url = trim((string) ($attributes['room_url'] ?? ''));
+        $address_label = trim((string) ($attributes['address_label'] ?? ''));
+        $show_social = array_key_exists('show_social', $attributes) ? (bool) $attributes['show_social'] : true;
+
+        $social = $this->visit_social_links();
+        $address = trim($address_label !== '' ? $address_label : __('Sie finden uns am Spreeufer.', 'industriesalon-steuerung'));
+        $full_address = trim($this->compose_full_address());
+
+        $parts = [];
+        if ($kicker !== '') {
+            $parts[] = '<p class="iss-visit-card__kicker iss-kicker">' . esc_html($kicker) . '</p>';
+        }
+        if ($title !== '') {
+            $parts[] = '<h3 class="iss-visit-card__title">' . esc_html($title) . '</h3>';
+        }
+        if ($primary_label !== '') {
+            $parts[] = $this->visit_card_button($primary_label, $primary_url, 'iss-visit-card__button--primary');
+        }
+        if ($show_upcoming && $upcoming_label !== '') {
+            $parts[] = $this->visit_card_button($upcoming_label, $upcoming_url, 'iss-visit-card__button--secondary', true);
+        }
+        if ($tour_label !== '') {
+            $parts[] = $this->visit_card_button($tour_label, $tour_url, 'iss-visit-card__button--secondary');
+        }
+        if ($room_label !== '') {
+            $parts[] = $this->visit_card_button($room_label, $room_url, 'iss-visit-card__button--secondary');
+        }
+        if ($address !== '' || $full_address !== '') {
+            $parts[] = $this->visit_card_address($address, $full_address);
+        }
+        if ($show_social && $social !== '') {
+            $parts[] = $social;
+        }
+
+        $parts = array_filter($parts, static function ($part) {
+            return trim((string) $part) !== '';
+        });
+
+        if (empty($parts)) {
+            return '';
+        }
+
+        return '<article class="iss-visit-card">' . implode('', $parts) . '</article>';
+    }
+
     public function render_visit_exceptions(string $type = 'museum'): string {
         $type = $this->normalize_visit_type($type);
         $list = $this->get_relevant_visit_exceptions($type);
@@ -962,6 +1059,97 @@ final class Industriesalon_Steuerung {
         </section>
         <?php
         return (string) ob_get_clean();
+    }
+
+    private function visit_card_button(string $label, string $url, string $class = '', bool $allow_placeholder = false): string {
+        if ($label === '') {
+            return '';
+        }
+
+        $base_class = 'iss-visit-card__button';
+        if ($class !== '') {
+            $base_class .= ' ' . $class;
+        }
+
+        if ($url !== '') {
+            return '<a class="' . esc_attr($base_class) . '" href="' . esc_url($url) . '">' . esc_html($label) . '</a>';
+        }
+
+        if ($allow_placeholder) {
+            return '<span class="' . esc_attr($base_class . ' iss-visit-card__button--placeholder') . '">' . esc_html($label) . '</span>';
+        }
+
+        return '';
+    }
+
+    private function visit_card_address(string $label, string $full_address): string {
+        $maps = get_option(self::OPTION_MAPS, $this->default_maps());
+        $maps_url = isset($maps['google_maps_url']) ? (string) $maps['google_maps_url'] : '';
+
+        ob_start();
+        ?>
+        <div class="iss-visit-card__address">
+            <p class="iss-visit-card__address-lead"><?php echo esc_html($label); ?></p>
+            <?php if ($full_address !== '') : ?>
+                <address class="iss-visit-card__address-value"><?php echo esc_html($full_address); ?></address>
+            <?php endif; ?>
+            <?php if ($maps_url !== '') : ?>
+                <a class="iss-visit-card__map-link" href="<?php echo esc_url($maps_url); ?>" target="_blank" rel="noopener noreferrer">
+                    <?php esc_html_e('Karte öffnen', 'industriesalon-steuerung'); ?>
+                </a>
+            <?php endif; ?>
+        </div>
+        <?php
+        return (string) ob_get_clean();
+    }
+
+    private function visit_social_links(): string {
+        $contact = get_option(self::OPTION_CONTACT, $this->default_contact());
+        $items = [];
+
+        $socials = [
+            'instagram' => [
+                'label' => 'Instagram',
+                'url'   => (string) ($contact['instagram'] ?? ''),
+            ],
+            'facebook' => [
+                'label' => 'Facebook',
+                'url'   => (string) ($contact['facebook'] ?? ''),
+            ],
+            'website' => [
+                'label' => __('Website', 'industriesalon-steuerung'),
+                'url'   => (string) ($contact['website'] ?? ''),
+            ],
+        ];
+
+        foreach ($socials as $key => $item) {
+            $url = trim((string) ($item['url'] ?? ''));
+            if ($url === '') {
+                continue;
+            }
+            $label = (string) ($item['label'] ?? $key);
+            $items[] = '<li class="iss-visit-card__social-item iss-visit-card__social-item--' . esc_attr($key) . '"><a href="' . esc_url($url) . '" target="_blank" rel="noopener noreferrer">' . $this->visit_social_icon($key) . '<span>' . esc_html($label) . '</span></a></li>';
+        }
+
+        if (empty($items)) {
+            return '';
+        }
+
+        return '<div class="iss-visit-card__social"><p class="iss-visit-card__social-lead">' . esc_html__('Bleiben Sie auf dem Laufenden – folgen Sie uns.', 'industriesalon-steuerung') . '</p><ul class="iss-visit-card__social-list">' . implode('', $items) . '</ul></div>';
+    }
+
+    private function visit_social_icon(string $key): string {
+        $svg = '';
+
+        if ($key === 'instagram') {
+            $svg = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="4" width="16" height="16" rx="4" ry="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17" cy="7" r="1.1" fill="currentColor"/></svg>';
+        } elseif ($key === 'facebook') {
+            $svg = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14 8.5V7.1c0-.8.5-1.1 1.2-1.1H17V3h-2.5C12.1 3 11 4.2 11 6.2v2.3H9v3h2V21h3v-9.5h2.5l.5-3H14Z" fill="currentColor"/></svg>';
+        } else {
+            $svg = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 12h17M12 3.5c2.2 2 3.3 4.8 3.3 8.5s-1.1 6.5-3.3 8.5M12 3.5c-2.2 2-3.3 4.8-3.3 8.5s1.1 6.5 3.3 8.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>';
+        }
+
+        return '<span class="iss-visit-card__social-icon iss-visit-card__social-icon--' . esc_attr($key) . '">' . $svg . '</span>';
     }
 
     public function render_contact(string $title = ''): string {
