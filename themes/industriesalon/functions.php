@@ -62,6 +62,18 @@ function industriesalon_enqueue_assets(): void
         );
     }
 
+    // 4. Timeline theme tokens/classes (plugin keeps structural timeline layout)
+    $timeline_theme_rel = '/assets/css/timeline-theme.css';
+    $timeline_theme_abs = $theme_dir . $timeline_theme_rel;
+    if (file_exists($timeline_theme_abs)) {
+        wp_enqueue_style(
+            'industriesalon-timeline-theme',
+            $theme_uri . $timeline_theme_rel,
+            array('industriesalon-base'),
+            (string) filemtime($timeline_theme_abs)
+        );
+    }
+
     // Header JS
     $script_rel_path = '/assets/js/header.js';
     $script_abs_path = get_stylesheet_directory() . $script_rel_path;

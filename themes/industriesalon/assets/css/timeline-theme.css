@@ -1,0 +1,30 @@
+/* =====================================================================
+   TIMELINE THEME LAYER
+   ---------------------------------------------------------------------
+   Theme-owned visual tokens/hooks for plugin-rendered timeline markup.
+   Structural timeline layout remains in plugin CSS.
+   ===================================================================== */
+
+.iss-timeline,
+.iss-timeline-sections,
+.iss-timeline-latest {
+  --iss-tl-text: var(--iss-black, #1e1e1e);
+  --iss-tl-muted: rgba(30, 30, 30, 0.72);
+  --iss-tl-line: var(--iss-border, rgba(30, 30, 30, 0.14));
+  --iss-tl-primary: var(--iss-red, #e81d25);
+  --iss-tl-pill-bg: #f5f5f5;
+}
+
+.iss-timeline__intro-text,
+.iss-timeline__summary {
+  color: var(--iss-tl-muted);
+}
+
+.iss-timeline__btn--primary {
+  background: var(--iss-tl-primary);
+  border-color: var(--iss-tl-primary);
+}
+
+.iss-timeline__footer {
+  margin-inline: auto;
+}
