@@ -27,6 +27,8 @@ function industriesalon_enqueue_assets(): void
 {
     $theme = wp_get_theme();
     $version = $theme->get('Version');
+    $theme_dir = get_stylesheet_directory();
+    $theme_uri = get_stylesheet_directory_uri();
 
     // 1. Base / style.css (contains global variables)
     wp_enqueue_style(
@@ -36,33 +38,27 @@ function industriesalon_enqueue_assets(): void
         $version
     );
 
-    // 2. Header Styles
-    if (file_exists(get_stylesheet_directory() . '/header.css')) {
+    // 2. Header styles
+    $header_rel = '/assets/css/header.css';
+    $header_abs = $theme_dir . $header_rel;
+    if (file_exists($header_abs)) {
         wp_enqueue_style(
             'industriesalon-header',
-            get_stylesheet_directory_uri() . '/header.css',
+            $theme_uri . $header_rel,
             array('industriesalon-base'),
-            $version
+            (string) filemtime($header_abs)
         );
     }
 
-    // 3. Front Page Styles (conditional)
-    if ((is_front_page() || is_home() || is_page_template('templates/front-page.html')) && file_exists(get_stylesheet_directory() . '/front-page.css')) {
+    // 3. Front page styles (conditional)
+    $front_page_rel = '/assets/css/front-page.css';
+    $front_page_abs = $theme_dir . $front_page_rel;
+    if ((is_front_page() || is_home() || is_page_template('templates/front-page.html')) && file_exists($front_page_abs)) {
         wp_enqueue_style(
             'industriesalon-front-page',
-            get_stylesheet_directory_uri() . '/front-page.css',
+            $theme_uri . $front_page_rel,
             array('industriesalon-base'),
-            $version
-        );
-    }
-
-    // 4. Timeline Styles
-    if (file_exists(get_stylesheet_directory() . '/assets/timeline.css')) {
-        wp_enqueue_style(
-            'industriesalon-timeline',
-            get_stylesheet_directory_uri() . '/assets/timeline.css',
-            array('industriesalon-base'),
-            $version
+            (string) filemtime($front_page_abs)
         );
     }
 

@@ -318,12 +318,98 @@ function is_tours_get_slots(WP_REST_Request $request) {
     return $res;
 }
 
+function is_saas_register_frontend_assets() {
+    wp_register_style(
+        'is-tour-calendar-flatpickr',
+        plugin_dir_url(__FILE__) . 'vendor/flatpickr/flatpickr.min.css',
+        [],
+        '4.6.13'
+    );
+
+    wp_register_script(
+        'is-tour-calendar-flatpickr',
+        plugin_dir_url(__FILE__) . 'vendor/flatpickr/flatpickr.min.js',
+        [],
+        '4.6.13',
+        true
+    );
+
+    wp_register_script(
+        'is-tour-calendar-flatpickr-l10n-de',
+        plugin_dir_url(__FILE__) . 'vendor/flatpickr/l10n/de.js',
+        ['is-tour-calendar-flatpickr'],
+        '4.6.13',
+        true
+    );
+
+    wp_register_script(
+        'is-tour-calendar',
+        plugin_dir_url(__FILE__) . 'saas-api.js',
+        ['is-tour-calendar-flatpickr', 'is-tour-calendar-flatpickr-l10n-de'],
+        IS_SAAS_VERSION,
+        true
+    );
+
+    wp_register_style(
+        'is-tour-calendar',
+        plugin_dir_url(__FILE__) . 'saas-api.css',
+        [],
+        IS_SAAS_VERSION
+    );
+
+    wp_register_style(
+        'iss-timeline',
+        plugin_dir_url(__FILE__) . 'iss-timeline/timeline.css',
+        [],
+        IS_SAAS_VERSION
+    );
+
+    wp_add_inline_script(
+        'is-tour-calendar',
+        'window.IS_TOUR_CALENDAR = ' . wp_json_encode([
+            'restUrl' => rest_url('is-tours/v1/slots'),
+        ]) . ';',
+        'before'
+    );
+
+    wp_add_inline_script(
+        'is-tour-calendar',
+        'window.IS_TOUR_CALENDAR = Object.assign({}, window.IS_TOUR_CALENDAR, {' .
+        '"bookUrl": ' . wp_json_encode(rest_url('is-tours/v1/book')) .
+        '});',
+        'after'
+    );
+}
+add_action('wp_enqueue_scripts', 'is_saas_register_frontend_assets');
+
+function is_saas_enqueue_calendar_assets() {
+    if (!wp_style_is('is-tour-calendar-flatpickr', 'registered')) {
+        is_saas_register_frontend_assets();
+    }
+
+    wp_enqueue_style('is-tour-calendar-flatpickr');
+    wp_enqueue_style('is-tour-calendar');
+    wp_enqueue_script('is-tour-calendar-flatpickr');
+    wp_enqueue_script('is-tour-calendar-flatpickr-l10n-de');
+    wp_enqueue_script('is-tour-calendar');
+}
+
+function is_saas_enqueue_timeline_assets() {
+    if (!wp_style_is('iss-timeline', 'registered')) {
+        is_saas_register_frontend_assets();
+    }
+
+    wp_enqueue_style('iss-timeline');
+}
+
 	add_shortcode('is_tour_calendar', function ($atts) {
 	    $atts = shortcode_atts([
 	        'tag'          => '',
 	        'title'        => 'Termine wählen',
 	        'fallback_url' => '',
 	    ], $atts);
+
+        is_saas_enqueue_calendar_assets();
 
 	    $tag = esc_attr(strtoupper($atts['tag']));
 	    $title = esc_html($atts['title']);
@@ -382,70 +468,6 @@ function is_tours_get_slots(WP_REST_Request $request) {
 		    </section>
 	    <?php
     return ob_get_clean();
-});
-
-add_action('wp_enqueue_scripts', function () {
-    wp_enqueue_style(
-        'is-tour-calendar-flatpickr',
-        plugin_dir_url(__FILE__) . 'vendor/flatpickr/flatpickr.min.css',
-        [],
-        '4.6.13'
-    );
-
-    wp_enqueue_script(
-        'is-tour-calendar-flatpickr',
-        plugin_dir_url(__FILE__) . 'vendor/flatpickr/flatpickr.min.js',
-        [],
-        '4.6.13',
-        true
-    );
-
-    wp_enqueue_script(
-        'is-tour-calendar-flatpickr-l10n-de',
-        plugin_dir_url(__FILE__) . 'vendor/flatpickr/l10n/de.js',
-        ['is-tour-calendar-flatpickr'],
-        '4.6.13',
-        true
-    );
-
-    wp_enqueue_script(
-        'is-tour-calendar',
-        plugin_dir_url(__FILE__) . 'saas-api.js',
-        ['is-tour-calendar-flatpickr', 'is-tour-calendar-flatpickr-l10n-de'],
-        IS_SAAS_VERSION,
-        true
-    );
-
-    wp_enqueue_style(
-        'is-tour-calendar',
-        plugin_dir_url(__FILE__) . 'saas-api.css',
-        [],
-        IS_SAAS_VERSION
-    );
-
-    wp_enqueue_style(
-        'iss-timeline',
-        plugin_dir_url(__FILE__) . 'iss-timeline/timeline.css',
-        [],
-        IS_SAAS_VERSION
-    );
-
-    // Feed config to JS (internal endpoints only)
-    wp_add_inline_script(
-        'is-tour-calendar',
-        'window.IS_TOUR_CALENDAR = ' . wp_json_encode([
-            'restUrl' => rest_url('is-tours/v1/slots'),
-        ]) . ';',
-        'before'
-    );
-
-    wp_add_inline_script(
-        'is-tour-calendar',
-        'window.IS_TOUR_CALENDAR = Object.assign({}, window.IS_TOUR_CALENDAR, {' .
-        '"bookUrl": ' . wp_json_encode( rest_url('is-tours/v1/book') ) .
-        '});',
-        'after'
-    );
 });
 
 /**

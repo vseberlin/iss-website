@@ -362,6 +362,10 @@ function iss_timeline_render_items_list($items, $opts = []) {
 }
 
 function iss_timeline_render($attributes = [], $content = '', $block = null) {
+    if (function_exists('is_saas_enqueue_timeline_assets')) {
+        is_saas_enqueue_timeline_assets();
+    }
+
     $attributes = is_array($attributes) ? $attributes : [];
 
     $title = isset($attributes['title']) ? sanitize_text_field((string) $attributes['title']) : '';
@@ -410,6 +414,10 @@ function iss_timeline_render($attributes = [], $content = '', $block = null) {
 }
 
 function iss_timeline_render_latest($attributes = [], $content = '', $block = null) {
+    if (function_exists('is_saas_enqueue_timeline_assets')) {
+        is_saas_enqueue_timeline_assets();
+    }
+
     $attributes = is_array($attributes) ? $attributes : [];
 
     $title = isset($attributes['title']) ? sanitize_text_field((string) $attributes['title']) : '';
@@ -488,6 +496,10 @@ function iss_timeline_collect_future_month_options($horizon_months = 12) {
 }
 
 function iss_timeline_render_sections($attributes = [], $content = '', $block = null) {
+    if (function_exists('is_saas_enqueue_timeline_assets')) {
+        is_saas_enqueue_timeline_assets();
+    }
+
     $attributes = is_array($attributes) ? $attributes : [];
 
     $title = isset($attributes['title']) ? sanitize_text_field((string) $attributes['title']) : '';
