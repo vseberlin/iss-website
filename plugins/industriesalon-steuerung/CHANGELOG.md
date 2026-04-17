@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.3.0 - 2026-04-17
+
+- Show the next SaaS calendar item even when it is not linked to a content page.
+- Added SaaS description and date under the Demnächst label.
+
+## 0.2.9 - 2026-04-17
+
+- Wired the visitor card to the next SaaS calendar item.
+- Added title and date below the Demnächst label.
+
+## 0.2.8 - 2026-04-17
+
+- Removed the primary "Vorbeikommen" button from the visitor card.
+
+## 0.2.7 - 2026-04-17
+
+- Split the visitor card into two lighter rows with compact action buttons.
+- Kept the opening-hours table layout in the left column.
+
 ## 0.2.6 - 2026-04-17
 
 - Added stacked visit-info block output with editable visitor card fields.

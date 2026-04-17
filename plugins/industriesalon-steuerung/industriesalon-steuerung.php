@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Industriesalon Steuerung
  * Description: Zentrale Seiteneinstellungen für Industriesalon: Öffnungszeiten, Bürozeiten, Kontakt, Adresse, Mission Statement, Barrierefreiheit, FAQ und Preise mit wiederverwendbarer Ausgabe per PHP, Shortcodes und Gutenberg-Blöcke.
- * Version: 0.2.6
+ * Version: 0.3.0
  * Author: OpenAI
  * Text Domain: industriesalon-steuerung
  */
@@ -12,7 +12,7 @@ if (! defined('ABSPATH')) {
 }
 
 final class Industriesalon_Steuerung {
-    private const VERSION = '0.2.6';
+    private const VERSION = '0.3.0';
     private const CAPABILITY = 'manage_iss_controls';
 
     private const OPTION_GENERAL = 'iss_control_general';
@@ -958,14 +958,35 @@ final class Industriesalon_Steuerung {
             <?php if ($variant === 'compact') : ?>
                 <p class="iss-visit-hours__summary"><?php echo esc_html($summary !== '' ? $summary : __('Keine Zeiten eingetragen.', 'industriesalon-steuerung')); ?></p>
             <?php else : ?>
-                <ul class="iss-visit-hours__list">
-                    <?php foreach ($details as $row) : ?>
-                        <li class="iss-visit-hours__item">
-                            <span class="iss-visit-hours__days"><?php echo esc_html((string) $row['days']); ?></span>
-                            <span class="iss-visit-hours__times"><?php echo esc_html((string) $row['times']); ?></span>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
+                <div class="iss-visit-hours__table-wrap iss-open-hours__table-wrap">
+                    <?php if (! $show_heading) : ?>
+                        <h3 class="iss-visit-hours__title iss-open-hours__table-title"><?php echo esc_html($heading); ?></h3>
+                    <?php endif; ?>
+                    <figure class="wp-block-table iss-visit-hours__table iss-open-hours__table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th><?php esc_html_e('Tag', 'industriesalon-steuerung'); ?></th>
+                                    <th><?php esc_html_e('Zeit', 'industriesalon-steuerung'); ?></th>
+                                    <th><?php esc_html_e('Status', 'industriesalon-steuerung'); ?></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($this->render_visit_hours_rows($group['days'] ?? [], $type) as $row) : ?>
+                                    <tr class="<?php echo esc_attr($row['today'] ? 'is-today' : ''); ?>">
+                                        <td><?php echo esc_html((string) $row['day']); ?></td>
+                                        <td><?php echo esc_html((string) $row['time']); ?></td>
+                                        <td>
+                                            <span class="iss-visit-hours__badge iss-open-hours__badge iss-open-hours__badge--<?php echo esc_attr((string) $row['badge']); ?>">
+                                                <?php echo esc_html((string) $row['badge_label']); ?>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </figure>
+                </div>
                 <?php if (! empty($group['note'])) : ?>
                     <p class="iss-visit-hours__note"><?php echo nl2br(esc_html((string) $group['note'])); ?></p>
                 <?php endif; ?>
@@ -981,12 +1002,44 @@ final class Industriesalon_Steuerung {
         return (string) ob_get_clean();
     }
 
+    private function render_visit_hours_rows(array $days, string $type): array {
+        $rows = [];
+        $day_labels = $this->days();
+        $today_index = (int) $this->current_visit_moment()->format('N') - 1;
+
+        foreach (array_keys($day_labels) as $index => $slug) {
+            $row = wp_parse_args($days[$slug] ?? [], ['closed' => 0, 'open' => '', 'close' => '', 'note' => '']);
+            $day_date = $this->current_visit_moment();
+            $delta = $index - $today_index;
+            if ($delta !== 0) {
+                $day_date = $day_date->modify(($delta > 0 ? '+' : '') . $delta . ' days');
+            }
+
+            $resolved = $this->resolve_visit_day($this->get_visit_schedule(), $type, $day_date);
+            $is_today = $index === $today_index;
+            $badge = $resolved['status'] ?? 'closed';
+            $badge_label = $badge === 'special' ? __('heute', 'industriesalon-steuerung') : ($badge === 'open' ? __('offen', 'industriesalon-steuerung') : __('geschlossen', 'industriesalon-steuerung'));
+            if ($is_today && $badge === 'open') {
+                $badge_label = __('heute', 'industriesalon-steuerung');
+            } elseif ($is_today && $badge === 'closed') {
+                $badge_label = __('heute', 'industriesalon-steuerung');
+            }
+
+            $rows[] = [
+                'day'        => $day_labels[$slug] ?? $slug,
+                'time'       => $this->format_hours_row($row),
+                'badge'      => $badge,
+                'badge_label'=> $badge_label,
+                'today'      => $is_today,
+            ];
+        }
+
+        return $rows;
+    }
+
     public function render_visit_card(array $attributes = []): string {
         $kicker = trim((string) ($attributes['kicker'] ?? ''));
         $title = trim((string) ($attributes['title'] ?? ''));
-        $primary_label = trim((string) ($attributes['primary_label'] ?? ''));
-        $primary_url = trim((string) ($attributes['primary_url'] ?? ''));
-        $show_upcoming = ! empty($attributes['show_upcoming']);
         $upcoming_label = trim((string) ($attributes['upcoming_label'] ?? ''));
         $upcoming_url = trim((string) ($attributes['upcoming_url'] ?? ''));
         $tour_label = trim((string) ($attributes['tour_label'] ?? ''));
@@ -1007,17 +1060,24 @@ final class Industriesalon_Steuerung {
         if ($title !== '') {
             $parts[] = '<h3 class="iss-visit-card__title">' . esc_html($title) . '</h3>';
         }
-        if ($primary_label !== '') {
-            $parts[] = $this->visit_card_button($primary_label, $primary_url, 'iss-visit-card__button--primary');
+        if (! empty($attributes['show_upcoming'])) {
+            $upcoming = $this->visit_card_upcoming_entry($upcoming_label, $upcoming_url);
+            if ($upcoming !== '') {
+                $parts[] = $upcoming;
+            }
         }
-        if ($show_upcoming && $upcoming_label !== '') {
-            $parts[] = $this->visit_card_button($upcoming_label, $upcoming_url, 'iss-visit-card__button--secondary', true);
+        $items = [];
+        $tour_item = $this->visit_card_item($tour_label, $tour_url);
+        if ($tour_item !== '') {
+            $items[] = $tour_item;
         }
-        if ($tour_label !== '') {
-            $parts[] = $this->visit_card_button($tour_label, $tour_url, 'iss-visit-card__button--secondary');
+        $room_item = $this->visit_card_item($room_label, $room_url);
+        if ($room_item !== '') {
+            $items[] = $room_item;
         }
-        if ($room_label !== '') {
-            $parts[] = $this->visit_card_button($room_label, $room_url, 'iss-visit-card__button--secondary');
+
+        if (! empty($items)) {
+            $parts[] = '<div class="iss-visitor-card__list">' . implode('', $items) . '</div>';
         }
         if ($address !== '' || $full_address !== '') {
             $parts[] = $this->visit_card_address($address, $full_address);
@@ -1034,7 +1094,7 @@ final class Industriesalon_Steuerung {
             return '';
         }
 
-        return '<article class="iss-visit-card">' . implode('', $parts) . '</article>';
+        return '<article class="iss-visit-card iss-visitor-card">' . implode('', $parts) . '</article>';
     }
 
     public function render_visit_exceptions(string $type = 'museum'): string {
@@ -1080,6 +1140,160 @@ final class Industriesalon_Steuerung {
         }
 
         return '';
+    }
+
+    private function visit_card_item(string $text, string $url): string {
+        $text = trim($text);
+        $url = trim($url);
+
+        if ($text === '' || $url === '') {
+            return '';
+        }
+
+        ob_start();
+        ?>
+        <div class="iss-visitor-card__item">
+            <div class="iss-visitor-card__item-text">
+                <p><?php echo esc_html($text); ?></p>
+            </div>
+            <div class="iss-visitor-card__item-action">
+                <a href="<?php echo esc_url($url); ?>" class="iss-visitor-card__mini-button">
+                    <?php esc_html_e('Mehr', 'industriesalon-steuerung'); ?>
+                </a>
+            </div>
+        </div>
+        <?php
+        return (string) ob_get_clean();
+    }
+
+    private function visit_card_upcoming_entry(string $label, string $url = ''): string {
+        $item = $this->visit_card_next_calendar_item();
+        if (! $item instanceof WP_Post) {
+            return '';
+        }
+
+        $item_id = (int) $item->ID;
+        $title = trim((string) get_the_title($item_id));
+        if ($title === '') {
+            return '';
+        }
+
+        $date_raw = (string) get_post_meta($item_id, 'sort_date', true);
+        $date_label = $this->format_visit_upcoming_date($date_raw);
+        $summary = $this->format_visit_upcoming_summary($item_id);
+        $permalink = trim($url);
+        if ($permalink === '') {
+            $permalink = (string) get_permalink($item_id);
+        }
+        if ($label === '') {
+            $label = __('Demnächst', 'industriesalon-steuerung');
+        }
+
+        ob_start();
+        ?>
+        <div class="iss-visitor-card__upcoming">
+            <p class="iss-visitor-card__upcoming-label"><?php echo esc_html($label); ?></p>
+            <?php if (is_string($permalink) && $permalink !== '') : ?>
+                <a class="iss-visitor-card__upcoming-link" href="<?php echo esc_url($permalink); ?>">
+                <span class="iss-visitor-card__upcoming-title"><?php echo esc_html($title); ?></span>
+                <?php if ($date_label !== '') : ?>
+                    <span class="iss-visitor-card__upcoming-date"><?php echo esc_html($date_label); ?></span>
+                <?php endif; ?>
+                <?php if ($summary !== '') : ?>
+                    <span class="iss-visitor-card__upcoming-summary"><?php echo esc_html($summary); ?></span>
+                <?php endif; ?>
+            </a>
+        <?php else : ?>
+            <div class="iss-visitor-card__upcoming-link">
+                <span class="iss-visitor-card__upcoming-title"><?php echo esc_html($title); ?></span>
+                <?php if ($date_label !== '') : ?>
+                    <span class="iss-visitor-card__upcoming-date"><?php echo esc_html($date_label); ?></span>
+                <?php endif; ?>
+                <?php if ($summary !== '') : ?>
+                    <span class="iss-visitor-card__upcoming-summary"><?php echo esc_html($summary); ?></span>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+        </div>
+        <?php
+        return (string) ob_get_clean();
+    }
+
+    private function visit_card_next_calendar_item(): ?WP_Post {
+        if (function_exists('iss_timeline_get_items_advanced')) {
+            $items = iss_timeline_get_items_advanced([
+                'limit' => 1,
+                'range' => 'future',
+                'order' => 'ASC',
+            ]);
+            if (! empty($items) && $items[0] instanceof WP_Post) {
+                return $items[0];
+            }
+        }
+
+        $query = new WP_Query([
+            'post_type' => defined('ISS_CALENDAR_ITEM_POST_TYPE') ? ISS_CALENDAR_ITEM_POST_TYPE : 'iss_calendar_item',
+            'post_status' => 'publish',
+            'posts_per_page' => 1,
+            'no_found_rows' => true,
+            'meta_key' => 'sort_date',
+            'orderby' => 'meta_value',
+            'meta_type' => 'DATETIME',
+            'order' => 'ASC',
+            'meta_query' => [
+                [
+                    'key' => 'sort_date',
+                    'value' => current_time('mysql'),
+                    'compare' => '>=',
+                    'type' => 'DATETIME',
+                ],
+            ],
+        ]);
+
+        if (! empty($query->posts) && $query->posts[0] instanceof WP_Post) {
+            return $query->posts[0];
+        }
+
+        return null;
+    }
+
+    private function format_visit_upcoming_date(string $date_raw): string {
+        $date_raw = trim($date_raw);
+        if ($date_raw === '') {
+            return '';
+        }
+
+        try {
+            $ts = (new DateTimeImmutable($date_raw, wp_timezone()))->getTimestamp();
+        } catch (Throwable $e) {
+            return '';
+        }
+
+        return wp_date('j. F Y', $ts);
+    }
+
+    private function format_visit_upcoming_summary(int $item_id): string {
+        $item_id = (int) $item_id;
+        if ($item_id <= 0) {
+            return '';
+        }
+
+        $summary = trim((string) get_post_meta($item_id, 'public_summary', true));
+        if ($summary !== '') {
+            return wp_trim_words(wp_strip_all_tags($summary), 18);
+        }
+
+        $post = get_post($item_id);
+        if (! $post instanceof WP_Post) {
+            return '';
+        }
+
+        $content = trim((string) $post->post_content);
+        if ($content === '') {
+            return '';
+        }
+
+        return wp_trim_words(wp_strip_all_tags($content), 18);
     }
 
     private function visit_card_address(string $label, string $full_address): string {
