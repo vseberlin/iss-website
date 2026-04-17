@@ -74,6 +74,18 @@ function industriesalon_enqueue_assets(): void
         );
     }
 
+    // 5. Visit info theme tokens/classes (plugin keeps structural visit info layout)
+    $visit_info_rel = '/assets/css/visit-info.css';
+    $visit_info_abs = $theme_dir . $visit_info_rel;
+    if (file_exists($visit_info_abs)) {
+        wp_enqueue_style(
+            'industriesalon-visit-info',
+            $theme_uri . $visit_info_rel,
+            array('industriesalon-base'),
+            (string) filemtime($visit_info_abs)
+        );
+    }
+
     // Header JS
     $script_rel_path = '/assets/js/header.js';
     $script_abs_path = get_stylesheet_directory() . $script_rel_path;

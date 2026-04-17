@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Industriesalon Steuerung
  * Description: Zentrale Seiteneinstellungen für Industriesalon: Öffnungszeiten, Bürozeiten, Kontakt, Adresse, Mission Statement, Barrierefreiheit, FAQ und Preise mit wiederverwendbarer Ausgabe per PHP, Shortcodes und Gutenberg-Blöcke.
- * Version: 0.2.4
+ * Version: 0.2.5
  * Author: OpenAI
  * Text Domain: industriesalon-steuerung
  */
@@ -12,7 +12,7 @@ if (! defined('ABSPATH')) {
 }
 
 final class Industriesalon_Steuerung {
-    private const VERSION = '0.2.4';
+    private const VERSION = '0.2.5';
     private const CAPABILITY = 'manage_iss_controls';
 
     private const OPTION_GENERAL = 'iss_control_general';
@@ -23,6 +23,7 @@ final class Industriesalon_Steuerung {
     private const OPTION_PRICES = 'iss_control_prices';
     private const OPTION_FAQ = 'iss_control_faq';
     private const OPTION_MISSION_STATEMENT = 'iss_control_mission_statement';
+    private const OPTION_VISIT_CACHE_VERSION = 'iss_control_visit_cache_version';
 
     private static ?Industriesalon_Steuerung $instance = null;
 
@@ -237,7 +238,7 @@ final class Industriesalon_Steuerung {
                 <a href="#iss-general" class="nav-tab nav-tab-active"><?php esc_html_e('Standort & Adresse', 'industriesalon-steuerung'); ?></a>
                 <a href="#iss-contact" class="nav-tab"><?php esc_html_e('Kontakt', 'industriesalon-steuerung'); ?></a>
                 <a href="#iss-maps" class="nav-tab"><?php esc_html_e('Google Maps / Anfahrt', 'industriesalon-steuerung'); ?></a>
-                <a href="#iss-hours" class="nav-tab"><?php esc_html_e('Öffnungszeiten', 'industriesalon-steuerung'); ?></a>
+                <a href="#iss-hours" class="nav-tab"><?php esc_html_e('Besuchszeiten', 'industriesalon-steuerung'); ?></a>
                 <a href="#iss-prices" class="nav-tab"><?php esc_html_e('Preise', 'industriesalon-steuerung'); ?></a>
                 <a href="#iss-accessibility" class="nav-tab"><?php esc_html_e('Barrierefreiheit', 'industriesalon-steuerung'); ?></a>
                 <a href="#iss-faq" class="nav-tab"><?php esc_html_e('Häufige Fragen', 'industriesalon-steuerung'); ?></a>
@@ -301,11 +302,11 @@ final class Industriesalon_Steuerung {
                 </section>
 
                 <section id="iss-hours" class="iss-panel" hidden>
-                    <h2><?php esc_html_e('Öffnungszeiten', 'industriesalon-steuerung'); ?></h2>
-                    <p class="iss-panel__hint"><?php esc_html_e('Öffnungszeiten und Bürozeiten werden getrennt gepflegt.', 'industriesalon-steuerung'); ?></p>
+                    <h2><?php esc_html_e('Besuchszeiten', 'industriesalon-steuerung'); ?></h2>
+                    <p class="iss-panel__hint"><?php esc_html_e('Hier werden Besuchszeiten, Bürozeiten und Sondertage gepflegt.', 'industriesalon-steuerung'); ?></p>
 
                     <div class="iss-hours-group">
-                        <h3><?php esc_html_e('Öffnungszeiten', 'industriesalon-steuerung'); ?></h3>
+                        <h3><?php esc_html_e('Besuchszeiten', 'industriesalon-steuerung'); ?></h3>
                         <?php $this->hours_table('public', $hours['public'] ?? [], $days); ?>
                     </div>
 
@@ -315,8 +316,8 @@ final class Industriesalon_Steuerung {
                     </div>
 
                     <div class="iss-hours-group">
-                        <h3><?php esc_html_e('Ausnahmen / Feiertage / Sonderöffnungen', 'industriesalon-steuerung'); ?></h3>
-                        <p class="iss-panel__hint"><?php esc_html_e('Diese Einträge überschreiben die normalen Zeiten für das gewählte Datum.', 'industriesalon-steuerung'); ?></p>
+                        <h3><?php esc_html_e('Sondertage', 'industriesalon-steuerung'); ?></h3>
+                        <p class="iss-panel__hint"><?php esc_html_e('Diese Einträge gelten nur für das gewählte Datum.', 'industriesalon-steuerung'); ?></p>
                         <div class="iss-special-list" data-iss-special-list>
                             <?php
                             $special = isset($hours['exceptions']) && is_array($hours['exceptions']) ? $hours['exceptions'] : [];
@@ -331,7 +332,7 @@ final class Industriesalon_Steuerung {
                         <template id="iss-special-template">
                             <?php $this->special_date_fields('__INDEX__', ['date' => '', 'type' => 'public', 'closed' => 0, 'open' => '', 'close' => '', 'note' => '']); ?>
                         </template>
-                        <p><button type="button" class="button" data-iss-add-special><?php esc_html_e('Sondertermin hinzufügen', 'industriesalon-steuerung'); ?></button></p>
+                        <p><button type="button" class="button" data-iss-add-special><?php esc_html_e('Sondertag hinzufügen', 'industriesalon-steuerung'); ?></button></p>
                     </div>
                 </section>
 
@@ -529,6 +530,7 @@ final class Industriesalon_Steuerung {
                     break;
                 case 'hours':
                     update_option($option_name, $this->sanitize_hours($payload));
+                    $this->bump_visit_cache_version();
                     break;
                 case 'accessibility':
                     update_option($option_name, $this->sanitize_accessibility($payload));
@@ -556,6 +558,8 @@ final class Industriesalon_Steuerung {
     public function register_shortcodes(): void {
         add_shortcode('iss_field', [$this, 'shortcode_field']);
         add_shortcode('iss_hours', [$this, 'shortcode_hours']);
+        add_shortcode('iss_status', [$this, 'shortcode_status']);
+        add_shortcode('iss_exceptions', [$this, 'shortcode_exceptions']);
         add_shortcode('iss_contact', [$this, 'shortcode_contact']);
         add_shortcode('iss_prices', [$this, 'shortcode_prices']);
         add_shortcode('iss_faq', [$this, 'shortcode_faq']);
@@ -594,6 +598,19 @@ final class Industriesalon_Steuerung {
             'attributes'      => [
                 'type'  => ['type' => 'string', 'default' => 'public'],
                 'title' => ['type' => 'string', 'default' => ''],
+            ],
+        ]);
+
+        register_block_type('industriesalon/visit-info', [
+            'api_version'     => 2,
+            'editor_script'   => 'iss-control-blocks',
+            'render_callback' => [$this, 'render_visit_info_block'],
+            'attributes'      => [
+                'show_status'        => ['type' => 'boolean', 'default' => true],
+                'show_museum_hours'  => ['type' => 'boolean', 'default' => true],
+                'show_office_hours'   => ['type' => 'boolean', 'default' => true],
+                'show_exceptions'    => ['type' => 'boolean', 'default' => false],
+                'variant'            => ['type' => 'string', 'default' => 'compact'],
             ],
         ]);
 
@@ -647,6 +664,10 @@ final class Industriesalon_Steuerung {
         return $this->render_hours((string) ($attributes['type'] ?? 'public'), (string) ($attributes['title'] ?? ''));
     }
 
+    public function render_visit_info_block(array $attributes = []): string {
+        return $this->render_visit_info($attributes);
+    }
+
     public function render_contact_block(array $attributes = []): string {
         return $this->render_contact((string) ($attributes['title'] ?? ''));
     }
@@ -679,11 +700,28 @@ final class Industriesalon_Steuerung {
 
     public function shortcode_hours(array $atts): string {
         $atts = shortcode_atts([
-            'type'  => 'public',
+            'type'  => 'museum',
+            'variant' => 'full',
             'title' => '',
         ], $atts, 'iss_hours');
 
-        return $this->render_hours((string) $atts['type'], (string) $atts['title']);
+        return $this->render_visit_hours((string) $atts['type'], (string) $atts['variant'], (string) $atts['title']);
+    }
+
+    public function shortcode_status(array $atts): string {
+        $atts = shortcode_atts([
+            'type' => 'museum',
+        ], $atts, 'iss_status');
+
+        return $this->render_visit_status((string) $atts['type']);
+    }
+
+    public function shortcode_exceptions(array $atts): string {
+        $atts = shortcode_atts([
+            'type' => 'museum',
+        ], $atts, 'iss_exceptions');
+
+        return $this->render_visit_exceptions((string) $atts['type']);
     }
 
     public function shortcode_contact(array $atts): string {
@@ -793,7 +831,7 @@ final class Industriesalon_Steuerung {
             <?php endif; ?>
             <?php if (! empty($exceptions)) : ?>
                 <div class="iss-hours__special">
-                    <h4 class="iss-hours__special-title"><?php esc_html_e('Ausnahmen / Feiertage', 'industriesalon-steuerung'); ?></h4>
+                    <h4 class="iss-hours__special-title"><?php esc_html_e('Sondertage', 'industriesalon-steuerung'); ?></h4>
                     <ul class="iss-hours__special-list">
                         <?php foreach ($exceptions as $item) : ?>
                             <li class="iss-hours__special-item">
@@ -805,6 +843,123 @@ final class Industriesalon_Steuerung {
                 </div>
             <?php endif; ?>
         </div>
+        <?php
+        return (string) ob_get_clean();
+    }
+
+    public function render_visit_info(array $attributes = []): string {
+        $variant = isset($attributes['variant']) ? (string) $attributes['variant'] : 'compact';
+        if (! in_array($variant, ['compact', 'full', 'inline'], true)) {
+            $variant = 'compact';
+        }
+
+        $show_status = array_key_exists('show_status', $attributes) ? (bool) $attributes['show_status'] : true;
+        $show_museum = array_key_exists('show_museum_hours', $attributes) ? (bool) $attributes['show_museum_hours'] : true;
+        $show_office = array_key_exists('show_office_hours', $attributes) ? (bool) $attributes['show_office_hours'] : true;
+        $show_exceptions = array_key_exists('show_exceptions', $attributes) ? (bool) $attributes['show_exceptions'] : false;
+
+        $parts = [];
+        if ($show_status) {
+            $parts[] = $this->render_visit_status('museum');
+        }
+        if ($show_museum) {
+            $parts[] = $this->render_visit_hours('museum', $variant);
+        }
+        if ($show_office) {
+            $parts[] = $this->render_visit_hours('office', $variant);
+        }
+        if ($show_exceptions) {
+            $parts[] = $this->render_visit_exceptions('museum');
+        }
+
+        $parts = array_filter($parts, static function ($part) {
+            return trim((string) $part) !== '';
+        });
+
+        if (empty($parts)) {
+            return '<div class="iss-visit-info iss-visit-info--empty">' . esc_html__('Keine Zeiten eingetragen.', 'industriesalon-steuerung') . '</div>';
+        }
+
+        return '<div class="iss-visit-info iss-visit-info--' . esc_attr(sanitize_html_class($variant)) . '">' . implode('', $parts) . '</div>';
+    }
+
+    public function render_visit_status(string $type = 'museum'): string {
+        $resolved = $this->get_visit_day($type, $this->current_visit_moment());
+        if ($resolved === []) {
+            return '';
+        }
+
+        return '<p class="iss-visit-status iss-visit-status--' . esc_attr(sanitize_html_class((string) ($resolved['status'] ?? 'closed'))) . '">' . esc_html((string) ($resolved['label'] ?? '')) . '</p>';
+    }
+
+    public function render_visit_hours(string $type = 'museum', string $variant = 'compact', string $title = ''): string {
+        $type = $this->normalize_visit_type($type);
+        $variant = in_array($variant, ['compact', 'full', 'inline'], true) ? $variant : 'compact';
+        $group = $this->visit_group_for_type($this->get_visit_schedule(), $type);
+        if ($group === []) {
+            return '';
+        }
+
+        $heading = $title !== '' ? $title : $this->visit_type_label($type);
+        $summary = $this->build_visit_summary($group);
+        $details = $this->build_visit_details($group);
+        $exceptions = $this->build_visit_exception_list($type);
+
+        if ($variant === 'inline') {
+            $line = $summary !== '' ? $summary : __('Keine Zeiten eingetragen.', 'industriesalon-steuerung');
+            return '<p class="iss-visit-hours iss-visit-hours--inline iss-visit-hours--' . esc_attr($type) . '">' . esc_html($heading . ': ' . wp_strip_all_tags($line)) . '</p>';
+        }
+
+        ob_start();
+        ?>
+        <section class="iss-visit-hours iss-visit-hours--<?php echo esc_attr($variant); ?> iss-visit-hours--<?php echo esc_attr($type); ?>">
+            <h3 class="iss-visit-hours__title"><?php echo esc_html($heading); ?></h3>
+            <?php if ($variant === 'compact') : ?>
+                <p class="iss-visit-hours__summary"><?php echo esc_html($summary !== '' ? $summary : __('Keine Zeiten eingetragen.', 'industriesalon-steuerung')); ?></p>
+            <?php else : ?>
+                <ul class="iss-visit-hours__list">
+                    <?php foreach ($details as $row) : ?>
+                        <li class="iss-visit-hours__item">
+                            <span class="iss-visit-hours__days"><?php echo esc_html((string) $row['days']); ?></span>
+                            <span class="iss-visit-hours__times"><?php echo esc_html((string) $row['times']); ?></span>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+                <?php if (! empty($group['note'])) : ?>
+                    <p class="iss-visit-hours__note"><?php echo nl2br(esc_html((string) $group['note'])); ?></p>
+                <?php endif; ?>
+                <?php if (! empty($exceptions)) : ?>
+                    <div class="iss-visit-hours__exceptions">
+                        <h4 class="iss-visit-hours__exceptions-title"><?php esc_html_e('Sondertage', 'industriesalon-steuerung'); ?></h4>
+                        <?php echo $exceptions; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                    </div>
+                <?php endif; ?>
+            <?php endif; ?>
+        </section>
+        <?php
+        return (string) ob_get_clean();
+    }
+
+    public function render_visit_exceptions(string $type = 'museum'): string {
+        $type = $this->normalize_visit_type($type);
+        $list = $this->get_relevant_visit_exceptions($type);
+        if (empty($list)) {
+            return '';
+        }
+
+        ob_start();
+        ?>
+        <section class="iss-visit-exceptions iss-visit-exceptions--<?php echo esc_attr($type); ?>">
+            <h3 class="iss-visit-exceptions__title"><?php esc_html_e('Sondertage', 'industriesalon-steuerung'); ?></h3>
+            <ul class="iss-visit-exceptions__list">
+                <?php foreach ($list as $item) : ?>
+                    <li class="iss-visit-exceptions__item">
+                        <span class="iss-visit-exceptions__date"><?php echo esc_html((string) $item['date_label']); ?></span>
+                        <span class="iss-visit-exceptions__time"><?php echo esc_html((string) $item['label']); ?></span>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </section>
         <?php
         return (string) ob_get_clean();
     }
@@ -979,9 +1134,9 @@ final class Industriesalon_Steuerung {
                     <input type="date" class="regular-text" name="<?php echo esc_attr(self::OPTION_HOURS . '[exceptions][' . $index . '][date]'); ?>" value="<?php echo esc_attr((string) $item['date']); ?>">
                 </div>
                 <div class="iss-field">
-                    <label><?php esc_html_e('Art', 'industriesalon-steuerung'); ?></label>
+                    <label><?php esc_html_e('Bereich', 'industriesalon-steuerung'); ?></label>
                     <select class="regular-text" name="<?php echo esc_attr(self::OPTION_HOURS . '[exceptions][' . $index . '][type]'); ?>">
-                        <option value="public" <?php selected((string) $item['type'], 'public'); ?>><?php esc_html_e('Öffnungszeiten', 'industriesalon-steuerung'); ?></option>
+                        <option value="public" <?php selected((string) $item['type'], 'public'); ?>><?php esc_html_e('Besuchszeiten', 'industriesalon-steuerung'); ?></option>
                         <option value="office" <?php selected((string) $item['type'], 'office'); ?>><?php esc_html_e('Bürozeiten', 'industriesalon-steuerung'); ?></option>
                         <option value="both" <?php selected((string) $item['type'], 'both'); ?>><?php esc_html_e('Beides', 'industriesalon-steuerung'); ?></option>
                     </select>
@@ -1003,7 +1158,7 @@ final class Industriesalon_Steuerung {
                     <input type="text" class="regular-text" name="<?php echo esc_attr(self::OPTION_HOURS . '[exceptions][' . $index . '][note]'); ?>" value="<?php echo esc_attr((string) $item['note']); ?>">
                 </div>
             </div>
-            <p><button type="button" class="button-link-delete" data-iss-remove-special><?php esc_html_e('Sondertermin entfernen', 'industriesalon-steuerung'); ?></button></p>
+            <p><button type="button" class="button-link-delete" data-iss-remove-special><?php esc_html_e('Sondertag entfernen', 'industriesalon-steuerung'); ?></button></p>
         </div>
         <?php
     }
@@ -1178,6 +1333,7 @@ final class Industriesalon_Steuerung {
             $clean_exceptions[] = $row;
         }
         $output['exceptions'] = $clean_exceptions;
+        $this->bump_visit_cache_version();
 
         return $output;
     }
@@ -1263,6 +1419,384 @@ final class Industriesalon_Steuerung {
             return $value;
         }
         return wp_date('d.m.Y', $timestamp);
+    }
+
+    private function normalize_visit_type(string $type): string {
+        return $type === 'office' ? 'office' : 'public';
+    }
+
+    private function visit_type_label(string $type): string {
+        return $this->normalize_visit_type($type) === 'office'
+            ? __('Bürozeiten', 'industriesalon-steuerung')
+            : __('Besuchszeiten', 'industriesalon-steuerung');
+    }
+
+    private function visit_type_short_label(string $type): string {
+        return $this->normalize_visit_type($type) === 'office'
+            ? __('Büro', 'industriesalon-steuerung')
+            : __('Besuch', 'industriesalon-steuerung');
+    }
+
+    private function current_visit_moment(): DateTimeImmutable {
+        return new DateTimeImmutable('now', wp_timezone());
+    }
+
+    private function visit_cache_version(): int {
+        return max(1, (int) get_option(self::OPTION_VISIT_CACHE_VERSION, 1));
+    }
+
+    private function bump_visit_cache_version(): void {
+        update_option(self::OPTION_VISIT_CACHE_VERSION, $this->visit_cache_version() + 1, false);
+    }
+
+    private function visit_cache_key(string $scope, array $args = []): string {
+        return 'iss_visit_' . $this->visit_cache_version() . '_' . md5(wp_json_encode([$scope, $args]));
+    }
+
+    private function get_visit_schedule(): array {
+        $cache_key = $this->visit_cache_key('schedule');
+        $cached = get_transient($cache_key);
+        if (is_array($cached)) {
+            return $cached;
+        }
+
+        $hours = get_option(self::OPTION_HOURS, $this->default_hours());
+        $schedule = is_array($hours) ? $hours : $this->default_hours();
+        set_transient($cache_key, $schedule, 10 * MINUTE_IN_SECONDS);
+        return $schedule;
+    }
+
+    private function visit_group_for_type(array $schedule, string $type): array {
+        $type = $this->normalize_visit_type($type);
+        $group = isset($schedule[$type]) && is_array($schedule[$type]) ? $schedule[$type] : [];
+        $group = wp_parse_args($group, ['note' => '', 'days' => []]);
+        $days = $this->days();
+
+        $rows = [];
+        foreach ($days as $slug => $label) {
+            $rows[$slug] = wp_parse_args($group['days'][$slug] ?? [], ['closed' => 0, 'open' => '', 'close' => '', 'note' => '']);
+        }
+
+        return ['note' => (string) $group['note'], 'days' => $rows];
+    }
+
+    private function get_visit_day(string $type, DateTimeInterface $date): array {
+        $type = $this->normalize_visit_type($type);
+        $cache_key = $this->visit_cache_key('day', ['type' => $type, 'date' => $date->format('Y-m-d'), 'time' => $date->format('H:i')]);
+        $cached = get_transient($cache_key);
+        if (is_array($cached)) {
+            return $cached;
+        }
+
+        $result = $this->resolve_visit_day($this->get_visit_schedule(), $type, $date);
+        set_transient($cache_key, $result, 2 * MINUTE_IN_SECONDS);
+        return $result;
+    }
+
+    private function resolve_visit_day(array $schedule, string $type, DateTimeInterface $date): array {
+        $type = $this->normalize_visit_type($type);
+        $date_key = $date->format('Y-m-d');
+        $day_slug = strtolower($date->format('l'));
+        $days_map = [
+            'monday' => 'monday',
+            'tuesday' => 'tuesday',
+            'wednesday' => 'wednesday',
+            'thursday' => 'thursday',
+            'friday' => 'friday',
+            'saturday' => 'saturday',
+            'sunday' => 'sunday',
+        ];
+        $slug = $days_map[$day_slug] ?? 'monday';
+
+        $group = $this->visit_group_for_type($schedule, $type);
+        $weekly = $group['days'][$slug] ?? ['closed' => 0, 'open' => '', 'close' => '', 'note' => ''];
+        $exception = $this->find_visit_exception($schedule['exceptions'] ?? [], $type, $date_key);
+        $is_today = $date_key === $this->current_visit_moment()->format('Y-m-d');
+        $day_label = $is_today ? __('Heute', 'industriesalon-steuerung') : wp_date('d.m.Y', $date->getTimestamp());
+
+        if (is_array($exception)) {
+            $closed = ! empty($exception['closed']) || ((string) ($exception['open'] ?? '') === '' && (string) ($exception['close'] ?? '') === '');
+            $ranges = $closed ? [] : [[
+                'open'  => (string) ($exception['open'] ?? ''),
+                'close' => (string) ($exception['close'] ?? ''),
+            ]];
+            $label = $closed
+                ? ($is_today ? __('Heute geschlossen', 'industriesalon-steuerung') : sprintf(__('%s geschlossen', 'industriesalon-steuerung'), $day_label))
+                : ($is_today ? __('Heute Sonderöffnung', 'industriesalon-steuerung') : sprintf(__('%s Sonderöffnung', 'industriesalon-steuerung'), $day_label));
+            if (! $closed && ! empty($ranges[0]['close'])) {
+                $label .= ' ' . sprintf(__('bis %s Uhr', 'industriesalon-steuerung'), $this->format_visit_clock((string) $ranges[0]['close']));
+            }
+            return [
+                'status'  => $closed ? 'closed' : 'special',
+                'source'  => 'exception',
+                'date'    => $date_key,
+                'label'   => $label,
+                'ranges'  => $ranges,
+                'note'    => (string) ($exception['note'] ?? ''),
+                'date_label' => $day_label,
+            ];
+        }
+
+        $closed = ! empty($weekly['closed']) || ((string) ($weekly['open'] ?? '') === '' && (string) ($weekly['close'] ?? '') === '');
+        $ranges = $closed ? [] : [[
+            'open'  => (string) ($weekly['open'] ?? ''),
+            'close' => (string) ($weekly['close'] ?? ''),
+        ]];
+        $label = $closed
+            ? ($is_today ? __('Heute geschlossen', 'industriesalon-steuerung') : sprintf(__('%s geschlossen', 'industriesalon-steuerung'), $day_label))
+            : ($is_today ? __('Heute geöffnet', 'industriesalon-steuerung') : sprintf(__('%s geöffnet', 'industriesalon-steuerung'), $day_label));
+        if (! $closed && ! empty($ranges[0]['close'])) {
+            $label .= ' ' . sprintf(__('bis %s Uhr', 'industriesalon-steuerung'), $this->format_visit_clock((string) $ranges[0]['close']));
+        }
+
+        return [
+            'status'  => $closed ? 'closed' : 'open',
+            'source'  => 'regular',
+            'date'    => $date_key,
+            'label'   => $label,
+            'ranges'  => $ranges,
+            'note'    => (string) ($weekly['note'] ?? ''),
+            'date_label' => $day_label,
+        ];
+    }
+
+    private function find_visit_exception(array $exceptions, string $type, string $date): ?array {
+        foreach ($exceptions as $item) {
+            if (! is_array($item)) {
+                continue;
+            }
+            if (($item['date'] ?? '') !== $date) {
+                continue;
+            }
+            $item_type = isset($item['type']) ? (string) $item['type'] : 'public';
+            if ($item_type !== 'both' && $this->normalize_visit_type($item_type) !== $type) {
+                continue;
+            }
+            return $item;
+        }
+        return null;
+    }
+
+    private function format_visit_clock(string $time): string {
+        if ($time === '') {
+            return '';
+        }
+
+        $timestamp = strtotime($time);
+        if ($timestamp === false) {
+            return $time;
+        }
+
+        $minute = (int) wp_date('i', $timestamp);
+        return $minute === 0 ? wp_date('G', $timestamp) : wp_date('H:i', $timestamp);
+    }
+
+    private function format_visit_time_ranges(array $ranges): string {
+        $ranges = array_values(array_filter($ranges, static function ($range) {
+            return is_array($range);
+        }));
+        if (empty($ranges)) {
+            return __('geschlossen', 'industriesalon-steuerung');
+        }
+
+        $parts = [];
+        foreach ($ranges as $range) {
+            $open = $this->format_visit_clock((string) ($range['open'] ?? ''));
+            $close = $this->format_visit_clock((string) ($range['close'] ?? ''));
+            if ($open === '' && $close === '') {
+                continue;
+            }
+            if ($open !== '' && $close !== '') {
+                $parts[] = $open . '–' . $close . ' Uhr';
+            } elseif ($open !== '') {
+                $parts[] = $open . ' Uhr';
+            } else {
+                $parts[] = $close . ' Uhr';
+            }
+        }
+
+        return empty($parts) ? __('geschlossen', 'industriesalon-steuerung') : implode('; ', $parts);
+    }
+
+    private function format_visit_day_range(array $days): string {
+        $map = [
+            'monday' => __('Mo', 'industriesalon-steuerung'),
+            'tuesday' => __('Di', 'industriesalon-steuerung'),
+            'wednesday' => __('Mi', 'industriesalon-steuerung'),
+            'thursday' => __('Do', 'industriesalon-steuerung'),
+            'friday' => __('Fr', 'industriesalon-steuerung'),
+            'saturday' => __('Sa', 'industriesalon-steuerung'),
+            'sunday' => __('So', 'industriesalon-steuerung'),
+        ];
+        $order = array_keys($map);
+        $indexes = [];
+        foreach ($days as $day) {
+            $index = array_search($day, $order, true);
+            if ($index !== false) {
+                $indexes[] = $index;
+            }
+        }
+        sort($indexes);
+        $chunks = [];
+        $current = [];
+        foreach ($indexes as $index) {
+            if (empty($current) || $index === end($current) + 1) {
+                $current[] = $index;
+                continue;
+            }
+            $chunks[] = $current;
+            $current = [$index];
+        }
+        if (! empty($current)) {
+            $chunks[] = $current;
+        }
+
+        $labels = [];
+        foreach ($chunks as $chunk) {
+            $start = $order[(int) $chunk[0]];
+            $end = $order[(int) end($chunk)];
+            $labels[] = count($chunk) > 1 ? $map[$start] . '–' . $map[$end] : $map[$start];
+        }
+
+        return implode(', ', $labels);
+    }
+
+    private function build_visit_summary(array $group): string {
+        $rows = $this->group_visit_rows($group['days'] ?? []);
+        $parts = [];
+        foreach ($rows as $row) {
+            $parts[] = $row['days'] . ', ' . $row['times'];
+        }
+        return implode('; ', $parts);
+    }
+
+    private function build_visit_details(array $group): array {
+        return $this->group_visit_rows($group['days'] ?? []);
+    }
+
+    private function group_visit_rows(array $days): array {
+        $order = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+        $groups = [];
+        $current = null;
+
+        foreach ($order as $slug) {
+            $row = wp_parse_args($days[$slug] ?? [], ['closed' => 0, 'open' => '', 'close' => '', 'note' => '']);
+            $signature = implode('|', [
+                ! empty($row['closed']) ? '1' : '0',
+                (string) $row['open'],
+                (string) $row['close'],
+                (string) $row['note'],
+            ]);
+
+            if ($current !== null && $current['signature'] === $signature) {
+                $current['days'][] = $slug;
+                $current['times'] = $this->format_visit_time_ranges([[
+                    'open'  => (string) $row['open'],
+                    'close' => (string) $row['close'],
+                ]]);
+                $groups[count($groups) - 1] = $current;
+                continue;
+            }
+
+            $current = [
+                'signature' => $signature,
+                'days'      => [$slug],
+                'times'     => $this->format_visit_time_ranges([[
+                    'open'  => (string) $row['open'],
+                    'close' => (string) $row['close'],
+                ]]),
+                'note'      => (string) $row['note'],
+            ];
+            $groups[] = $current;
+        }
+
+        $rows = [];
+        foreach ($groups as $group) {
+            $rows[] = [
+                'days'  => $this->format_visit_day_range($group['days']),
+                'times' => $group['times'],
+            ];
+        }
+
+        return $rows;
+    }
+
+    private function get_relevant_visit_exceptions(string $type): array {
+        $type = $this->normalize_visit_type($type);
+        $today_key = $this->current_visit_moment()->format('Y-m-d');
+        $cache_key = $this->visit_cache_key('exceptions', ['type' => $type, 'from' => $today_key]);
+        $cached = get_transient($cache_key);
+        if (is_array($cached)) {
+            return $cached;
+        }
+
+        $schedule = $this->get_visit_schedule();
+        $exceptions = isset($schedule['exceptions']) && is_array($schedule['exceptions']) ? $schedule['exceptions'] : [];
+        $today = $this->current_visit_moment()->setTime(0, 0);
+        $limit = $today->modify('+30 days');
+        $list = [];
+
+        foreach ($exceptions as $item) {
+            if (! is_array($item)) {
+                continue;
+            }
+            $date = $this->sanitize_date_value((string) ($item['date'] ?? ''));
+            if ($date === '') {
+                continue;
+            }
+            $moment = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $date . ' 00:00:00', wp_timezone());
+            if (! ($moment instanceof DateTimeImmutable)) {
+                continue;
+            }
+            if ($moment < $today || $moment > $limit) {
+                continue;
+            }
+
+            $item_type = isset($item['type']) ? (string) $item['type'] : 'public';
+            if ($item_type !== 'both' && $this->normalize_visit_type($item_type) !== $type) {
+                continue;
+            }
+
+            $closed = ! empty($item['closed']) || ((string) ($item['open'] ?? '') === '' && (string) ($item['close'] ?? '') === '');
+            $ranges = $closed ? [] : [[
+                'open'  => (string) ($item['open'] ?? ''),
+                'close' => (string) ($item['close'] ?? ''),
+            ]];
+            $label = $closed ? __('geschlossen', 'industriesalon-steuerung') : $this->format_visit_time_ranges($ranges);
+
+            $list[] = [
+                'date'       => $date,
+                'date_label' => wp_date('d.m.Y', $moment->getTimestamp()),
+                'label'      => $label,
+            ];
+        }
+
+        usort($list, static function ($a, $b) {
+            return strcmp((string) ($a['date'] ?? ''), (string) ($b['date'] ?? ''));
+        });
+
+        set_transient($cache_key, $list, 10 * MINUTE_IN_SECONDS);
+        return $list;
+    }
+
+    private function build_visit_exception_list(string $type): string {
+        $list = $this->get_relevant_visit_exceptions($type);
+        if (empty($list)) {
+            return '';
+        }
+
+        ob_start();
+        ?>
+        <ul class="iss-visit-exceptions__list">
+            <?php foreach ($list as $item) : ?>
+                <li class="iss-visit-exceptions__item">
+                    <span class="iss-visit-exceptions__date"><?php echo esc_html((string) $item['date_label']); ?></span>
+                    <span class="iss-visit-exceptions__time"><?php echo esc_html((string) $item['label']); ?></span>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+        <?php
+        return (string) ob_get_clean();
     }
 
     public function get_all_data(): array {
@@ -1427,4 +1961,20 @@ function iss_control_get(string $key, $default = '') {
 
 function iss_control_get_section(string $section): array {
     return Industriesalon_Steuerung::instance()->get_section($section);
+}
+
+function iss_get_status(string $type = 'museum'): string {
+    return Industriesalon_Steuerung::instance()->render_visit_status($type);
+}
+
+function iss_get_hours(string $type = 'museum', string $variant = 'compact'): string {
+    return Industriesalon_Steuerung::instance()->render_visit_hours($type, $variant);
+}
+
+function iss_get_hours_block(array $attributes = []): string {
+    return Industriesalon_Steuerung::instance()->render_visit_info($attributes);
+}
+
+function iss_get_exceptions(string $type = 'museum'): string {
+    return Industriesalon_Steuerung::instance()->render_visit_exceptions($type);
 }

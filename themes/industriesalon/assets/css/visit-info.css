@@ -1,0 +1,129 @@
+/* =====================================================================
+   VISIT INFO THEME LAYER
+   ---------------------------------------------------------------------
+   Theme-owned visual tokens/hooks for plugin-rendered visit info markup.
+   Structural output stays in the plugin.
+   ===================================================================== */
+
+.iss-visit-info,
+.iss-visit-status,
+.iss-visit-hours,
+.iss-visit-exceptions {
+  --iss-visit-surface: #fff;
+  --iss-visit-text: var(--iss-black, #1e1e1e);
+  --iss-visit-muted: rgba(30, 30, 30, 0.72);
+  --iss-visit-border: var(--iss-border, rgba(30, 30, 30, 0.14));
+  --iss-visit-accent: var(--iss-red, #e81d25);
+  --iss-visit-radius: var(--iss-radius-md, 16px);
+  --iss-visit-gap: 0.75rem;
+  --iss-visit-pad: 1.25rem;
+}
+
+.iss-visit-info {
+  display: grid;
+  gap: 1rem;
+  color: var(--iss-visit-text);
+}
+
+.iss-visit-status {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--iss-visit-border);
+  border-left: 4px solid var(--iss-visit-accent);
+  border-radius: var(--iss-visit-radius);
+  background: var(--iss-visit-surface);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.iss-visit-status--special {
+  --iss-visit-accent: var(--iss-yellow, #ebbc1e);
+}
+
+.iss-visit-status--open {
+  --iss-visit-accent: var(--iss-green, #579e7d);
+}
+
+.iss-visit-status--closed {
+  --iss-visit-accent: var(--iss-brown, #753a18);
+}
+
+.iss-visit-hours,
+.iss-visit-exceptions {
+  padding: var(--iss-visit-pad);
+  border: 1px solid var(--iss-visit-border);
+  border-radius: var(--iss-visit-radius);
+  background: var(--iss-visit-surface);
+}
+
+.iss-visit-hours__title,
+.iss-visit-exceptions__title {
+  margin: 0 0 0.85rem;
+  color: var(--iss-visit-text);
+}
+
+.iss-visit-hours__summary,
+.iss-visit-hours__note {
+  margin: 0;
+  color: var(--iss-visit-muted);
+}
+
+.iss-visit-hours__list,
+.iss-visit-exceptions__list {
+  display: grid;
+  gap: var(--iss-visit-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.iss-visit-hours__item,
+.iss-visit-exceptions__item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: baseline;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid rgba(30, 30, 30, 0.08);
+}
+
+.iss-visit-hours__item:last-child,
+.iss-visit-exceptions__item:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.iss-visit-hours__days,
+.iss-visit-exceptions__date {
+  font-weight: 700;
+}
+
+.iss-visit-hours__times,
+.iss-visit-exceptions__time {
+  text-align: right;
+  color: var(--iss-visit-muted);
+}
+
+.iss-visit-hours--inline {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.iss-visit-hours--inline .iss-visit-hours__title {
+  display: inline;
+  margin-right: 0.35rem;
+}
+
+@media (max-width: 782px) {
+  .iss-visit-hours__item,
+  .iss-visit-exceptions__item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .iss-visit-hours__times,
+  .iss-visit-exceptions__time {
+    text-align: left;
+  }
+}
