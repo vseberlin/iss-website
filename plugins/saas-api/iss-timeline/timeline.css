@@ -17,26 +17,6 @@
   color: var(--iss-tl-text);
 }
 
-.iss-timeline__intro {
-  margin-bottom: 1.25rem;
-}
-
-.iss-timeline__kicker {
-  margin-bottom: 0.65rem;
-}
-
-.iss-timeline__title-heading {
-  margin: 0;
-  font-size: clamp(1.75rem, 3vw, 2.75rem);
-  line-height: 1.1;
-}
-
-.iss-timeline__intro-text {
-  margin-top: 0.65rem;
-  max-width: 70ch;
-  color: var(--iss-tl-muted);
-}
-
 /* =========================================================
    Timeline sections and list shell
    ========================================================= */

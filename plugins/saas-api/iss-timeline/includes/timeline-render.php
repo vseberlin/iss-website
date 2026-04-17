@@ -368,11 +368,6 @@ function iss_timeline_render($attributes = [], $content = '', $block = null) {
 
     $attributes = is_array($attributes) ? $attributes : [];
 
-    $title = isset($attributes['title']) ? sanitize_text_field((string) $attributes['title']) : '';
-    $kicker = isset($attributes['kicker']) ? sanitize_text_field((string) $attributes['kicker']) : '';
-    $show_title = !array_key_exists('showTitle', $attributes) || (bool) $attributes['showTitle'];
-    $show_kicker = !empty($attributes['showKicker']) && (bool) $attributes['showKicker'];
-    $intro = isset($attributes['intro']) ? sanitize_textarea_field((string) $attributes['intro']) : '';
     $limit = isset($attributes['limit']) ? (int) $attributes['limit'] : 50;
     $group = isset($attributes['group']) ? sanitize_text_field((string) $attributes['group']) : '';
     $yearGrouping = array_key_exists('yearGrouping', $attributes) ? (bool) $attributes['yearGrouping'] : true;
@@ -388,13 +383,6 @@ function iss_timeline_render($attributes = [], $content = '', $block = null) {
         : 'class="iss-timeline iss-container"';
 
     $out = '<section ' . $attrs . '>';
-    if (($show_kicker && $kicker !== '') || ($show_title && $title !== '') || $intro !== '') {
-        $out .= '<header class="iss-timeline__intro">';
-        if ($show_kicker && $kicker !== '') $out .= '<p class="iss-kicker iss-timeline__kicker">' . esc_html($kicker) . '</p>';
-        if ($show_title && $title !== '') $out .= '<h2 class="iss-timeline__title-heading">' . esc_html($title) . '</h2>';
-        if ($intro !== '') $out .= '<div class="iss-timeline__intro-text">' . wp_kses_post(wpautop(esc_html($intro))) . '</div>';
-        $out .= '</header>';
-    }
     $out .= iss_timeline_render_items_list($items, [
         'yearGrouping' => $yearGrouping,
         'order' => 'ASC',
@@ -420,11 +408,6 @@ function iss_timeline_render_latest($attributes = [], $content = '', $block = nu
 
     $attributes = is_array($attributes) ? $attributes : [];
 
-    $title = isset($attributes['title']) ? sanitize_text_field((string) $attributes['title']) : '';
-    $kicker = isset($attributes['kicker']) ? sanitize_text_field((string) $attributes['kicker']) : '';
-    $show_title = !array_key_exists('showTitle', $attributes) || (bool) $attributes['showTitle'];
-    $show_kicker = !empty($attributes['showKicker']) && (bool) $attributes['showKicker'];
-    $intro = isset($attributes['intro']) ? sanitize_textarea_field((string) $attributes['intro']) : '';
     $group = isset($attributes['group']) ? sanitize_text_field((string) $attributes['group']) : '';
 
     $items = function_exists('iss_timeline_get_items_advanced')
@@ -443,13 +426,6 @@ function iss_timeline_render_latest($attributes = [], $content = '', $block = nu
         : 'class="iss-timeline-latest iss-container"';
 
     $out = '<section ' . $attrs . '>';
-    if (($show_kicker && $kicker !== '') || ($show_title && $title !== '') || $intro !== '') {
-        $out .= '<header class="iss-timeline__intro">';
-        if ($show_kicker && $kicker !== '') $out .= '<p class="iss-kicker iss-timeline__kicker">' . esc_html($kicker) . '</p>';
-        if ($show_title && $title !== '') $out .= '<h2 class="iss-timeline__title-heading">' . esc_html($title) . '</h2>';
-        if ($intro !== '') $out .= '<div class="iss-timeline__intro-text">' . wp_kses_post(wpautop(esc_html($intro))) . '</div>';
-        $out .= '</header>';
-    }
     $out .= '<div class="iss-timeline iss-timeline--latest">';
     $out .= iss_timeline_render_items_list($items, [
         'yearGrouping' => false,
@@ -502,9 +478,6 @@ function iss_timeline_render_sections($attributes = [], $content = '', $block = 
 
     $attributes = is_array($attributes) ? $attributes : [];
 
-    $title = isset($attributes['title']) ? sanitize_text_field((string) $attributes['title']) : '';
-    $intro = isset($attributes['intro']) ? sanitize_textarea_field((string) $attributes['intro']) : '';
-
     $next_title = isset($attributes['nextTitle']) ? sanitize_text_field((string) $attributes['nextTitle']) : 'Was kommt als Nächstes';
     $next_limit = isset($attributes['nextLimit']) ? (int) $attributes['nextLimit'] : 4;
 
@@ -531,15 +504,9 @@ function iss_timeline_render_sections($attributes = [], $content = '', $block = 
         ? get_block_wrapper_attributes(['class' => 'iss-timeline-sections iss-container'])
         : 'class="iss-timeline-sections iss-container"';
 
-    $section_heading_tag = ($title !== '') ? 'h3' : 'h2';
+    $section_heading_tag = 'h2';
 
     $out = '<section ' . $attrs . '>';
-    if ($title !== '' || $intro !== '') {
-        $out .= '<header class="iss-timeline__intro">';
-        if ($title !== '') $out .= '<h2 class="iss-timeline__title-heading">' . esc_html($title) . '</h2>';
-        if ($intro !== '') $out .= '<div class="iss-timeline__intro-text">' . wp_kses_post(wpautop(esc_html($intro))) . '</div>';
-        $out .= '</header>';
-    }
 
     // 1) Next
     $out .= '<div class="iss-timeline__section iss-timeline__section--next">';

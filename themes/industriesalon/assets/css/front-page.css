@@ -28,6 +28,9 @@ html, body, .wp-site-blocks {
 .wp-site-blocks .wp-block-cover.iss-front-hero {
   --iss-hero-min-h: 80svh;
   --iss-banner-width: 460px;
+  --iss-hero-gap: 2.5rem;
+  --iss-banner-drop: 33%;
+  --iss-logo-baseline-offset: 10.75rem;
   min-height: 80vh;
   min-height: var(--iss-hero-min-h);
   margin: 0;
@@ -42,10 +45,10 @@ html, body, .wp-site-blocks {
 
 .iss-front-page-main .iss-front-banner-slot {
   position: relative;
-  transform: translateY(10%);
+  transform: translateY(var(--iss-banner-drop));
   width: 100%;
   max-width: var(--iss-banner-width);
-  margin-left: 10px !important;
+  margin-left: 0 !important;
   margin-right: auto !important;
   margin-bottom: -100px;
   z-index: 999;
@@ -54,7 +57,7 @@ html, body, .wp-site-blocks {
 @media (max-width: 782px) {
   .iss-front-page-main .iss-front-banner-slot {
     max-width: 90%;
-    margin-left: 10px !important;
+    margin-left: 0 !important;
   }
 }
 
@@ -93,6 +96,10 @@ html, body, .wp-site-blocks {
   transform: translateY(10px);
 }
 
+.iss-front-page-main .iss-front-hero .iss-kicker {
+  margin-left: 0;
+}
+
 .iss-front-page-main .iss-front-hero .iss-control-field--general-tagline {
   max-width: 18ch;
   margin: 0 0 0 4rem;
@@ -113,14 +120,14 @@ html, body, .wp-site-blocks {
 @media (max-width: 782px) {
   .iss-front-page-main .iss-front-hero__content.has-global-padding.is-layout-constrained.wp-block-group-is-layout-constrained {
     padding-top: 10px;
-    padding-left: 6rem;
+    padding-left: var(--iss-container-pad);
   }
 }
 
 
 /* Clearance for the section below */
 #programm {
-  padding-top: 200px;
+  padding-top: 240px;
   background: white;
   position: relative;
   z-index: 10;
@@ -133,10 +140,13 @@ html, body, .wp-site-blocks {
     flex-direction: row !important;
     align-items: flex-start !important;
     justify-content: flex-start !important;
-    max-width: 1440px !important;
+    gap: var(--iss-hero-gap) !important;
+    max-width: var(--iss-content-width) !important;
     margin: 0 auto !important;
     min-height: 600px !important;
     overflow: visible !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
 
   .iss-front-banner-slot {
@@ -151,7 +161,7 @@ html, body, .wp-site-blocks {
     order: 2 !important;
     flex: 1 !important;
     margin-left: 1px !important;
-    margin-top: 1rem !important;
+    margin-top: var(--iss-logo-baseline-offset) !important;
     z-index: 10 !important;
   }
 }
@@ -160,15 +170,15 @@ html, body, .wp-site-blocks {
   .iss-front-hero__shell {
     display: flex !important;
     flex-direction: column !important;
+    justify-content: flex-end !important;
     align-items: center !important;
-    padding-top: 100px !important;
+    padding-top: calc(var(--iss-header-height) + 1rem) !important;
     height: auto !important;
     width: 100% !important;
     overflow-x: hidden !important;
   }
 
-  .iss-front-hero__content, 
-  .iss-front-banner-slot {
+  .iss-front-hero__content {
     width: 100% !important;
     max-width: 100% !important;
     padding: 0 1.5rem !important;
@@ -179,8 +189,17 @@ html, body, .wp-site-blocks {
 
   .iss-front-banner-slot {
     order: 2 !important;
-    margin-top: 2rem !important;
-    margin-bottom: 3rem !important;
+    width: 100% !important;
+    max-width: min(100%, var(--iss-banner-width)) !important;
+    margin-top: 1.5rem !important;
+    margin-left: 0 !important;
+    margin-right: auto !important;
+    transform: none !important;
+    margin-bottom: 0 !important;
+  }
+
+  #programm {
+    padding-top: 120px;
   }
 }
 
@@ -189,23 +208,76 @@ html, body, .wp-site-blocks {
   margin-left: auto !important;
   margin-right: auto !important;
   width: 100% !important;
-  max-width: 42rem !important;
-  padding: 0 1.5rem !important;
+  max-width: var(--iss-content-width) !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
   box-sizing: border-box !important;
 }
 
-@media (min-width: 1440px) {
-  .iss-mission-statement {
-    margin-left: 750px !important;
+/* Wrapper from front-page template: neutralize .iss-indent max-width caging */
+.iss-mission-statement--indent {
+  width: 100% !important;
+  max-width: var(--iss-content-width) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  border-left: 0 !important;
+  padding-left: 0 !important;
+}
+
+/* --- MISSION STATEMENT Alignment overrides--- */
+.iss-mission-statement--indent .iss-mission-statement.iss-mission-statement--manual-offset {
+  width: auto !important;
+  max-width: none !important;
+  margin-left: 640px !important;
+  margin-right: 120px !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  transform: none !important;
+}
+
+.iss-mission-statement--indent .iss-mission-statement.iss-mission-statement--manual-offset .iss-heading__text {
+  max-width: none !important;
+}
+.iss-mission-statement .iss-heading__text.iss-mission-statement__text {
+    color: black; /* e.g., red or #000000 */
+}
+
+
+@media (min-width: 1024px) {
+  .iss-mission-statement:not(.iss-mission-statement--manual-offset) {
+    padding-left: calc(var(--iss-banner-width) + var(--iss-hero-gap)) !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  .iss-mission-statement--indent {
+    max-width: 100% !important;
+    padding-left: var(--iss-container-pad) !important;
+    padding-right: var(--iss-container-pad) !important;
+  }
+
+  .iss-mission-statement,
+  .iss-mission-statement--manual-offset,
+  .iss-mission-statement--indent .iss-mission-statement.iss-mission-statement--manual-offset {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding-left: var(--iss-container-pad) !important;
+    padding-right: var(--iss-container-pad) !important;
+    margin-left: auto !important;
     margin-right: auto !important;
-    padding-left: 0 !important;
+  }
+}
+
+@media (min-width: 1440px) {
+  .iss-mission-statement:not(.iss-mission-statement--manual-offset) {
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
 }
 
 @media (min-width: 1024px) and (max-width: 1439px) {
-  .iss-mission-statement {
-    margin-left: 200px !important;
+  .iss-mission-statement:not(.iss-mission-statement--manual-offset) {
+    margin-left: auto !important;
     margin-right: auto !important;
-    padding-left: 0 !important;
   }
 }

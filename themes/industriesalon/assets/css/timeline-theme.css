@@ -15,7 +15,6 @@
   --iss-tl-pill-bg: #f5f5f5;
 }
 
-.iss-timeline__intro-text,
 .iss-timeline__summary {
   color: var(--iss-tl-muted);
 }

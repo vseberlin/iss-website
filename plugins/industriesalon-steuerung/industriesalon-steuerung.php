@@ -926,7 +926,7 @@ final class Industriesalon_Steuerung {
 
         ob_start();
         ?>
-        <div class="iss-heading iss-mission-statement">
+        <div class="iss-heading iss-mission-statement iss-mission-statement--manual-offset">
             <?php if ($title !== '') : ?>
                 <p class="iss-kicker iss-mission-statement__title"><?php echo esc_html($title); ?></p>
             <?php endif; ?>
