@@ -27,3 +27,7 @@
 .iss-timeline__footer {
   margin-inline: auto;
 }
+
+.iss-timeline--latest {
+  width: 100%;
+}

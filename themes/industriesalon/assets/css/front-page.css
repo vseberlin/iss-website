@@ -48,8 +48,8 @@ html, body, .wp-site-blocks {
   transform: translateY(var(--iss-banner-drop));
   width: 100%;
   max-width: var(--iss-banner-width);
-  margin-left: 0 !important;
-  margin-right: auto !important;
+  margin-left: 0;
+  margin-right: auto;
   margin-bottom: -100px;
   z-index: 999;
 }
@@ -57,7 +57,7 @@ html, body, .wp-site-blocks {
 @media (max-width: 782px) {
   .iss-front-page-main .iss-front-banner-slot {
     max-width: 90%;
-    margin-left: 0 !important;
+    margin-left: 0;
   }
 }
 
@@ -71,6 +71,10 @@ html, body, .wp-site-blocks {
   border-left: 10px solid #e81d25;
   border-radius: 12px;
   box-shadow: 0 40px 90px rgba(0, 0, 0, 0.3);
+}
+
+.iss-front-page-main .iss-notice--front_page_banner {
+  width: 100%;
 }
 
 /* =====================================================================
@@ -100,6 +104,10 @@ html, body, .wp-site-blocks {
   margin-left: 0;
 }
 
+.iss-front-page-main .iss-control-field {
+  display: block;
+}
+
 .iss-front-page-main .iss-front-hero .iss-control-field--general-tagline {
   max-width: 18ch;
   margin: 0 0 0 4rem;
@@ -113,7 +121,7 @@ html, body, .wp-site-blocks {
 @media (min-width: 782px) {
   .iss-front-page-main .iss-front-hero .iss-control-field--general-tagline {
     font-size: 3.5rem;
-     margin-left: 6rem !important;
+     margin-left: 6rem;
   }
 }
 
@@ -136,66 +144,66 @@ html, body, .wp-site-blocks {
 /* --- HERO SECTION LAYOUT --- */
 @media (min-width: 1024px) {
   .iss-front-hero__shell {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: flex-start !important;
-    justify-content: flex-start !important;
-    gap: var(--iss-hero-gap) !important;
-    max-width: var(--iss-content-width) !important;
-    margin: 0 auto !important;
-    min-height: 600px !important;
-    overflow: visible !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: var(--iss-hero-gap);
+    max-width: var(--iss-content-width);
+    margin: 0 auto;
+    min-height: 600px;
+    overflow: visible;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .iss-front-banner-slot {
-    order: 1 !important;
-    width: var(--iss-banner-width) !important;
-    flex-shrink: 0 !important;
-    margin-top: 15rem !important;
-    z-index: 99 !important;
+    order: 1;
+    width: var(--iss-banner-width);
+    flex-shrink: 0;
+    margin-top: 15rem;
+    z-index: 99;
   }
 
   .iss-front-hero__content {
-    order: 2 !important;
-    flex: 1 !important;
-    margin-left: 1px !important;
-    margin-top: var(--iss-logo-baseline-offset) !important;
-    z-index: 10 !important;
+    order: 2;
+    flex: 1;
+    margin-left: 1px;
+    margin-top: var(--iss-logo-baseline-offset);
+    z-index: 10;
   }
 }
 
 @media (max-width: 1023px) {
   .iss-front-hero__shell {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: flex-end !important;
-    align-items: center !important;
-    padding-top: calc(var(--iss-header-height) + 1rem) !important;
-    height: auto !important;
-    width: 100% !important;
-    overflow-x: hidden !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    padding-top: calc(var(--iss-header-height) + 1rem);
+    height: auto;
+    width: 100%;
+    overflow-x: hidden;
   }
 
   .iss-front-hero__content {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 0 1.5rem !important;
-    box-sizing: border-box !important;
-    margin: 0 !important;
-    transform: none !important;
+    width: 100%;
+    max-width: 100%;
+    padding: 0 1.5rem;
+    box-sizing: border-box;
+    margin: 0;
+    transform: none;
   }
 
   .iss-front-banner-slot {
-    order: 2 !important;
-    width: 100% !important;
-    max-width: min(100%, var(--iss-banner-width)) !important;
-    margin-top: 1.5rem !important;
-    margin-left: 0 !important;
-    margin-right: auto !important;
-    transform: none !important;
-    margin-bottom: 0 !important;
+    order: 2;
+    width: 100%;
+    max-width: min(100%, var(--iss-banner-width));
+    margin-top: 1.5rem;
+    margin-left: 0;
+    margin-right: auto;
+    transform: none;
+    margin-bottom: 0;
   }
 
   #programm {
@@ -242,6 +250,10 @@ html, body, .wp-site-blocks {
     color: black; /* e.g., red or #000000 */
 }
 
+.iss-mission-statement__title {
+  margin: 0;
+}
+
 
 @media (min-width: 1024px) {
   .iss-mission-statement:not(.iss-mission-statement--manual-offset) {
@@ -283,102 +295,43 @@ html, body, .wp-site-blocks {
 }
 
 
-/* Führungen entdecken: stable desktop layout */
-.iss-home-tours .iss-tours-teaser-grid {
-  gap: clamp(0.75rem, 1.2vw, 1rem) !important;
+/* Keep top-level front-page heading blocks inside the shared content container. */
+.home .wp-site-blocks > .wp-block-group.iss-heading {
+  width: 100%;
+  max-width: var(--iss-content-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--iss-container-pad);
+  padding-right: var(--iss-container-pad);
+  box-sizing: border-box;
 }
 
-@media (min-width: 1024px) {
-  .iss-home-tours .iss-tours-teaser-grid {
-    display: grid !important;
-    grid-template-columns: minmax(0, 60%) minmax(0, 40%);
-    column-gap: clamp(0.75rem, 1.2vw, 1rem);
-    align-items: stretch;
-    height: 40vh;
-    min-height: 24rem;
-  }
+.iss-section {
+  width: 100%;
+}
 
-  .iss-home-tours .iss-tours-teaser-grid__main,
-  .iss-home-tours .iss-tours-teaser-grid__side {
-    min-width: 0;
-    width: auto !important;
-    max-width: none !important;
-  }
+/* Front-page tours text and footer structure */
+.iss-home-tours .iss-tour-lead-card__title {
+  margin: 0;
+}
 
-  .iss-home-tours .iss-tours-teaser-grid__main .iss-tour-card {
-    display: grid;
-    grid-template-rows: 33% 1fr;
-    height: 100%;
-    min-height: 0;
-    overflow: hidden;
-  }
+.iss-home-tours .iss-tour-lead-card__text {
+  margin: 0;
+  color: rgba(30, 30, 30, 0.82);
+}
 
-  .iss-home-tours .iss-tours-teaser-grid__main .iss-tour-card__media {
-    width: 100%;
-    height: 100%;
-    margin: 0 !important;
-  }
+.iss-home-tours .iss-tour-lead-card__actions {
+  margin-top: auto;
+}
 
-  .iss-home-tours .iss-tours-teaser-grid__main .iss-tour-card__media img {
-    width: 100% !important;
-    height: 100% !important;
-    display: block;
-    object-fit: cover;
-  }
+.iss-home-tours .iss-home-tours__footer {
+  gap: 1rem;
+}
 
-  .iss-home-tours .iss-tours-teaser-grid__main .iss-tour-card__body {
-    display: flex !important;
-    flex-direction: column;
-    gap: 0.5rem;
-    overflow: hidden;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__main .iss-tour-card__text {
-    display: block;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__main .iss-tour-card__text + .iss-tour-card__text {
-    display: none;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__main .iss-tour-card__actions {
-    display: none;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__side {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(3, minmax(0, 1fr));
-    gap: clamp(0.75rem, 1.2vw, 1rem);
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__side .iss-tour-tile {
-    height: 100%;
-    min-height: 0;
-    padding: 0 !important;
-    overflow: hidden;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__side .iss-tour-tile__overlay {
-    display: none !important;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__side .iss-tour-tile__media {
-    width: 100%;
-    height: 100%;
-    margin: 0 !important;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__side .iss-tour-tile__media img {
-    width: 100% !important;
-    height: 100% !important;
-    display: block;
-    object-fit: cover;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__side .wp-block-spacer {
-    display: none;
-  }
+.iss-home-tours .iss-home-tours__note {
+  margin: 0;
+  max-width: 58ch;
+  color: rgba(30, 30, 30, 0.78);
 }
 
 @media (max-width: 1023px) {
@@ -392,133 +345,8 @@ html, body, .wp-site-blocks {
     max-width: none;
   }
 
-  .iss-home-tours .iss-tours-teaser-grid {
-    display: block !important;
-    height: auto;
-    min-height: 0;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__main,
-  .iss-home-tours .iss-tours-teaser-grid__side {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__side {
-    margin-top: 0.75rem;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: none;
-  }
-}
-
-/* Keep top-level front-page heading blocks inside the shared content container. */
-.home .wp-site-blocks > .wp-block-group.iss-heading {
-  width: 100%;
-  max-width: var(--iss-content-width);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--iss-container-pad);
-  padding-right: var(--iss-container-pad);
-  box-sizing: border-box;
-}
-
-/* =====================================================================
-   HOTFIX: Führungen entdecken stable two-column layout
-   ===================================================================== */
-@media (min-width: 1024px) {
-  .iss-home-tours .iss-tours-teaser-grid {
-    display: grid !important;
-    grid-template-columns: minmax(0, 60%) minmax(0, 40%) !important;
-    gap: clamp(0.75rem, 1.2vw, 1rem) !important;
-    height: 50vh !important;
-    min-height: 22rem !important;
-    max-height: 50vh !important;
-    overflow: hidden !important;
-    align-items: stretch !important;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__main,
-  .iss-home-tours .iss-tours-teaser-grid__side {
-    width: auto !important;
-    max-width: none !important;
-    min-width: 0 !important;
-    min-height: 0 !important;
-    overflow: hidden !important;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__main .iss-card {
-    height: 100% !important;
-    min-height: 0 !important;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__main .iss-tour-card {
-    display: grid !important;
-    grid-template-rows: auto minmax(0, 1fr) !important;
-    height: 100% !important;
-    overflow: hidden !important;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__main .iss-tour-card__media,
-  .iss-home-tours .iss-tours-teaser-grid__main .iss-tour-card__media img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    margin: 0 !important;
-    display: block !important;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__main .iss-tour-card__body {
-    order: 1 !important;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__main .iss-tour-card__media {
-    order: 2 !important;
-    min-height: 0 !important;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__main .iss-tour-card__body {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 0.5rem !important;
-    overflow: hidden !important;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__main .iss-tour-card__text {
-    display: block !important;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__main .iss-tour-card__text + .iss-tour-card__text,
-  .iss-home-tours .iss-tours-teaser-grid__main .iss-tour-card__actions {
-    display: none !important;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__side {
-    display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    grid-template-rows: repeat(3, minmax(0, 1fr)) !important;
-    gap: clamp(0.75rem, 1.2vw, 1rem) !important;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__side .iss-card,
-  .iss-home-tours .iss-tours-teaser-grid__side .iss-tour-tile {
-    height: 100% !important;
-    min-height: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__side .iss-tour-tile__overlay,
-  .iss-home-tours .iss-tours-teaser-grid__side .wp-block-spacer {
-    display: none !important;
-  }
-
-  .iss-home-tours .iss-tours-teaser-grid__side .iss-tour-tile__media,
-  .iss-home-tours .iss-tours-teaser-grid__side .iss-tour-tile__media img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    margin: 0 !important;
-    display: block !important;
+  .iss-home-tours .iss-home-tours__footer {
+    align-items: flex-start;
   }
 }
 
@@ -527,94 +355,94 @@ html, body, .wp-site-blocks {
    ===================================================================== */
 @media (min-width: 1024px) {
   .iss-home-tours .iss-tours-layout {
-    display: grid !important;
-    grid-template-columns: minmax(0, 60%) minmax(0, 40%) !important;
-    gap: clamp(0.75rem, 1.2vw, 1rem) !important;
-    height: 50vh !important;
-    min-height: 24rem !important;
-    max-height: 50vh !important;
-    align-items: stretch !important;
+    display: grid;
+    grid-template-columns: minmax(0, 60%) minmax(0, 40%);
+    gap: clamp(0.75rem, 1.2vw, 1rem);
+    height: 50vh;
+    min-height: 24rem;
+    max-height: 50vh;
+    align-items: stretch;
   }
 
   .iss-home-tours .iss-tours-layout__lead,
   .iss-home-tours .iss-tours-layout__grid {
-    width: auto !important;
-    max-width: none !important;
-    min-width: 0 !important;
-    min-height: 0 !important;
-    overflow: hidden !important;
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
   }
 
   .iss-home-tours .iss-tour-lead-card {
-    display: grid !important;
-    grid-template-rows: auto minmax(0, 1fr) !important;
-    height: 100% !important;
-    overflow: hidden !important;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    height: 100%;
+    overflow: hidden;
   }
 
   .iss-home-tours .iss-tour-lead-card__body {
-    order: 1 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 0.5rem !important;
-    overflow: hidden !important;
+    order: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    overflow: hidden;
   }
 
   .iss-home-tours .iss-tour-lead-card__media {
-    order: 2 !important;
-    margin: 0 !important;
-    min-height: 0 !important;
+    order: 1;
+    margin: 0;
+    min-height: 0;
   }
 
   .iss-home-tours .iss-tour-lead-card__media a,
   .iss-home-tours .iss-tour-lead-card__media img {
-    width: 100% !important;
-    height: 100% !important;
-    display: block !important;
+    width: 100%;
+    height: 100%;
+    display: block;
   }
 
   .iss-home-tours .iss-tour-lead-card__media img {
-    object-fit: cover !important;
+    object-fit: cover;
   }
 
   .iss-home-tours .iss-tour-thumb-grid {
-    display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    grid-template-rows: repeat(3, minmax(0, 1fr)) !important;
-    gap: clamp(0.5rem, 1vw, 0.75rem) !important;
-    height: 100% !important;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    gap: clamp(0.5rem, 1vw, 0.75rem);
+    height: 100%;
   }
 
   .iss-home-tours .iss-tour-thumb {
-    min-height: 0 !important;
-    overflow: hidden !important;
+    min-height: 0;
+    overflow: hidden;
   }
 
   .iss-home-tours .iss-tour-thumb .wp-block-image,
   .iss-home-tours .iss-tour-thumb .iss-tour-thumb__media {
-    margin: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
+    margin: 0;
+    width: 100%;
+    height: 100%;
   }
 
   .iss-home-tours .iss-tour-thumb .wp-block-image a,
   .iss-home-tours .iss-tour-thumb .wp-block-image img {
-    width: 100% !important;
-    height: 100% !important;
-    display: block !important;
+    width: 100%;
+    height: 100%;
+    display: block;
   }
 
   .iss-home-tours .iss-tour-thumb .wp-block-image img {
-    aspect-ratio: 1 / 1 !important;
-    object-fit: cover !important;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
   }
 }
 
 @media (max-width: 1023px) {
   .iss-home-tours .iss-tours-layout {
-    display: block !important;
-    height: auto !important;
-    min-height: 0 !important;
+    display: block;
+    height: auto;
+    min-height: 0;
   }
 
   .iss-home-tours .iss-tours-layout__grid {
@@ -622,20 +450,20 @@ html, body, .wp-site-blocks {
   }
 
   .iss-home-tours .iss-tour-thumb-grid {
-    display: grid !important;
+    display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.75rem;
   }
 
   .iss-home-tours .iss-tour-lead-card__media,
   .iss-home-tours .iss-tour-thumb .wp-block-image {
-    margin: 0 !important;
+    margin: 0;
   }
 
   .iss-home-tours .iss-tour-thumb .wp-block-image img {
-    width: 100% !important;
-    height: 100% !important;
-    aspect-ratio: 1 / 1 !important;
-    object-fit: cover !important;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
   }
 }

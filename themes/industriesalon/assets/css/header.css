@@ -32,6 +32,12 @@
   min-width: 0;
 }
 
+.iss-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .iss-site-header .wp-block-site-logo {
   margin: 0;
 }

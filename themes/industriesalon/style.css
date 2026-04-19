@@ -110,7 +110,9 @@ body {
   gap: 0.6rem;
 
   margin: 0 0 1rem;
+  margin-left: 0;
   padding-left: 0.9rem;
+  text-indent: 0;
 
   border-left: 3px solid var(--iss-red);
 
@@ -178,6 +180,10 @@ body {
 .iss-kicker--blue::before  { background: var(--iss-blue); }
 .iss-kicker--yellow::before{ background: var(--iss-yellow); }
 
+.iss-info-panel > .iss-kicker {
+  margin: -0.45rem 0 0.75rem;
+}
+
 /* =====================================================================
    KICKER + HEADING BLOCK (paired pattern)
    ===================================================================== */
@@ -187,22 +193,9 @@ body {
   flex-direction: column;
   gap: 0.5rem;
   max-width: 42rem;
-}
-
-/* Align the heading block with the start of the card grid */
-.iss-heading {
-    max-width: 1720px !important; /* Match the grid's container width */
-    margin-left: auto !important;
-    margin-right: auto !important;
-    padding-left: 40px !important; /* Match the offset seen on the grid */
-    box-sizing: border-box;
-}
-
-/* Ensure the text inside the heading stays aligned to the left */
-.iss-heading {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+  align-items: flex-start;
+  text-align: left;
+  box-sizing: border-box;
 }
 
 
@@ -325,7 +318,7 @@ body {
 /* Stack cards on mobile (screens smaller than 768px) */
 @media (max-width: 767px) {
     .wp-block-group.iss-card-grid {
-        grid-template-columns: 1fr !important;
+        grid-template-columns: 1fr;
         /* Ensure there is vertical spacing between stacked cards */
         row-gap: 24px; 
     }
@@ -544,4 +537,3 @@ body {
     grid-template-columns: 1fr;
   }
 }
-
