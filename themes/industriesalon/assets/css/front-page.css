@@ -81,7 +81,7 @@ html, body, .wp-site-blocks {
    FRONT PAGE HERO CONTENT (Title & Cluster)
    ===================================================================== */
 
-.iss-front-page-main .iss-front-hero__shell.has-global-padding.is-layout-constrained.wp-block-group-is-layout-constrained {
+.iss-front-page-main .iss-front-hero__shell {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -94,7 +94,7 @@ html, body, .wp-site-blocks {
   overflow: visible;
 }
 
-.iss-front-page-main .iss-front-hero__content.has-global-padding.is-layout-constrained.wp-block-group-is-layout-constrained {
+.iss-front-page-main .iss-front-hero__content {
   padding-top: 0;
   padding-left: 1px;
   transform: translateY(10px);
@@ -126,7 +126,7 @@ html, body, .wp-site-blocks {
 }
 
 @media (max-width: 782px) {
-  .iss-front-page-main .iss-front-hero__content.has-global-padding.is-layout-constrained.wp-block-group-is-layout-constrained {
+  .iss-front-page-main .iss-front-hero__content {
     padding-top: 10px;
     padding-left: var(--iss-container-pad);
   }
