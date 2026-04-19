@@ -212,42 +212,13 @@ html, body, .wp-site-blocks {
 }
 
 /* --- MISSION STATEMENT BLOCK --- */
-.iss-mission-statement {
-  margin-left: auto !important;
-  margin-right: auto !important;
-  width: 100% !important;
-  max-width: var(--iss-content-width) !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  box-sizing: border-box !important;
+.iss-mission-statement-wrap .iss-mission-statement {
+  margin: 0;
+  max-width: 60ch;
 }
 
-/* Wrapper from front-page template: neutralize .iss-indent max-width caging */
-.iss-mission-statement--indent {
-  width: 100% !important;
-  max-width: var(--iss-content-width) !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  border-left: 0 !important;
-  padding-left: 0 !important;
-}
-
-/* --- MISSION STATEMENT Alignment overrides--- */
-.iss-mission-statement--indent .iss-mission-statement.iss-mission-statement--manual-offset {
-  width: auto !important;
-  max-width: none !important;
-  margin-left: 640px !important;
-  margin-right: 120px !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  transform: none !important;
-}
-
-.iss-mission-statement--indent .iss-mission-statement.iss-mission-statement--manual-offset .iss-heading__text {
-  max-width: none !important;
-}
-.iss-mission-statement .iss-heading__text.iss-mission-statement__text {
-    color: black; /* e.g., red or #000000 */
+.iss-mission-statement-wrap .iss-mission-statement .iss-heading__text.iss-mission-statement__text {
+  color: black;
 }
 
 .iss-mission-statement__title {
@@ -256,41 +227,15 @@ html, body, .wp-site-blocks {
 
 
 @media (min-width: 1024px) {
-  .iss-mission-statement:not(.iss-mission-statement--manual-offset) {
-    padding-left: calc(var(--iss-banner-width) + var(--iss-hero-gap)) !important;
+  .iss-mission-statement-wrap .iss-mission-statement {
+    margin-left: calc(var(--iss-banner-width) + var(--iss-hero-gap));
   }
 }
 
 @media (max-width: 1023px) {
-  .iss-mission-statement--indent {
-    max-width: 100% !important;
-    padding-left: var(--iss-container-pad) !important;
-    padding-right: var(--iss-container-pad) !important;
-  }
-
-  .iss-mission-statement,
-  .iss-mission-statement--manual-offset,
-  .iss-mission-statement--indent .iss-mission-statement.iss-mission-statement--manual-offset {
-    max-width: 100% !important;
-    width: 100% !important;
-    padding-left: var(--iss-container-pad) !important;
-    padding-right: var(--iss-container-pad) !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-}
-
-@media (min-width: 1440px) {
-  .iss-mission-statement:not(.iss-mission-statement--manual-offset) {
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-}
-
-@media (min-width: 1024px) and (max-width: 1439px) {
-  .iss-mission-statement:not(.iss-mission-statement--manual-offset) {
-    margin-left: auto !important;
-    margin-right: auto !important;
+  .iss-mission-statement-wrap .iss-mission-statement {
+    max-width: 100%;
+    margin-left: 0;
   }
 }
 
@@ -381,7 +326,6 @@ html, body, .wp-site-blocks {
   }
 
   .iss-home-tours .iss-tour-lead-card__body {
-    order: 2;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -389,7 +333,6 @@ html, body, .wp-site-blocks {
   }
 
   .iss-home-tours .iss-tour-lead-card__media {
-    order: 1;
     margin: 0;
     min-height: 0;
   }

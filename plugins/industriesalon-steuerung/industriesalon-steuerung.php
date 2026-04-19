@@ -761,8 +761,13 @@ final class Industriesalon_Steuerung {
         $atts = shortcode_atts([
             'title'   => '',
             'heading' => '',
+            'layout'  => 'offset',
         ], $atts, 'iss_mission_statement');
-        return $this->render_mission_statement((string) $atts['title'], (string) $atts['heading']);
+        return $this->render_mission_statement(
+            (string) $atts['title'],
+            (string) $atts['heading'],
+            (string) $atts['layout']
+        );
     }
 
     public function render_field(array $args): string {
@@ -1474,16 +1479,21 @@ final class Industriesalon_Steuerung {
         return (string) ob_get_clean();
     }
 
-    public function render_mission_statement(string $title = '', string $heading = ''): string {
+    public function render_mission_statement(string $title = '', string $heading = '', string $layout = 'offset'): string {
         $mission_statement = get_option(self::OPTION_MISSION_STATEMENT, $this->default_mission_statement());
         $content = trim((string) ($mission_statement['content'] ?? ''));
         if ($content === '') {
             return '';
         }
 
+        $wrapper_classes = ['iss-heading', 'iss-mission-statement'];
+        if ($layout !== 'natural') {
+            $wrapper_classes[] = 'iss-mission-statement--manual-offset';
+        }
+
         ob_start();
         ?>
-        <div class="iss-heading iss-mission-statement iss-mission-statement--manual-offset">
+        <div class="<?php echo esc_attr(implode(' ', $wrapper_classes)); ?>">
             <?php if ($title !== '') : ?>
                 <p class="iss-kicker iss-mission-statement__title"><?php echo esc_html($title); ?></p>
             <?php endif; ?>
