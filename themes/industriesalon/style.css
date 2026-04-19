@@ -189,13 +189,41 @@ body {
    ===================================================================== */
 
 .iss-heading {
+  --iss-heading-max-width: 42rem;
+  --iss-heading-pad-right: 0;
+  --iss-heading-margin-right: 0;
+
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  max-width: 42rem;
+  width: 100%;
+  max-width: var(--iss-heading-max-width);
   align-items: flex-start;
   text-align: left;
+  margin-right: var(--iss-heading-margin-right);
+  padding-right: var(--iss-heading-pad-right);
   box-sizing: border-box;
+}
+
+.iss-heading > .iss-kicker,
+.iss-heading > .iss-heading__title,
+.iss-heading > .iss-heading__text {
+  margin-left: 0;
+  margin-right: 0;
+  max-width: none;
+  text-align: inherit;
+}
+
+.iss-heading--uncaged {
+  --iss-heading-max-width: none;
+}
+
+.iss-heading--pad-right {
+  --iss-heading-pad-right: var(--wp--preset--spacing--l, 1.5rem);
+}
+
+.iss-heading--margin-right {
+  --iss-heading-margin-right: var(--wp--preset--spacing--l, 1.5rem);
 }
 
 
@@ -255,9 +283,29 @@ body {
    ===================================================================== */
 
 .iss-indent {
+  --iss-indent-max-width: 60ch;
+  --iss-indent-pad-right: 0;
+  --iss-indent-margin-right: 0;
+
   border-left: 3px solid var(--iss-red);
   padding-left: 1rem;
-  max-width: 60ch;
+  padding-right: var(--iss-indent-pad-right);
+  margin-right: var(--iss-indent-margin-right);
+  max-width: var(--iss-indent-max-width);
+  width: 100%;
+  text-align: left;
+}
+
+.iss-indent--uncaged {
+  --iss-indent-max-width: none;
+}
+
+.iss-indent--pad-right {
+  --iss-indent-pad-right: var(--wp--preset--spacing--l, 1.5rem);
+}
+
+.iss-indent--margin-right {
+  --iss-indent-margin-right: var(--wp--preset--spacing--l, 1.5rem);
 }
 
 .iss-indent--light {

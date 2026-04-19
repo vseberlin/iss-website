@@ -109,21 +109,34 @@
 }
 
 @media (max-width: 781px) {
+  /*
+    Mobile stack behavior:
+    - Do not fight inline flex-basis from Columns with !important.
+    - Switch container from flex to block so flex-basis is ignored naturally.
+    - This keeps Gutenberg markup simple and avoids hard overrides.
+  */
   .iss-feature-stack {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.5rem;
+    display: block;
   }
 
+  /* Both logical columns flow full-width in natural DOM order. */
   .iss-feature-stack__content,
   .iss-feature-stack__media-col {
     width: 100%;
-    flex-basis: auto !important;
     max-width: 100%;
     min-height: 0;
   }
 
+  /* Replaces former flex gap once container is block. */
+  .iss-feature-stack__media-col {
+    margin-top: 1.5rem;
+    justify-content: flex-start;
+  }
+
+  /*
+    Actions stay left-aligned and width-aware without forcing
+    button widths globally.
+  */
   .iss-feature-stack__actions {
     width: 100%;
   }
@@ -132,10 +145,7 @@
     width: auto;
   }
 
-  .iss-feature-stack__media-col {
-    justify-content: flex-start;
-  }
-
+  /* Keep horizontal image-strip scroll interaction on narrow screens. */
   .iss-feature-stack__media-grid {
     display: flex;
     flex-direction: row;

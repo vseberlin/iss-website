@@ -2,9 +2,15 @@
    FRONT PAGE LAYOUT FIXES
    --------------------------------------------------------------------- */
 
-html, body, .wp-site-blocks {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
+/*
+  Home canvas reset (without hard override):
+  - Previous rule used !important on html/body/.wp-site-blocks.
+  - We only need this reset on the front-page canvas.
+  - Scope to .home so global pages keep default behavior.
+*/
+.home .wp-site-blocks {
+  margin-top: 0;
+  padding-top: 0;
 }
 
 /* 
