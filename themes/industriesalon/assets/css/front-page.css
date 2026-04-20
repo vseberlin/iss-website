@@ -21,23 +21,25 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  align-items: flex-start;
+  align-items: center;
   width: 100%;
   height: 100%;
+  min-height: inherit;
   max-width: var(--iss-content-width);
   margin: 0 auto;
-  padding: 0 var(--iss-container-pad);
+  padding: 0 var(--iss-container-pad) clamp(2rem, 5vh, 4rem);
   box-sizing: border-box;
   overflow: visible;
 }
 
 .wp-site-blocks .wp-block-cover.iss-front-hero {
-  --iss-hero-min-h: 80svh;
+  --iss-hero-min-h: 100svh;
   --iss-banner-width: 460px;
   --iss-hero-gap: 2.5rem;
-  --iss-banner-drop: 33%;
-  --iss-logo-baseline-offset: 10.75rem;
-  min-height: 80vh;
+  --iss-banner-offset: 100px;
+  --iss-banner-pad-y: 1.65rem;
+  --iss-banner-pad-x: 2rem;
+  min-height: 100vh;
   min-height: var(--iss-hero-min-h);
   margin: 0;
   padding: 0;
@@ -51,12 +53,12 @@
 
 .iss-front-page-main .iss-front-banner-slot {
   position: relative;
-  transform: translateY(var(--iss-banner-drop));
+  transform: translateY(var(--iss-banner-offset));
   width: 100%;
   max-width: var(--iss-banner-width);
   margin-left: 0;
   margin-right: auto;
-  margin-bottom: -100px;
+  margin-bottom: 0;
   z-index: 999;
 }
 
@@ -70,7 +72,7 @@
 .iss-front-page-main .iss-front-banner-slot .iss-notice__inner {
   display: grid;
   gap: 0.75rem;
-  padding: 2.5rem 3rem;
+  padding: var(--iss-banner-pad-y) var(--iss-banner-pad-x);
   background: white;
   color: #1e1e1e;
   border: 1px solid rgba(30, 30, 30, 0.1);
@@ -89,25 +91,35 @@
 
 .iss-front-page-main .iss-front-hero__shell {
   width: 100%;
+  min-height: inherit;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 2.5rem;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
   margin-top: 0;
-  margin-bottom: 2.5rem;
+  margin-bottom: 0;
   padding-top: 0;
   overflow: visible;
 }
 
 .iss-front-page-main .iss-front-hero__content {
+  width: 100%;
+  max-width: var(--iss-heading-max-width, 42rem);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  text-align: center;
   padding-top: 0;
-  padding-left: 1px;
-  transform: translateY(10px);
+  padding-left: 0;
+  transform: none;
 }
 
 .iss-front-page-main .iss-front-hero .iss-kicker {
-  margin-left: 0;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .iss-front-page-main .iss-control-field {
@@ -115,26 +127,28 @@
 }
 
 .iss-front-page-main .iss-front-hero .iss-control-field--general-tagline {
-  max-width: 18ch;
-  margin: 0 0 0 4rem;
-  font-size: 3.5rem;
-  font-weight: 700;
-  line-height: 1;
-  color: white;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  max-width: none;
+  margin: 0 auto;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: inherit;
+  line-height: 1.15;
+  color: var(--iss-white);
+  text-align: center;
+  text-shadow: none;
 }
 
 @media (min-width: 782px) {
   .iss-front-page-main .iss-front-hero .iss-control-field--general-tagline {
-    font-size: 3.5rem;
-     margin-left: 6rem;
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
 @media (max-width: 782px) {
   .iss-front-page-main .iss-front-hero__content {
-    padding-top: 10px;
-    padding-left: var(--iss-container-pad);
+    padding-top: 0;
+    padding-left: 0;
   }
 }
 
@@ -151,31 +165,38 @@
 @media (min-width: 1024px) {
   .iss-front-hero__shell {
     display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: flex-start;
-    gap: var(--iss-hero-gap);
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
     max-width: var(--iss-content-width);
     margin: 0 auto;
-    min-height: 600px;
+    min-height: inherit;
+    position: relative;
     overflow: visible;
     padding-left: 0;
     padding-right: 0;
   }
 
   .iss-front-banner-slot {
-    order: 1;
+    order: 2;
+    position: absolute;
+    left: 0;
+    bottom: calc(-1 * var(--iss-banner-offset));
+    transform: none;
     width: var(--iss-banner-width);
-    flex-shrink: 0;
-    margin-top: 15rem;
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
     z-index: 99;
   }
 
   .iss-front-hero__content {
-    order: 2;
-    flex: 1;
-    margin-left: 1px;
-    margin-top: var(--iss-logo-baseline-offset);
+    order: 1;
+    flex: 0 0 auto;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0;
     z-index: 10;
   }
 }

@@ -22,6 +22,20 @@
   min-width: 0;
 }
 
+.iss-3-card-row .iss-3-card-row__card > .wp-block-image,
+.iss-3-card-row .iss-3-card-row__card > .wp-block-image.size-large {
+  margin: 0;
+  width: 100%;
+}
+
+.iss-3-card-row .iss-3-card-row__card > .wp-block-image img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  height: auto;
+  object-fit: cover;
+}
+
 @media (max-width: 1024px) {
   .iss-3-card-row .iss-3-card-row__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

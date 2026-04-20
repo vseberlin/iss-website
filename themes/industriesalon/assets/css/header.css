@@ -1,5 +1,19 @@
 /* Header and navigation */
 
+:root {
+  --iss-site-header-pad-top: 3rem;
+  --iss-site-header-pad-bottom: 1rem;
+  --iss-site-logo-size: 80px;
+  --iss-site-logo-bottom: calc(var(--iss-site-header-pad-top) + var(--iss-site-logo-size));
+}
+
+@media (min-width: 782px) {
+  :root {
+    --iss-site-header-pad-top: 4.5rem;
+    --iss-site-logo-size: 120px;
+  }
+}
+
 .iss-site-header {
   position: fixed;
   top: 0;
@@ -16,14 +30,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  /* Push logo and menu lower into the cover */
-  padding: 3rem var(--iss-container-pad) 1rem;
-}
-
-@media (min-width: 782px) {
-  .iss-site-header__inner {
-    padding-top: 4.5rem;
-  }
+  padding: var(--iss-site-header-pad-top) var(--iss-container-pad) var(--iss-site-header-pad-bottom);
 }
 
 .iss-site-brand {
@@ -45,17 +52,10 @@
 /* Bigger Logo */
 .iss-site-header .custom-logo,
 .iss-site-header .wp-block-site-logo img {
-  width: 80px;
+  width: var(--iss-site-logo-size);
   height: auto;
   object-fit: contain;
   filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
-}
-
-@media (min-width: 782px) {
-  .iss-site-header .custom-logo,
-  .iss-site-header .wp-block-site-logo img {
-    width: 120px;
-  }
 }
 
 /* Menu Toggle (Mobile on Desktop) */
