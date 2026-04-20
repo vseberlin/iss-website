@@ -90,6 +90,13 @@ function industriesalon_register_block_patterns(): void
             'categories' => array('industriesalon', 'media', 'cards'),
             'file' => '/patterns/iss-4-card-row.html',
         ),
+        array(
+            'name' => 'industriesalon/3-card-row',
+            'title' => 'ISS 3 Card Row',
+            'description' => 'Section heading above a row of three compact info cards.',
+            'categories' => array('industriesalon', 'media', 'cards'),
+            'file' => '/patterns/iss-3-card-row.html',
+        ),
     );
 
     foreach ($patterns as $pattern) {
@@ -320,6 +327,18 @@ function industriesalon_enqueue_assets(): void
             $theme_uri . $four_card_row_rel,
             array('industriesalon-base'),
             (string) filemtime($four_card_row_abs)
+        );
+    }
+
+    // 16. 3 card row pattern styles
+    $three_card_row_rel = '/assets/css/3-card-row.css';
+    $three_card_row_abs = $theme_dir . $three_card_row_rel;
+    if (file_exists($three_card_row_abs)) {
+        wp_enqueue_style(
+            'industriesalon-3-card-row',
+            $theme_uri . $three_card_row_rel,
+            array('industriesalon-base'),
+            (string) filemtime($three_card_row_abs)
         );
     }
 

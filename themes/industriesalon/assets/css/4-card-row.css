@@ -17,6 +17,10 @@
   align-items: start;
 }
 
+.iss-4-card-row .iss-4-card-row__grid > * {
+  margin-block-start: 0 !important;
+}
+
 .iss-4-card-row .iss-4-card-row__card {
   display: flex;
   flex-direction: column;

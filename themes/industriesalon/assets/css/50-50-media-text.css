@@ -9,6 +9,7 @@
 }
 
 .iss-media-text .iss-media-text__layout {
+  margin-top: 1rem;
   gap: var(--iss-gap);
   align-items: stretch;
 }
@@ -21,31 +22,28 @@
 .iss-media-text .iss-media-text__inner {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-start;
   gap: 0.75rem;
-  min-height: clamp(20rem, 40vh, 34rem);
-  height: 100%;
-  padding: clamp(1.5rem, 2.5vw, 3rem);
-  border: 1px solid var(--iss-border);
-  border-radius: var(--iss-radius-lg);
-  background: var(--iss-white);
-  box-shadow: var(--iss-shadow);
+  min-height: 0;
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .iss-media-text .iss-media-text__title {
   margin: 0;
-  max-width: 16ch;
 }
 
 .iss-media-text .iss-media-text__text {
   margin: 0;
-  max-width: 56ch;
-  color: rgba(30, 30, 30, 0.78);
 }
 
 .iss-media-text .iss-media-text__actions {
-  margin-top: 0.5rem;
+  margin-top: 0;
 }
 
 .iss-media-text .iss-media-text__media,

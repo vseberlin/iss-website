@@ -38,15 +38,10 @@
 
 .iss-feature-stack__title {
   margin: 0;
-  width: 100%;
-  max-width: none;
 }
 
 .iss-feature-stack__text {
   margin: 0;
-  width: 100%;
-  max-width: none;
-  color: rgba(30, 30, 30, 0.82);
 }
 
 .iss-feature-stack__content .iss-kicker {
@@ -54,7 +49,7 @@
 }
 
 .iss-feature-stack__actions {
-  margin-top: 1.5rem;
+  margin-top: 0;
   justify-content: flex-start;
 }
 
