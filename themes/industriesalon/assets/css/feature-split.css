@@ -3,7 +3,8 @@
    Left text, right compact 3-image row aligned closer to text.
    ===================================================================== */
 
-.iss-section--feature-split-stack {
+.iss-section--feature-split-stack,
+.iss-section--feature-split {
   position: relative;
   overflow: hidden;
   --iss-feature-stack-gap: clamp(0.5rem, 1.2vw, 0.9rem);

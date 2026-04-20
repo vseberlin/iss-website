@@ -1,7 +1,7 @@
 /* Header and navigation */
 
 .iss-site-header {
-  position: absolute; /* Changed from fixed to absolute to move with scroll or stay top of cover */
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;

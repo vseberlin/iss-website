@@ -1,0 +1,105 @@
+/* =====================================================================
+   50/50 MEDIA TEXT PATTERN
+   Text block + image block.
+   Add .iss-media-text--flip on the root pattern wrapper to switch sides.
+   ===================================================================== */
+
+.iss-media-text {
+  overflow: clip;
+}
+
+.iss-media-text .iss-media-text__layout {
+  gap: var(--iss-gap);
+  align-items: stretch;
+}
+
+.iss-media-text .iss-media-text__content,
+.iss-media-text .iss-media-text__media-col {
+  min-width: 0;
+}
+
+.iss-media-text .iss-media-text__inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-height: clamp(20rem, 40vh, 34rem);
+  height: 100%;
+  padding: clamp(1.5rem, 2.5vw, 3rem);
+  border: 1px solid var(--iss-border);
+  border-radius: var(--iss-radius-lg);
+  background: var(--iss-white);
+  box-shadow: var(--iss-shadow);
+}
+
+.iss-media-text .iss-media-text__title {
+  margin: 0;
+  max-width: 16ch;
+}
+
+.iss-media-text .iss-media-text__text {
+  margin: 0;
+  max-width: 56ch;
+  color: rgba(30, 30, 30, 0.78);
+}
+
+.iss-media-text .iss-media-text__actions {
+  margin-top: 0.5rem;
+}
+
+.iss-media-text .iss-media-text__media,
+.iss-media-text .iss-media-text__media.wp-block-image {
+  margin: 0;
+  height: 100%;
+}
+
+.iss-media-text .iss-media-text__media img {
+  display: block;
+  width: 100%;
+  min-height: clamp(20rem, 40vh, 34rem);
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--iss-radius-lg);
+}
+
+@media (min-width: 782px) {
+  .iss-media-text .iss-media-text__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .iss-media-text.iss-media-text--flip .iss-media-text__content {
+    order: 2;
+  }
+
+  .iss-media-text.iss-media-text--flip .iss-media-text__media-col {
+    order: 1;
+  }
+}
+
+@media (max-width: 781px) {
+  .iss-media-text.section {
+    padding-top: 1.35rem;
+    padding-bottom: 1.35rem;
+  }
+
+  .iss-media-text .iss-media-text__layout {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .iss-media-text .iss-media-text__inner,
+  .iss-media-text .iss-media-text__media img {
+    min-height: 0;
+  }
+
+  .iss-media-text .iss-media-text__inner {
+    padding: 1.25rem;
+  }
+
+  .iss-media-text .iss-media-text__media img {
+    aspect-ratio: 4 / 3;
+  }
+}

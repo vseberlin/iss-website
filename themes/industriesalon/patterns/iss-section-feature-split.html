@@ -5,7 +5,7 @@ Categories: industriesalon, text, media
 Block Types: core/group
 Description: Left-aligned editorial split with compact three-image cluster on the right.
 -->
-<!-- wp:group {"className":"iss-section iss-section\u002d\u002dfeature-split-stack section","layout":{"type":"constrained"}} -->
+<!-- wp:group {"className":"iss-section iss-section--feature-split-stack section","layout":{"type":"constrained"}} -->
 <div class="wp-block-group iss-section iss-section--feature-split-stack section">
 
 	<!-- wp:columns {"verticalAlignment":"top","className":"iss-feature-stack","style":{"spacing":{"blockGap":{"left":"var:preset|spacing|s"}}}} -->
@@ -14,7 +14,7 @@ Description: Left-aligned editorial split with compact three-image cluster on th
 		<!-- wp:column {"verticalAlignment":"top","width":"33%","className":"iss-feature-stack__content"} -->
 		<div class="wp-block-column is-vertically-aligned-top iss-feature-stack__content" style="flex-basis:33%">
 
-			<!-- wp:paragraph {"className":"iss-kicker iss-kicker\u002d\u002dyellow"} -->
+			<!-- wp:paragraph {"className":"iss-kicker iss-kicker--yellow"} -->
 			<p class="iss-kicker iss-kicker--yellow">Für Schulklassen &amp; Gruppen</p>
 			<!-- /wp:paragraph -->
 
@@ -47,17 +47,29 @@ Description: Left-aligned editorial split with compact three-image cluster on th
 			<!-- wp:group {"className":"iss-feature-stack__media-grid"} -->
 			<div class="wp-block-group iss-feature-stack__media-grid">
 
-				<!-- wp:image {"sizeSlug":"large","linkDestination":"none","className":"iss-feature-stack__media iss-feature-stack__media\u002d\u002dprimary"} -->
-				<figure class="wp-block-image size-large iss-feature-stack__media iss-feature-stack__media--primary"><img src="https://via.placeholder.com/900x1200/f1f1f1/1e1e1e?text=Publikation+1" alt=""/></figure>
-				<!-- /wp:image -->
+				<!-- wp:group {"className":"iss-feature-stack__media iss-feature-stack__media--primary iss-media-card iss-media-card--yellow iss-media-card--contain iss-media-card--framed","layout":{"type":"default"}} -->
+				<div class="wp-block-group iss-feature-stack__media iss-feature-stack__media--primary iss-media-card iss-media-card--yellow iss-media-card--contain iss-media-card--framed">
+					<!-- wp:image {"sizeSlug":"large","linkDestination":"none","className":"iss-feature-stack__image"} -->
+					<figure class="wp-block-image size-large iss-feature-stack__image"><img src="https://via.placeholder.com/900x1200/f1f1f1/1e1e1e?text=Publikation+1" alt=""/></figure>
+					<!-- /wp:image -->
+				</div>
+				<!-- /wp:group -->
 
-				<!-- wp:image {"sizeSlug":"large","linkDestination":"none","className":"iss-feature-stack__media iss-feature-stack__media\u002d\u002dsecondary"} -->
-				<figure class="wp-block-image size-large iss-feature-stack__media iss-feature-stack__media--secondary"><img src="https://via.placeholder.com/900x1200/e9e9e9/1e1e1e?text=Publikation+2" alt=""/></figure>
-				<!-- /wp:image -->
+				<!-- wp:group {"className":"iss-feature-stack__media iss-feature-stack__media--secondary iss-media-card iss-media-card--grey iss-media-card--contain iss-media-card--framed iss-media-card--soft","layout":{"type":"default"}} -->
+				<div class="wp-block-group iss-feature-stack__media iss-feature-stack__media--secondary iss-media-card iss-media-card--grey iss-media-card--contain iss-media-card--framed iss-media-card--soft">
+					<!-- wp:image {"sizeSlug":"large","linkDestination":"none","className":"iss-feature-stack__image"} -->
+					<figure class="wp-block-image size-large iss-feature-stack__image"><img src="https://via.placeholder.com/900x1200/e9e9e9/1e1e1e?text=Publikation+2" alt=""/></figure>
+					<!-- /wp:image -->
+				</div>
+				<!-- /wp:group -->
 
-				<!-- wp:image {"sizeSlug":"large","linkDestination":"none","className":"iss-feature-stack__media iss-feature-stack__media\u002d\u002ddetail"} -->
-				<figure class="wp-block-image size-large iss-feature-stack__media iss-feature-stack__media--detail"><img src="https://via.placeholder.com/900x1200/e3e3e3/1e1e1e?text=Publikation+3" alt=""/></figure>
-				<!-- /wp:image -->
+				<!-- wp:group {"className":"iss-feature-stack__media iss-feature-stack__media--detail iss-media-card iss-media-card--red iss-media-card--cover iss-media-card--soft iss-media-card--rail-thin","layout":{"type":"default"}} -->
+				<div class="wp-block-group iss-feature-stack__media iss-feature-stack__media--detail iss-media-card iss-media-card--red iss-media-card--cover iss-media-card--soft iss-media-card--rail-thin">
+					<!-- wp:image {"sizeSlug":"large","linkDestination":"none","className":"iss-feature-stack__image"} -->
+					<figure class="wp-block-image size-large iss-feature-stack__image"><img src="https://via.placeholder.com/900x1200/e3e3e3/1e1e1e?text=Publikation+3" alt=""/></figure>
+					<!-- /wp:image -->
+				</div>
+				<!-- /wp:group -->
 
 			</div>
 			<!-- /wp:group -->

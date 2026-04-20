@@ -1,7 +1,8 @@
 <!-- wp:template-part {"slug":"header","theme":"industriesalon","tagName":"header"} /-->
 
 <!-- wp:group {"tagName":"main","className":"site-main iss-front-page-main","layout":{"type":"default"}} -->
-<main class="wp-block-group site-main iss-front-page-main"><!-- wp:cover {"url":"http://192.168.2.31:8082/wp-content/uploads/2019/08/2030-20171001-boxenstopp-34881182-1024x683.jpg","id":837,"dimRatio":0,"customOverlayColor":"#443a3f","isUserOverlayColor":false,"minHeight":80,"minHeightUnit":"vh","contentPosition":"center center","sizeSlug":"large","className":"iss-front-hero"} -->
+<main class="wp-block-group site-main iss-front-page-main"><!-- wp:group {"tagName":"section","className":"iss-section iss-section\u002d\u002dhero","layout":{"type":"default"}} -->
+<section class="wp-block-group iss-section iss-section--hero"><!-- wp:cover {"url":"http://192.168.2.31:8082/wp-content/uploads/2019/08/2030-20171001-boxenstopp-34881182-1024x683.jpg","id":837,"dimRatio":0,"customOverlayColor":"#443a3f","isUserOverlayColor":false,"minHeight":80,"minHeightUnit":"vh","contentPosition":"center center","sizeSlug":"large","className":"iss-front-hero"} -->
 <div class="wp-block-cover iss-front-hero" style="min-height:80vh"><img class="wp-block-cover__image-background wp-image-837 size-large" alt="" src="http://192.168.2.31:8082/wp-content/uploads/2019/08/2030-20171001-boxenstopp-34881182-1024x683.jpg" data-object-fit="cover"/><span aria-hidden="true" class="wp-block-cover__background has-background-dim-0 has-background-dim" style="background-color:#443a3f"></span><div class="wp-block-cover__inner-container"><!-- wp:group {"className":"iss-front-hero__shell","layout":{"type":"default"}} -->
 <div class="wp-block-group iss-front-hero__shell"><!-- wp:group {"className":"iss-front-hero__content","layout":{"type":"default"}} -->
 <div class="wp-block-group iss-front-hero__content"><!-- wp:paragraph {"className":"iss-kicker iss-kicker\u002d\u002dlight"} -->
@@ -17,16 +18,19 @@
 <div class="wp-block-group iss-front-banner-slot"><!-- wp:industriesalon/notice-banner /--></div>
 <!-- /wp:group --></div>
 <!-- /wp:group --></div></div>
-<!-- /wp:cover --></main>
+<!-- /wp:cover --></section>
 <!-- /wp:group -->
 
-<!-- wp:group {"className":"iss-container iss-mission-statement-wrap","layout":{"type":"constrained"}} -->
+<!-- wp:group {"tagName":"section","className":"iss-section iss-section\u002d\u002dmission","layout":{"type":"constrained"}} -->
+<section class="wp-block-group iss-section iss-section--mission"><!-- wp:group {"className":"iss-container iss-mission-statement-wrap","layout":{"type":"constrained"}} -->
 <div class="wp-block-group iss-container iss-mission-statement-wrap"><!-- wp:shortcode -->
 [iss_mission_statement title="Industriesalon Schöneweide" layout="natural"]
 <!-- /wp:shortcode --></div>
+<!-- /wp:group --></section>
 <!-- /wp:group -->
 
-<!-- wp:group {"metadata":{"categories":["industriesalon"],"patternName":"industriesalon/info-panel-besuch","name":"Info Panel – Besuch planen"},"className":"iss-info-panel iss-info-panel\u002d\u002dgreen","layout":{"type":"constrained"}} -->
+<!-- wp:group {"tagName":"section","className":"iss-section iss-section\u002d\u002dvisit-info","layout":{"type":"constrained"}} -->
+<section class="wp-block-group iss-section iss-section--visit-info"><!-- wp:group {"metadata":{"categories":["industriesalon"],"patternName":"industriesalon/info-panel-besuch","name":"Info Panel – Besuch planen"},"className":"iss-info-panel iss-info-panel\u002d\u002dgreen","layout":{"type":"constrained"}} -->
 <div class="wp-block-group iss-info-panel iss-info-panel--green"><!-- wp:paragraph {"className":"iss-kicker iss-kicker\u002d\u002dgreen"} -->
 <p class="iss-kicker iss-kicker--green">ANREISE &amp; MEHR</p>
 <!-- /wp:paragraph -->
@@ -86,13 +90,15 @@
 <!-- /wp:group --></div>
 <!-- /wp:column --></div>
 <!-- /wp:columns --></div>
+<!-- /wp:group --></section>
 <!-- /wp:group -->
 
 <!-- wp:spacer -->
 <div style="height:100px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:group {"metadata":{"name":"heading 3 säulen"},"className":"iss-heading iss-container"} -->
+<!-- wp:group {"tagName":"section","className":"iss-section iss-section\u002d\u002dpillars","layout":{"type":"constrained"}} -->
+<section class="wp-block-group iss-section iss-section--pillars"><!-- wp:group {"metadata":{"name":"heading 3 säulen"},"className":"iss-heading iss-container"} -->
 <div class="wp-block-group iss-heading iss-container"><!-- wp:paragraph {"className":"iss-kicker"} -->
 <p class="iss-kicker">Drei Säulen</p>
 <!-- /wp:paragraph -->
@@ -188,13 +194,15 @@
 <!-- /wp:group --></div>
 <!-- /wp:group --></div>
 <!-- /wp:group --></div>
+<!-- /wp:group --></section>
 <!-- /wp:group -->
 
 <!-- wp:spacer -->
 <div style="height:100px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:group {"metadata":{"name":"timeline"},"className":"iss-heading"} -->
+<!-- wp:group {"tagName":"section","className":"iss-section iss-section\u002d\u002dtimeline","layout":{"type":"constrained"}} -->
+<section class="wp-block-group iss-section iss-section--timeline"><!-- wp:group {"metadata":{"name":"timeline"},"className":"iss-heading"} -->
 <div class="wp-block-group iss-heading"><!-- wp:paragraph {"className":"iss-kicker"} -->
 <p class="iss-kicker">aktueller Kalender</p>
 <!-- /wp:paragraph -->
@@ -209,129 +217,11 @@
 <!-- /wp:group -->
 
 <!-- wp:industriesalon/timeline-latest {"title":"Demnächst","kicker":"aktueller Kalender","showKicker":true,"ticketsButtonText":"Buchen","showBottomButton":true,"bottomButtonText":"Zeitweiser","bottomButtonUrl":"#","intro":"Hier finden Sie die nächsten Führungen, Vorträge und Sondertermine im Industriesalon. Änderungen und zusätzliche Termine werden laufend ergänzt."} /-->
-
-<!-- wp:group {"metadata":{"name":"tours"},"className":"iss-container","layout":{"type":"constrained"}} -->
-<div class="wp-block-group iss-container"><!-- wp:group {"tagName":"section","className":"iss-home-tours section ","layout":{"type":"constrained"}} -->
-<section class="wp-block-group iss-home-tours section"><!-- wp:group {"className":"iss-container","layout":{"type":"constrained"}} -->
-<div class="wp-block-group iss-container"><!-- wp:group {"className":"iss-heading"} -->
-<div class="wp-block-group iss-heading"><!-- wp:paragraph {"className":"iss-kicker"} -->
-<p class="iss-kicker">Führungen entdecken</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:heading {"className":"iss-heading__title"} -->
-<h2 class="wp-block-heading iss-heading__title">Industriegeschichte vor Ort erleben</h2>
-<!-- /wp:heading -->
-
-<!-- wp:paragraph {"className":"iss-heading__text"} -->
-<p class="iss-heading__text">Ausgewählte Rundgänge geben einen ersten Einstieg in Schöneweides Industriegeschichte. Weitere Formate, Themen und Termine finden Sie auf der Übersichtsseite.</p>
-<!-- /wp:paragraph --></div>
+</section>
 <!-- /wp:group -->
 
-<!-- wp:columns {"verticalAlignment":"stretch","className":"iss-tours-layout"} -->
-<div class="wp-block-columns are-vertically-aligned-stretch iss-tours-layout"><!-- wp:column {"width":"60%","className":"iss-tours-layout__lead"} -->
-<div class="wp-block-column iss-tours-layout__lead" style="flex-basis:60%"><!-- wp:group {"className":"iss-tour-lead-card","layout":{"type":"constrained"}} -->
-<div class="wp-block-group iss-tour-lead-card"><!-- wp:image {"id":5502,"sizeSlug":"large","linkDestination":"custom","className":"iss-tour-lead-card__media"} -->
-<figure class="wp-block-image size-large iss-tour-lead-card__media"><a href="/fuehrungen/licht-und-transparenz/"><img src="http://192.168.2.31:8082/wp-content/uploads/2022/06/Transformatorenwerk_Industriesalon-52-1024x714.jpg" alt="" class="wp-image-5502"/></a></figure>
-<!-- /wp:image -->
-
-<!-- wp:group {"className":"iss-tour-lead-card__body","layout":{"type":"constrained"}} -->
-<div class="wp-block-group iss-tour-lead-card__body"><!-- wp:paragraph {"className":"iss-kicker iss-kicker\u002d\u002dyellow iss-kicker\u002d\u002dcompact"} -->
-<p class="iss-kicker iss-kicker--yellow iss-kicker--compact">Highlight</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:heading {"level":3,"className":"iss-tour-lead-card__title"} -->
-<h3 class="wp-block-heading iss-tour-lead-card__title">Licht und Transparenz</h3>
-<!-- /wp:heading -->
-
-<!-- wp:paragraph {"className":"iss-tour-lead-card__text"} -->
-<p class="iss-tour-lead-card__text">Eine Entdeckertour durch die Meisterwerke des industriellen Bauens – die Tageslichtfabriken vom historischen Transformatorenwerk Oberschöneweide.</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:buttons {"className":"iss-tour-lead-card__actions"} -->
-<div class="wp-block-buttons iss-tour-lead-card__actions"><!-- wp:button {"className":"is-style-fill"} -->
-<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="/fuehrungen/licht-und-transparenz/">Zur Führung</a></div>
-<!-- /wp:button --></div>
-<!-- /wp:buttons --></div>
-<!-- /wp:group --></div>
-<!-- /wp:group --></div>
-<!-- /wp:column -->
-
-<!-- wp:column {"width":"40%","className":"iss-tours-layout__grid"} -->
-<div class="wp-block-column iss-tours-layout__grid" style="flex-basis:40%"><!-- wp:group {"className":"iss-tour-thumb-grid","layout":{"type":"constrained"}} -->
-<div class="wp-block-group iss-tour-thumb-grid"><!-- wp:group {"className":"iss-tour-thumb","layout":{"type":"constrained"}} -->
-<div class="wp-block-group iss-tour-thumb"><!-- wp:image {"id":1496,"sizeSlug":"full","linkDestination":"custom","className":"iss-tour-thumb__media"} -->
-<figure class="wp-block-image size-full iss-tour-thumb__media"><a href="/fuehrungen/elektropolis-tour/"><img src="http://192.168.2.31:8082/wp-content/uploads/2020/07/Elektra_website-e1601715571408.jpg" alt="Der Bildausscdhnitt zeigt die Glühbinre - hochgehalten von der &quot;Göttin des Lichts&quot; Elektra" class="wp-image-1496"/></a></figure>
-<!-- /wp:image --></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"className":"iss-tour-thumb","layout":{"type":"constrained"}} -->
-<div class="wp-block-group iss-tour-thumb"><!-- wp:image {"id":8930,"sizeSlug":"large","linkDestination":"custom","className":"iss-tour-thumb__media"} -->
-<figure class="wp-block-image size-large iss-tour-thumb__media"><a href="/fuehrungen/kiez-tour/"><img src="http://192.168.2.31:8082/wp-content/uploads/2024/03/Quappenkrug_br-774x1024.jpg" alt="" class="wp-image-8930"/></a></figure>
-<!-- /wp:image --></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"className":"iss-tour-thumb","layout":{"type":"constrained"}} -->
-<div class="wp-block-group iss-tour-thumb"><!-- wp:image {"id":5502,"sizeSlug":"large","linkDestination":"custom","className":"iss-tour-thumb__media"} -->
-<figure class="wp-block-image size-large iss-tour-thumb__media"><a href="/fuehrungen/licht-und-transparenz/"><img src="http://192.168.2.31:8082/wp-content/uploads/2022/06/Transformatorenwerk_Industriesalon-52-1024x714.jpg" alt="" class="wp-image-5502"/></a></figure>
-<!-- /wp:image --></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"className":"iss-tour-thumb","layout":{"type":"constrained"}} -->
-<div class="wp-block-group iss-tour-thumb"><!-- wp:image {"id":1496,"sizeSlug":"full","linkDestination":"custom","className":"iss-tour-thumb__media"} -->
-<figure class="wp-block-image size-full iss-tour-thumb__media"><a href="/fuehrungen/elektropolis-tour/"><img src="http://192.168.2.31:8082/wp-content/uploads/2020/07/Elektra_website-e1601715571408.jpg" alt="" class="wp-image-1496"/></a></figure>
-<!-- /wp:image --></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"className":"iss-tour-thumb","layout":{"type":"constrained"}} -->
-<div class="wp-block-group iss-tour-thumb"><!-- wp:image {"id":8930,"sizeSlug":"large","linkDestination":"custom","className":"iss-tour-thumb__media"} -->
-<figure class="wp-block-image size-large iss-tour-thumb__media"><a href="/fuehrungen/kiez-tour/"><img src="http://192.168.2.31:8082/wp-content/uploads/2024/03/Quappenkrug_br-774x1024.jpg" alt="" class="wp-image-8930"/></a></figure>
-<!-- /wp:image --></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"className":"iss-tour-thumb","layout":{"type":"constrained"}} -->
-<div class="wp-block-group iss-tour-thumb"><!-- wp:image {"id":5502,"sizeSlug":"large","linkDestination":"custom","className":"iss-tour-thumb__media"} -->
-<figure class="wp-block-image size-large iss-tour-thumb__media"><a href="/fuehrungen/licht-und-transparenz/"><img src="http://192.168.2.31:8082/wp-content/uploads/2022/06/Transformatorenwerk_Industriesalon-52-1024x714.jpg" alt="" class="wp-image-5502"/></a></figure>
-<!-- /wp:image --></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"className":"iss-tour-thumb","layout":{"type":"constrained"}} -->
-<div class="wp-block-group iss-tour-thumb"><!-- wp:image {"id":1496,"sizeSlug":"full","linkDestination":"custom","className":"iss-tour-thumb__media"} -->
-<figure class="wp-block-image size-full iss-tour-thumb__media"><a href="/fuehrungen/elektropolis-tour/"><img src="http://192.168.2.31:8082/wp-content/uploads/2020/07/Elektra_website-e1601715571408.jpg" alt="" class="wp-image-1496"/></a></figure>
-<!-- /wp:image --></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"className":"iss-tour-thumb","layout":{"type":"constrained"}} -->
-<div class="wp-block-group iss-tour-thumb"><!-- wp:image {"id":8930,"sizeSlug":"large","linkDestination":"custom","className":"iss-tour-thumb__media"} -->
-<figure class="wp-block-image size-large iss-tour-thumb__media"><a href="/fuehrungen/kiez-tour/"><img src="http://192.168.2.31:8082/wp-content/uploads/2024/03/Quappenkrug_br-774x1024.jpg" alt="" class="wp-image-8930"/></a></figure>
-<!-- /wp:image --></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"className":"iss-tour-thumb","layout":{"type":"constrained"}} -->
-<div class="wp-block-group iss-tour-thumb"><!-- wp:image {"id":5502,"sizeSlug":"large","linkDestination":"custom","className":"iss-tour-thumb__media"} -->
-<figure class="wp-block-image size-large iss-tour-thumb__media"><a href="/fuehrungen/licht-und-transparenz/"><img src="http://192.168.2.31:8082/wp-content/uploads/2022/06/Transformatorenwerk_Industriesalon-52-1024x714.jpg" alt="" class="wp-image-5502"/></a></figure>
-<!-- /wp:image --></div>
-<!-- /wp:group --></div>
-<!-- /wp:group --></div>
-<!-- /wp:column --></div>
-<!-- /wp:columns -->
-
-<!-- wp:group {"className":"iss-home-tours__footer","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap","verticalAlignment":"center"}} -->
-<div class="wp-block-group iss-home-tours__footer"><!-- wp:paragraph {"className":"iss-home-tours__note"} -->
-<p class="iss-home-tours__note">Weitere Rundgänge für Gruppen, Einzelbesucher und Sondertermine finden Sie gesammelt auf der Führungsübersicht.</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:buttons -->
-<div class="wp-block-buttons"><!-- wp:button {"className":"is-style-outline"} -->
-<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/fuehrungen/">Alle Führungen ansehen</a></div>
-<!-- /wp:button --></div>
-<!-- /wp:buttons --></div>
-<!-- /wp:group --></div>
-<!-- /wp:group --></section>
-<!-- /wp:group --></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"metadata":{"categories":["industriesalon","text","media"],"patternName":"industriesalon/feature-split","name":"ISS Feature Split"},"className":"iss-section iss-section\u002d\u002dfeature-split-stack section","layout":{"type":"constrained"}} -->
-<div class="wp-block-group iss-section iss-section--feature-split-stack section"><!-- wp:columns {"verticalAlignment":"top","className":"iss-feature-stack","style":{"spacing":{"blockGap":{"left":"var:preset|spacing|2xl"}}}} -->
+<!-- wp:group {"tagName":"section","metadata":{"categories":["industriesalon","text","media"],"patternName":"industriesalon/feature-split","name":"ISS Feature Split"},"className":"iss-section iss-section\u002d\u002dfeature-split","layout":{"type":"constrained"}} -->
+<section class="wp-block-group iss-section iss-section--feature-split"><!-- wp:columns {"verticalAlignment":"top","className":"iss-feature-stack","style":{"spacing":{"blockGap":{"left":"var:preset|spacing|2xl"}}}} -->
 <div class="wp-block-columns are-vertically-aligned-top iss-feature-stack"><!-- wp:column {"verticalAlignment":"top","width":"58%","className":"iss-feature-stack__content"} -->
 <div class="wp-block-column is-vertically-aligned-top iss-feature-stack__content" style="flex-basis:58%"><!-- wp:paragraph {"className":"iss-kicker iss-kicker\u002d\u002dyellow"} -->
 <p class="iss-kicker iss-kicker--yellow">Besonders</p>
@@ -369,5 +259,6 @@
 <!-- /wp:image --></div>
 <!-- /wp:group --></div>
 <!-- /wp:column --></div>
-<!-- /wp:columns --></div>
+<!-- /wp:columns --></section>
+<!-- /wp:group --></main>
 <!-- /wp:group -->

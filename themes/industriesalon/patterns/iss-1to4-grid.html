@@ -1,0 +1,93 @@
+<!--
+Title: ISS 1to4 Grid
+Slug: industriesalon/1to4-grid
+Categories: industriesalon, query, tours
+Block Types: core/group
+Description: Lead query card on the left and a 2x2 query card grid on the right.
+Inserter: yes
+-->
+<!-- wp:group {"className":"iss-1to4-grid section","layout":{"type":"constrained"}} -->
+<div class="wp-block-group iss-1to4-grid section">
+	<!-- wp:group {"className":"iss-container","layout":{"type":"default"}} -->
+	<div class="wp-block-group iss-container">
+		<!-- wp:group {"className":"iss-heading","layout":{"type":"default"}} -->
+		<div class="wp-block-group iss-heading">
+			<!-- wp:paragraph {"className":"iss-kicker"} -->
+			<p class="iss-kicker">Führungen</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:heading {"level":2,"className":"iss-heading__title"} -->
+			<h2 class="wp-block-heading iss-heading__title">Industriegeschichte vor Ort erleben</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph {"className":"iss-heading__text"} -->
+			<p class="iss-heading__text">Links steht die empfohlene Führung als große Karte. Rechts laufen vier weitere Führungen als kompakte Karten im 2×2-Raster.</p>
+			<!-- /wp:paragraph -->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"className":"iss-1to4-grid__layout","layout":{"type":"default"}} -->
+		<div class="wp-block-group iss-1to4-grid__layout">
+			<!-- wp:query {"queryId":1,"query":{"perPage":1,"pages":0,"offset":0,"postType":"fuehrung","order":"desc","orderBy":"date","inherit":false},"className":"iss-1to4-grid__lead-query"} -->
+			<div class="wp-block-query iss-1to4-grid__lead-query">
+				<!-- wp:post-template -->
+				<!-- wp:group {"className":"iss-card iss-card--lead iss-1to4-grid__lead-card","layout":{"type":"default"}} -->
+				<div class="wp-block-group iss-card iss-card--lead iss-1to4-grid__lead-card">
+					<!-- wp:group {"className":"iss-card__media iss-1to4-grid__lead-media iss-media-card iss-media-card--red iss-media-card--cover iss-media-card--flat","layout":{"type":"default"}} -->
+					<div class="wp-block-group iss-card__media iss-1to4-grid__lead-media iss-media-card iss-media-card--red iss-media-card--cover iss-media-card--flat">
+						<!-- wp:post-featured-image {"isLink":true,"className":"iss-1to4-grid__lead-image"} /-->
+					</div>
+					<!-- /wp:group -->
+
+					<!-- wp:group {"className":"iss-card__body iss-1to4-grid__lead-body","layout":{"type":"default"}} -->
+					<div class="wp-block-group iss-card__body iss-1to4-grid__lead-body">
+						<!-- wp:paragraph {"className":"iss-kicker iss-kicker--compact"} -->
+						<p class="iss-kicker iss-kicker--compact">Empfohlen</p>
+						<!-- /wp:paragraph -->
+
+						<!-- wp:post-title {"isLink":true,"level":3,"className":"iss-card__title iss-1to4-grid__lead-title"} /-->
+
+						<!-- wp:post-excerpt {"moreText":"Mehr erfahren","className":"iss-card__text iss-1to4-grid__lead-text"} /-->
+
+						<!-- wp:read-more {"content":"Zur Führung","className":"iss-card__link iss-1to4-grid__lead-link"} /-->
+					</div>
+					<!-- /wp:group -->
+				</div>
+				<!-- /wp:group -->
+				<!-- /wp:post-template -->
+			</div>
+			<!-- /wp:query -->
+
+			<!-- wp:query {"queryId":2,"query":{"perPage":4,"pages":0,"offset":1,"postType":"fuehrung","order":"desc","orderBy":"date","inherit":false},"className":"iss-1to4-grid__grid-query"} -->
+			<div class="wp-block-query iss-1to4-grid__grid-query">
+				<!-- wp:post-template -->
+				<!-- wp:group {"className":"iss-card iss-card--flat iss-1to4-grid__grid-card","layout":{"type":"default"}} -->
+				<div class="wp-block-group iss-card iss-card--flat iss-1to4-grid__grid-card">
+					<!-- wp:group {"className":"iss-card__media iss-1to4-grid__grid-media iss-media-card iss-media-card--grey iss-media-card--cover iss-media-card--flat iss-media-card--rail-thin","layout":{"type":"default"}} -->
+					<div class="wp-block-group iss-card__media iss-1to4-grid__grid-media iss-media-card iss-media-card--grey iss-media-card--cover iss-media-card--flat iss-media-card--rail-thin">
+						<!-- wp:post-featured-image {"isLink":true,"className":"iss-1to4-grid__grid-image"} /-->
+					</div>
+					<!-- /wp:group -->
+
+					<!-- wp:group {"className":"iss-card__body iss-1to4-grid__grid-body","layout":{"type":"default"}} -->
+					<div class="wp-block-group iss-card__body iss-1to4-grid__grid-body">
+						<!-- wp:paragraph {"className":"iss-kicker iss-kicker--compact"} -->
+						<p class="iss-kicker iss-kicker--compact">Führung</p>
+						<!-- /wp:paragraph -->
+
+						<!-- wp:post-title {"isLink":true,"level":4,"className":"iss-card__title iss-1to4-grid__grid-title"} /-->
+
+						<!-- wp:post-excerpt {"moreText":"Mehr","className":"iss-card__text iss-1to4-grid__grid-text"} /-->
+					</div>
+					<!-- /wp:group -->
+				</div>
+				<!-- /wp:group -->
+				<!-- /wp:post-template -->
+			</div>
+			<!-- /wp:query -->
+		</div>
+		<!-- /wp:group -->
+	</div>
+	<!-- /wp:group -->
+</div>
+<!-- /wp:group -->

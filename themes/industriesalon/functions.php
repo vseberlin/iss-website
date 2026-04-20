@@ -63,11 +63,32 @@ function industriesalon_register_block_patterns(): void
             'file' => '/patterns/iss-section-feature-split.html',
         ),
         array(
-            'name' => 'industriesalon/tour-1-6-grid',
-            'title' => 'ISS Tour 1-6 Grid',
-            'description' => 'Lead tour card with a 2x3 query grid for six additional tours.',
+            'name' => 'industriesalon/1to4-grid',
+            'title' => 'ISS 1to4 Grid',
+            'description' => 'Lead card with a compact query grid.',
             'categories' => array('industriesalon', 'text', 'media'),
-            'file' => '/patterns/iss-tour-1-6-grid.html',
+            'file' => '/patterns/iss-1to4-grid.html',
+        ),
+        array(
+            'name' => 'industriesalon/50-50-media-text',
+            'title' => 'ISS 50/50 Media Text',
+            'description' => 'Two-column section with text on one side and image on the other.',
+            'categories' => array('industriesalon', 'text', 'media'),
+            'file' => '/patterns/iss-50-50-media-text.html',
+        ),
+        array(
+            'name' => 'industriesalon/asymmetric-feature',
+            'title' => 'ISS Asymmetric Feature',
+            'description' => 'Asymmetric content and image section with offset visual rhythm.',
+            'categories' => array('industriesalon', 'text', 'media'),
+            'file' => '/patterns/iss-asymmetric-feature.html',
+        ),
+        array(
+            'name' => 'industriesalon/4-card-row',
+            'title' => 'ISS 4 Card Row',
+            'description' => 'Section heading above a row of four compact cards with image and title.',
+            'categories' => array('industriesalon', 'media', 'cards'),
+            'file' => '/patterns/iss-4-card-row.html',
         ),
     );
 
@@ -130,7 +151,19 @@ function industriesalon_enqueue_assets(): void
         $version
     );
 
-    // 2. Header styles
+    // 2. Media card utilities (must load immediately after base)
+    $media_card_utilities_rel = '/assets/css/iss-media-card-utilities.css';
+    $media_card_utilities_abs = $theme_dir . $media_card_utilities_rel;
+    if (file_exists($media_card_utilities_abs)) {
+        wp_enqueue_style(
+            'industriesalon-media-card-utilities',
+            $theme_uri . $media_card_utilities_rel,
+            array('industriesalon-base'),
+            (string) filemtime($media_card_utilities_abs)
+        );
+    }
+
+    // 3. Header styles
     $header_rel = '/assets/css/header.css';
     $header_abs = $theme_dir . $header_rel;
     if (file_exists($header_abs)) {
@@ -142,7 +175,7 @@ function industriesalon_enqueue_assets(): void
         );
     }
 
-    // 3. Front page styles (conditional)
+    // 4. Front page styles (conditional)
     $front_page_rel = '/assets/css/front-page.css';
     $front_page_abs = $theme_dir . $front_page_rel;
     if ((is_front_page() || is_home() || is_page_template('templates/front-page.html')) && file_exists($front_page_abs)) {
@@ -154,7 +187,7 @@ function industriesalon_enqueue_assets(): void
         );
     }
 
-    // 4. Timeline theme tokens/classes (plugin keeps structural timeline layout)
+    // 5. Timeline theme tokens/classes (plugin keeps structural timeline layout)
     $timeline_theme_rel = '/assets/css/timeline-theme.css';
     $timeline_theme_abs = $theme_dir . $timeline_theme_rel;
     if (file_exists($timeline_theme_abs)) {
@@ -166,7 +199,7 @@ function industriesalon_enqueue_assets(): void
         );
     }
 
-    // 5. Visit info theme tokens/classes (plugin keeps structural visit info layout)
+    // 6. Visit info theme tokens/classes (plugin keeps structural visit info layout)
     $visit_info_rel = '/assets/css/visit-info.css';
     $visit_info_abs = $theme_dir . $visit_info_rel;
     if (file_exists($visit_info_abs)) {
@@ -178,7 +211,7 @@ function industriesalon_enqueue_assets(): void
         );
     }
 
-    // 6. Tour styles
+    // 7. Tour styles
     $tour_rel = '/assets/css/tour.css';
     $tour_abs = $theme_dir . $tour_rel;
     if (file_exists($tour_abs)) {
@@ -190,7 +223,7 @@ function industriesalon_enqueue_assets(): void
         );
     }
 
-    // 7. Tours page styles
+    // 8. Tours page styles
     $tours_page_rel = '/assets/css/tours-page.css';
     $tours_page_abs = $theme_dir . $tours_page_rel;
     if (file_exists($tours_page_abs)) {
@@ -202,7 +235,7 @@ function industriesalon_enqueue_assets(): void
         );
     }
 
-    // 8. Info panel styles
+    // 9. Info panel styles
     $info_panel_rel = '/assets/css/info-panel.css';
     $info_panel_abs = $theme_dir . $info_panel_rel;
     if (file_exists($info_panel_abs)) {
@@ -214,7 +247,7 @@ function industriesalon_enqueue_assets(): void
         );
     }
 
-    // 9. Feature split styles
+    // 10. Feature split styles
     $feature_split_rel = '/assets/css/feature-split.css';
     $feature_split_abs = $theme_dir . $feature_split_rel;
     if (file_exists($feature_split_abs)) {
@@ -223,6 +256,54 @@ function industriesalon_enqueue_assets(): void
             $theme_uri . $feature_split_rel,
             array('industriesalon-base'),
             (string) filemtime($feature_split_abs)
+        );
+    }
+
+    // 11. 1to4 grid pattern styles
+    $one_to_four_grid_rel = '/assets/css/1to4-grid.css';
+    $one_to_four_grid_abs = $theme_dir . $one_to_four_grid_rel;
+    if (file_exists($one_to_four_grid_abs)) {
+        wp_enqueue_style(
+            'industriesalon-1to4-grid',
+            $theme_uri . $one_to_four_grid_rel,
+            array('industriesalon-base'),
+            (string) filemtime($one_to_four_grid_abs)
+        );
+    }
+
+    // 12. 50-50 media text pattern styles
+    $fifty_fifty_rel = '/assets/css/50-50-media-text.css';
+    $fifty_fifty_abs = $theme_dir . $fifty_fifty_rel;
+    if (file_exists($fifty_fifty_abs)) {
+        wp_enqueue_style(
+            'industriesalon-50-50-media-text',
+            $theme_uri . $fifty_fifty_rel,
+            array('industriesalon-base'),
+            (string) filemtime($fifty_fifty_abs)
+        );
+    }
+
+    // 13. Asymmetric feature pattern styles
+    $asymmetric_feature_rel = '/assets/css/asymmetric-feature.css';
+    $asymmetric_feature_abs = $theme_dir . $asymmetric_feature_rel;
+    if (file_exists($asymmetric_feature_abs)) {
+        wp_enqueue_style(
+            'industriesalon-asymmetric-feature',
+            $theme_uri . $asymmetric_feature_rel,
+            array('industriesalon-base'),
+            (string) filemtime($asymmetric_feature_abs)
+        );
+    }
+
+    // 14. 4 card row pattern styles
+    $four_card_row_rel = '/assets/css/4-card-row.css';
+    $four_card_row_abs = $theme_dir . $four_card_row_rel;
+    if (file_exists($four_card_row_abs)) {
+        wp_enqueue_style(
+            'industriesalon-4-card-row',
+            $theme_uri . $four_card_row_rel,
+            array('industriesalon-base'),
+            (string) filemtime($four_card_row_abs)
         );
     }
 
