@@ -63,11 +63,11 @@ function industriesalon_register_block_patterns(): void
             'file' => '/patterns/iss-section-feature-split.html',
         ),
         array(
-            'name' => 'industriesalon/tours-1-9-grid',
-            'title' => 'ISS Tours 1-9 Grid',
-            'description' => 'Lead tour card with 3x3 grid for nine additional tours.',
+            'name' => 'industriesalon/tour-1-6-grid',
+            'title' => 'ISS Tour 1-6 Grid',
+            'description' => 'Lead tour card with a 2x3 query grid for six additional tours.',
             'categories' => array('industriesalon', 'text', 'media'),
-            'file' => '/patterns/iss-tours-1-9-grid.html',
+            'file' => '/patterns/iss-tour-1-6-grid.html',
         ),
     );
 

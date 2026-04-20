@@ -1,0 +1,99 @@
+<!--
+Title: ISS Tour 1-6 Grid
+Slug: industriesalon/tour-1-6-grid
+Categories: industriesalon, text, media
+Block Types: core/group
+Description: Lead tour card with a 2x3 query grid for six additional tours.
+Inserter: yes
+-->
+<!-- wp:group {"className":"iss-home-tours section","layout":{"type":"constrained"}} -->
+<div class="wp-block-group iss-home-tours section">
+	<!-- wp:group {"className":"iss-container","layout":{"type":"default"}} -->
+	<div class="wp-block-group iss-container">
+		<!-- wp:group {"className":"iss-heading","layout":{"type":"default"}} -->
+		<div class="wp-block-group iss-heading">
+			<!-- wp:paragraph {"className":"iss-kicker"} -->
+			<p class="iss-kicker">Führungen</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:heading {"level":2,"className":"iss-heading__title"} -->
+			<h2 class="wp-block-heading iss-heading__title">Industriegeschichte vor Ort erleben</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph {"className":"iss-heading__text"} -->
+			<p class="iss-heading__text">Öffentliche Touren, Gruppenangebote und thematische Rundgänge durch Schöneweide und den Industriesalon.</p>
+			<!-- /wp:paragraph -->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:columns {"verticalAlignment":"stretch","className":"iss-tours-layout"} -->
+		<div class="wp-block-columns are-vertically-aligned-stretch iss-tours-layout">
+			<!-- wp:column {"className":"iss-tours-layout__lead"} -->
+			<div class="wp-block-column iss-tours-layout__lead">
+				<!-- wp:group {"className":"iss-tour-lead-card","layout":{"type":"default"}} -->
+				<div class="wp-block-group iss-tour-lead-card">
+					<!-- wp:image {"sizeSlug":"large","linkDestination":"custom","className":"iss-tour-lead-card__media"} -->
+					<figure class="wp-block-image size-large iss-tour-lead-card__media"><a href="/fuehrungen/"><img src="https://via.placeholder.com/1400x900/f1f1f1/1e1e1e?text=Leitf%C3%BChrung" alt="Leitführung"/></a></figure>
+					<!-- /wp:image -->
+
+					<!-- wp:group {"className":"iss-tour-lead-card__body","layout":{"type":"default"}} -->
+					<div class="wp-block-group iss-tour-lead-card__body">
+						<!-- wp:paragraph {"className":"iss-kicker iss-kicker\u002d\u002dcompact"} -->
+						<p class="iss-kicker iss-kicker--compact">Empfohlen</p>
+						<!-- /wp:paragraph -->
+
+						<!-- wp:heading {"level":3,"className":"iss-tour-lead-card__title"} -->
+						<h3 class="wp-block-heading iss-tour-lead-card__title">Industriekultur in Schöneweide</h3>
+						<!-- /wp:heading -->
+
+						<!-- wp:paragraph {"className":"iss-tour-lead-card__text"} -->
+						<p class="iss-tour-lead-card__text">Ein kompakter Einstieg in Standortgeschichte, Architektur und die Geschichten der Menschen vor Ort.</p>
+						<!-- /wp:paragraph -->
+
+						<!-- wp:buttons {"className":"iss-tour-lead-card__actions"} -->
+						<div class="wp-block-buttons iss-tour-lead-card__actions">
+							<!-- wp:button {"className":"is-style-fill"} -->
+							<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="/fuehrungen/">Zur Führung</a></div>
+							<!-- /wp:button -->
+						</div>
+						<!-- /wp:buttons -->
+					</div>
+					<!-- /wp:group -->
+				</div>
+				<!-- /wp:group -->
+			</div>
+			<!-- /wp:column -->
+
+			<!-- wp:column {"className":"iss-tours-layout__grid"} -->
+			<div class="wp-block-column iss-tours-layout__grid">
+				<!-- wp:query {"queryId":1,"query":{"perPage":6,"pages":0,"offset":0,"postType":"fuehrung","order":"desc","orderBy":"date","inherit":false},"className":"iss-tour-grid"} -->
+				<div class="wp-block-query iss-tour-grid">
+					<!-- wp:post-template -->
+					<!-- wp:group {"className":"iss-tour-card","layout":{"type":"default"}} -->
+					<div class="wp-block-group iss-tour-card">
+						<!-- wp:post-featured-image {"isLink":true,"className":"iss-tour-card__media"} /-->
+
+						<!-- wp:group {"className":"iss-tour-card__body","layout":{"type":"default"}} -->
+						<div class="wp-block-group iss-tour-card__body">
+							<!-- wp:paragraph {"className":"iss-kicker iss-kicker\u002d\u002dcompact"} -->
+							<p class="iss-kicker iss-kicker--compact">Führung</p>
+							<!-- /wp:paragraph -->
+
+							<!-- wp:post-title {"isLink":true,"level":4,"className":"iss-tour-card__title"} /-->
+
+							<!-- wp:post-excerpt {"moreText":"Mehr","className":"iss-tour-card__text"} /-->
+						</div>
+						<!-- /wp:group -->
+					</div>
+					<!-- /wp:group -->
+					<!-- /wp:post-template -->
+				</div>
+				<!-- /wp:query -->
+			</div>
+			<!-- /wp:column -->
+		</div>
+		<!-- /wp:columns -->
+	</div>
+	<!-- /wp:group -->
+</div>
+<!-- /wp:group -->

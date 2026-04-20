@@ -1,0 +1,27 @@
+<svg width="900" height="900" viewBox="0 0 900 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="issCircleFade" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(420 420) rotate(0) scale(420 420)">
+      <stop offset="0" stop-color="#C0B8B5" stop-opacity="0.18"/>
+      <stop offset="0.72" stop-color="#C0B8B5" stop-opacity="0.1"/>
+      <stop offset="1" stop-color="#C0B8B5" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="issRedWash" x1="470" y1="280" x2="845" y2="280" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#E81D25" stop-opacity="0"/>
+      <stop offset="0.58" stop-color="#E81D25" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#E81D25" stop-opacity="0.16"/>
+    </linearGradient>
+    <linearGradient id="issInnerFade" x1="320" y1="520" x2="745" y2="520" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F9F9FA" stop-opacity="0.52"/>
+      <stop offset="0.72" stop-color="#F9F9FA" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#F9F9FA" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="420" cy="420" r="420" fill="url(#issCircleFade)"/>
+
+  <path d="M320 760C268 690 240 602 240 510C240 345 332 216 500 190C635 169 745 227 820 322" fill="none" stroke="url(#issInnerFade)" stroke-width="88" stroke-linecap="round"/>
+
+  <path d="M265 740V330L400 210L520 320L645 220L780 330" fill="none" stroke="#C0B8B5" stroke-opacity="0.56" stroke-width="34" stroke-linejoin="miter" stroke-linecap="square"/>
+
+  <path d="M520 320L645 220L780 330" fill="none" stroke="url(#issRedWash)" stroke-width="34" stroke-linejoin="miter" stroke-linecap="square"/>
+</svg>
