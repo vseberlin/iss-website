@@ -1,0 +1,166 @@
+/* =====================================================================
+   INNER PAGE TEMPLATE
+   Shared landing-page hero for all pages except front page.
+   ===================================================================== */
+
+.iss-page-template {
+  margin: 0;
+}
+
+.iss-page-template > .iss-page-hero {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.iss-page-hero {
+  position: relative;
+  min-height: 60svh;
+  min-height: 60vh;
+  padding: 0;
+  overflow: clip;
+  background-color: var(--iss-black);
+}
+
+.iss-page-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(30, 30, 30, 0.78) 0%,
+      rgba(30, 30, 30, 0.66) 34%,
+      rgba(30, 30, 30, 0.36) 58%,
+      rgba(30, 30, 30, 0.16) 100%
+    );
+  z-index: 1;
+  pointer-events: none;
+}
+
+.iss-page-hero > .wp-block-cover__image-background,
+.iss-page-hero > .wp-block-cover__video-background {
+  object-fit: cover;
+}
+
+.iss-page-hero > .wp-block-cover__inner-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  min-height: inherit;
+}
+
+.iss-page-hero__inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 1rem;
+  min-height: inherit;
+  width: 100%;
+  max-width: var(--iss-content-width);
+  margin: 0 auto;
+  padding-top: calc(var(--iss-header-height) + 2rem);
+  padding-bottom: clamp(2rem, 5vw, 4rem);
+  padding-left: var(--iss-container-pad);
+  padding-right: var(--iss-container-pad);
+  text-align: left;
+}
+
+.iss-page-hero__kicker,
+.iss-page-hero__title,
+.iss-page-hero__text {
+  max-width: 46rem;
+  margin-left: 0;
+  margin-right: 0;
+  text-align: left;
+}
+
+.iss-page-hero__kicker {
+  margin-bottom: 0.25rem;
+}
+
+.iss-page-hero__title {
+  margin: 0;
+  color: var(--iss-white);
+  font-size: clamp(2.5rem, 5vw, 4.75rem);
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+.iss-page-hero__text {
+  margin: 0;
+  color: rgba(249, 249, 250, 0.9);
+  font-size: clamp(1rem, 1.2vw, 1.2rem);
+  line-height: 1.55;
+}
+
+.iss-page-hero__text p {
+  margin: 0;
+}
+
+.iss-page-content {
+  position: relative;
+  z-index: 3;
+}
+
+.iss-page-content > .wp-block-post-content {
+  width: 100%;
+}
+
+.iss-page-content > .wp-block-post-content > *:first-child {
+  margin-top: 0;
+}
+
+@media (max-width: 1024px) {
+  .iss-page-hero {
+    min-height: 56svh;
+    min-height: 56vh;
+  }
+
+  .iss-page-hero__inner {
+    padding-top: calc(var(--iss-header-height) + 1.5rem);
+    padding-bottom: 2.5rem;
+  }
+
+  .iss-page-hero__title,
+  .iss-page-hero__text {
+    max-width: 38rem;
+  }
+}
+
+@media (max-width: 781px) {
+  .iss-page-hero {
+    min-height: 52svh;
+    min-height: 52vh;
+  }
+
+  .iss-page-hero::before {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(30, 30, 30, 0.58) 0%,
+        rgba(30, 30, 30, 0.68) 45%,
+        rgba(30, 30, 30, 0.78) 100%
+      );
+  }
+
+  .iss-page-hero__inner {
+    gap: 0.85rem;
+    padding-top: calc(var(--iss-header-height) + 1.25rem);
+    padding-bottom: 2rem;
+  }
+
+  .iss-page-hero__kicker,
+  .iss-page-hero__title,
+  .iss-page-hero__text {
+    max-width: none;
+  }
+
+  .iss-page-hero__title {
+    font-size: clamp(2rem, 9vw, 3.2rem);
+  }
+
+  .iss-page-hero__text {
+    font-size: 0.98rem;
+  }
+}

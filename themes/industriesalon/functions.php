@@ -187,7 +187,23 @@ function industriesalon_enqueue_assets(): void
         );
     }
 
-    // 5. Timeline theme tokens/classes (plugin keeps structural timeline layout)
+    // 5. Default page template styles (exclude front page)
+    $page_rel = '/assets/css/page.css';
+    $page_abs = $theme_dir . $page_rel;
+    $current_template_id = isset($GLOBALS['_wp_current_template_id']) && is_string($GLOBALS['_wp_current_template_id'])
+        ? $GLOBALS['_wp_current_template_id']
+        : '';
+    $default_page_template_id = get_stylesheet() . '//page';
+    if (!is_front_page() && !is_home() && is_page() && $current_template_id === $default_page_template_id && file_exists($page_abs)) {
+        wp_enqueue_style(
+            'industriesalon-page',
+            $theme_uri . $page_rel,
+            array('industriesalon-base'),
+            (string) filemtime($page_abs)
+        );
+    }
+
+    // 6. Timeline theme tokens/classes (plugin keeps structural timeline layout)
     $timeline_theme_rel = '/assets/css/timeline-theme.css';
     $timeline_theme_abs = $theme_dir . $timeline_theme_rel;
     if (file_exists($timeline_theme_abs)) {
@@ -199,7 +215,7 @@ function industriesalon_enqueue_assets(): void
         );
     }
 
-    // 6. Visit info theme tokens/classes (plugin keeps structural visit info layout)
+    // 7. Visit info theme tokens/classes (plugin keeps structural visit info layout)
     $visit_info_rel = '/assets/css/visit-info.css';
     $visit_info_abs = $theme_dir . $visit_info_rel;
     if (file_exists($visit_info_abs)) {
@@ -211,7 +227,7 @@ function industriesalon_enqueue_assets(): void
         );
     }
 
-    // 7. Tour styles
+    // 8. Tour styles
     $tour_rel = '/assets/css/tour.css';
     $tour_abs = $theme_dir . $tour_rel;
     if (file_exists($tour_abs)) {
@@ -223,7 +239,7 @@ function industriesalon_enqueue_assets(): void
         );
     }
 
-    // 8. Tours page styles
+    // 9. Tours page styles
     $tours_page_rel = '/assets/css/tours-page.css';
     $tours_page_abs = $theme_dir . $tours_page_rel;
     if (file_exists($tours_page_abs)) {
@@ -235,7 +251,7 @@ function industriesalon_enqueue_assets(): void
         );
     }
 
-    // 9. Info panel styles
+    // 10. Info panel styles
     $info_panel_rel = '/assets/css/info-panel.css';
     $info_panel_abs = $theme_dir . $info_panel_rel;
     if (file_exists($info_panel_abs)) {
@@ -247,7 +263,7 @@ function industriesalon_enqueue_assets(): void
         );
     }
 
-    // 10. Feature split styles
+    // 11. Feature split styles
     $feature_split_rel = '/assets/css/feature-split.css';
     $feature_split_abs = $theme_dir . $feature_split_rel;
     if (file_exists($feature_split_abs)) {
@@ -259,7 +275,7 @@ function industriesalon_enqueue_assets(): void
         );
     }
 
-    // 11. 1to4 grid pattern styles
+    // 12. 1to4 grid pattern styles
     $one_to_four_grid_rel = '/assets/css/1to4-grid.css';
     $one_to_four_grid_abs = $theme_dir . $one_to_four_grid_rel;
     if (file_exists($one_to_four_grid_abs)) {
@@ -271,7 +287,7 @@ function industriesalon_enqueue_assets(): void
         );
     }
 
-    // 12. 50-50 media text pattern styles
+    // 13. 50-50 media text pattern styles
     $fifty_fifty_rel = '/assets/css/50-50-media-text.css';
     $fifty_fifty_abs = $theme_dir . $fifty_fifty_rel;
     if (file_exists($fifty_fifty_abs)) {
@@ -283,7 +299,7 @@ function industriesalon_enqueue_assets(): void
         );
     }
 
-    // 13. Asymmetric feature pattern styles
+    // 14. Asymmetric feature pattern styles
     $asymmetric_feature_rel = '/assets/css/asymmetric-feature.css';
     $asymmetric_feature_abs = $theme_dir . $asymmetric_feature_rel;
     if (file_exists($asymmetric_feature_abs)) {
@@ -295,7 +311,7 @@ function industriesalon_enqueue_assets(): void
         );
     }
 
-    // 14. 4 card row pattern styles
+    // 15. 4 card row pattern styles
     $four_card_row_rel = '/assets/css/4-card-row.css';
     $four_card_row_abs = $theme_dir . $four_card_row_rel;
     if (file_exists($four_card_row_abs)) {

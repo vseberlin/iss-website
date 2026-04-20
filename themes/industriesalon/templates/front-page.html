@@ -201,8 +201,9 @@
 <div style="height:100px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:group {"tagName":"section","className":"iss-section iss-section\u002d\u002dtimeline","layout":{"type":"constrained"}} -->
-<section class="wp-block-group iss-section iss-section--timeline"><!-- wp:group {"metadata":{"name":"timeline"},"className":"iss-heading"} -->
+<!-- wp:group {"tagName":"section","className":"iss-section iss-section\u002d\u002dtimeline section","layout":{"type":"constrained"}} -->
+<section class="wp-block-group iss-section iss-section--timeline section"><!-- wp:group {"className":"iss-container","layout":{"type":"constrained"}} -->
+<div class="wp-block-group iss-container"><!-- wp:group {"metadata":{"name":"timeline"},"className":"iss-heading"} -->
 <div class="wp-block-group iss-heading"><!-- wp:paragraph {"className":"iss-kicker"} -->
 <p class="iss-kicker">aktueller Kalender</p>
 <!-- /wp:paragraph -->
@@ -216,49 +217,67 @@
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
-<!-- wp:industriesalon/timeline-latest {"title":"Demnächst","kicker":"aktueller Kalender","showKicker":true,"ticketsButtonText":"Buchen","showBottomButton":true,"bottomButtonText":"Zeitweiser","bottomButtonUrl":"#","intro":"Hier finden Sie die nächsten Führungen, Vorträge und Sondertermine im Industriesalon. Änderungen und zusätzliche Termine werden laufend ergänzt."} /-->
-</section>
+<!-- wp:industriesalon/timeline-latest {"title":"Demnächst","kicker":"aktueller Kalender","showKicker":true,"ticketsButtonText":"Buchen","showBottomButton":true,"bottomButtonText":"Zeitweiser","bottomButtonUrl":"#","intro":"Hier finden Sie die nächsten Führungen, Vorträge und Sondertermine im Industriesalon. Änderungen und zusätzliche Termine werden laufend ergänzt."} /--></div>
+<!-- /wp:group --></section>
 <!-- /wp:group -->
 
-<!-- wp:group {"tagName":"section","metadata":{"categories":["industriesalon","text","media"],"patternName":"industriesalon/feature-split","name":"ISS Feature Split"},"className":"iss-section iss-section\u002d\u002dfeature-split","layout":{"type":"constrained"}} -->
-<section class="wp-block-group iss-section iss-section--feature-split"><!-- wp:columns {"verticalAlignment":"top","className":"iss-feature-stack","style":{"spacing":{"blockGap":{"left":"var:preset|spacing|2xl"}}}} -->
-<div class="wp-block-columns are-vertically-aligned-top iss-feature-stack"><!-- wp:column {"verticalAlignment":"top","width":"58%","className":"iss-feature-stack__content"} -->
-<div class="wp-block-column is-vertically-aligned-top iss-feature-stack__content" style="flex-basis:58%"><!-- wp:paragraph {"className":"iss-kicker iss-kicker\u002d\u002dyellow"} -->
-<p class="iss-kicker iss-kicker--yellow">Besonders</p>
+<!-- wp:spacer -->
+<div style="height:100px" aria-hidden="true" class="wp-block-spacer"></div>
+<!-- /wp:spacer -->
+
+<!-- wp:group {"metadata":{"categories":["industriesalon"],"patternName":"industriesalon/1to4-grid","name":"ISS 1to4 Grid"},"className":"iss-1to4-grid section","layout":{"type":"default"}} -->
+<div class="wp-block-group iss-1to4-grid section"><!-- wp:group {"className":"iss-container","layout":{"type":"default"}} -->
+<div class="wp-block-group iss-container"><!-- wp:group {"className":"iss-heading","layout":{"type":"default"}} -->
+<div class="wp-block-group iss-heading"><!-- wp:paragraph {"className":"iss-kicker"} -->
+<p class="iss-kicker">Führungen</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:group {"className":"iss-heading","layout":{"type":"constrained"}} -->
-<div class="wp-block-group iss-heading"><!-- wp:heading {"className":"iss-feature-stack__title iss-heading__title"} -->
-<h2 class="wp-block-heading iss-feature-stack__title iss-heading__title">Publikationen</h2>
+<!-- wp:heading {"className":"iss-heading__title"} -->
+<h2 class="wp-block-heading iss-heading__title">Industriegeschichte vor Ort erleben</h2>
 <!-- /wp:heading -->
 
-<!-- wp:paragraph {"className":"iss-feature-stack__text iss-heading__text"} -->
-<p class="iss-feature-stack__text iss-heading__text">Die Publikationen nehmen Themen aus dem Industriesalon mit nach Hause. Sie erzählen von Technik, Arbeit und Alltag in Schöneweide – kompakt und gut lesbar, oft direkt aus Archivmaterial und Ausstellungen entwickelt. Besonders prägend: Viele der Autorinnen und Autoren haben die Umbruchzeit von der DDR zur BRD selbst erlebt und bringen diese Erfahrungen unmittelbar in ihre Texte ein. So entstehen keine distanzierten Rückblicke, sondern persönliche, oft sehr konkrete Einblicke in eine Phase tiefgreifender Veränderung.</p>
+<!-- wp:paragraph {"className":"iss-heading__text"} -->
+<p class="iss-heading__text">Links steht die empfohlene Führung als große Karte. Rechts laufen vier weitere Führungen als kompakte Karten im 2×2-Raster.</p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
-<!-- wp:buttons {"className":"iss-feature-stack__actions"} -->
-<div class="wp-block-buttons iss-feature-stack__actions"><!-- wp:button -->
-<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/fuehrungen/">Mehr erfahren </a></div>
-<!-- /wp:button --></div>
-<!-- /wp:buttons --></div>
-<!-- /wp:column -->
+<!-- wp:group {"className":"iss-1to4-grid__layout","layout":{"type":"default"}} -->
+<div class="wp-block-group iss-1to4-grid__layout"><!-- wp:query {"queryId":1,"query":{"perPage":1,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","inherit":false,"parents":[]},"className":"iss-1to4-grid__lead-query"} -->
+<div class="wp-block-query iss-1to4-grid__lead-query"><!-- wp:post-template -->
+<!-- wp:group {"className":"iss-card iss-card\u002d\u002dlead iss-1to4-grid__lead-card","layout":{"type":"default"}} -->
+<div class="wp-block-group iss-card iss-card--lead iss-1to4-grid__lead-card"><!-- wp:group {"className":"iss-card__media iss-1to4-grid__lead-media iss-media-card iss-media-card\u002d\u002dred iss-media-card\u002d\u002dcover iss-media-card\u002d\u002dflat","layout":{"type":"default"}} -->
+<div class="wp-block-group iss-card__media iss-1to4-grid__lead-media iss-media-card iss-media-card--red iss-media-card--cover iss-media-card--flat"><!-- wp:post-featured-image {"isLink":true,"className":"iss-1to4-grid__lead-image"} /--></div>
+<!-- /wp:group -->
 
-<!-- wp:column {"verticalAlignment":"top","width":"42%","className":"iss-feature-stack__media-col"} -->
-<div class="wp-block-column is-vertically-aligned-top iss-feature-stack__media-col" style="flex-basis:42%"><!-- wp:group {"className":"iss-feature-stack__media-grid","layout":{"type":"constrained"}} -->
-<div class="wp-block-group iss-feature-stack__media-grid"><!-- wp:image {"id":12426,"sizeSlug":"large","linkDestination":"none","className":"iss-feature-stack__media iss-feature-stack__media\u002d\u002dprimary"} -->
-<figure class="wp-block-image size-large iss-feature-stack__media iss-feature-stack__media--primary"><img src="http://192.168.2.31:8082/wp-content/uploads/2026/04/715yWXXfaFL._SL1500_-1024x977.jpg" alt="" class="wp-image-12426"/></figure>
-<!-- /wp:image -->
+<!-- wp:group {"className":"iss-card__body iss-1to4-grid__lead-body","layout":{"type":"default"}} -->
+<div class="wp-block-group iss-card__body iss-1to4-grid__lead-body"><!-- wp:paragraph {"className":"iss-kicker iss-kicker\u002d\u002dcompact"} -->
+<p class="iss-kicker iss-kicker--compact">Empfohlen</p>
+<!-- /wp:paragraph -->
 
-<!-- wp:image {"id":12428,"sizeSlug":"full","linkDestination":"none","className":"iss-feature-stack__media iss-feature-stack__media\u002d\u002dsecondary"} -->
-<figure class="wp-block-image size-full iss-feature-stack__media iss-feature-stack__media--secondary"><img src="http://192.168.2.31:8082/wp-content/uploads/2026/04/ChatGPT-Image-Apr-19-2026-08_34_45-AM.png" alt="" class="wp-image-12428"/></figure>
-<!-- /wp:image -->
+<!-- wp:post-title {"level":3,"isLink":true,"className":"iss-card__title iss-1to4-grid__lead-title"} /-->
 
-<!-- wp:image {"id":12424,"sizeSlug":"large","linkDestination":"none","className":"iss-feature-stack__media iss-feature-stack__media\u002d\u002ddetail"} -->
-<figure class="wp-block-image size-large iss-feature-stack__media iss-feature-stack__media--detail"><img src="http://192.168.2.31:8082/wp-content/uploads/2026/04/stern-713x1024.jpg" alt="" class="wp-image-12424"/></figure>
-<!-- /wp:image --></div>
+<!-- wp:post-excerpt {"moreText":"Mehr erfahren","className":"iss-card__text iss-1to4-grid__lead-text"} /-->
+
+<!-- wp:read-more {"content":"Zur Führung","className":"iss-card__link iss-1to4-grid__lead-link"} /--></div>
 <!-- /wp:group --></div>
-<!-- /wp:column --></div>
-<!-- /wp:columns --></section>
+<!-- /wp:group -->
+<!-- /wp:post-template --></div>
+<!-- /wp:query -->
+
+<!-- wp:query {"queryId":2,"query":{"perPage":4,"pages":0,"offset":1,"postType":"post","order":"desc","orderBy":"date","inherit":false,"parents":[]},"className":"iss-1to4-grid__grid-query"} -->
+<div class="wp-block-query iss-1to4-grid__grid-query"><!-- wp:post-template -->
+<!-- wp:group {"className":"iss-card iss-card\u002d\u002dflat iss-1to4-grid__grid-card","layout":{"type":"default"}} -->
+<div class="wp-block-group iss-card iss-card--flat iss-1to4-grid__grid-card"><!-- wp:group {"className":"iss-card__media iss-1to4-grid__grid-media iss-media-card iss-media-card\u002d\u002dgrey iss-media-card\u002d\u002dcover iss-media-card\u002d\u002dflat iss-media-card\u002d\u002drail-thin","layout":{"type":"default"}} -->
+<div class="wp-block-group iss-card__media iss-1to4-grid__grid-media iss-media-card iss-media-card--grey iss-media-card--cover iss-media-card--flat iss-media-card--rail-thin"><!-- wp:post-featured-image {"isLink":true,"className":"iss-1to4-grid__grid-image"} /--></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"iss-card__body iss-1to4-grid__grid-body","layout":{"type":"default"}} -->
+<div class="wp-block-group iss-card__body iss-1to4-grid__grid-body"><!-- wp:post-title {"level":4,"isLink":true,"className":"iss-card__title iss-1to4-grid__grid-title"} /--></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
+<!-- /wp:post-template --></div>
+<!-- /wp:query --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group --></div>
 <!-- /wp:group --></main>
 <!-- /wp:group -->

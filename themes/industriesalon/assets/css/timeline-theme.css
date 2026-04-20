@@ -31,3 +31,70 @@
 .iss-timeline--latest {
   width: 100%;
 }
+
+/* =====================================================================
+   TIMELINE SECTION INTRO ALIGNMENT
+   ---------------------------------------------------------------------
+   Plugin markup can still place a narrow intro block visually centered
+   inside a grid/flex parent. Scope the fix here instead of changing the
+   global .iss-heading system.
+   ===================================================================== */
+
+.iss-timeline .iss-heading,
+.iss-timeline-sections .iss-heading,
+.iss-timeline-latest .iss-heading {
+  width: 100%;
+  margin-left: 0 !important;
+  margin-right: auto !important;
+  align-self: flex-start;
+  justify-self: start;
+  text-align: left;
+}
+
+/* keep readable measure unless plugin/editor sets uncaged explicitly */
+.iss-timeline .iss-heading:not(.iss-heading--uncaged),
+.iss-timeline-sections .iss-heading:not(.iss-heading--uncaged),
+.iss-timeline-latest .iss-heading:not(.iss-heading--uncaged) {
+  max-width: var(--iss-heading-max-width, 42rem);
+}
+
+/* children must inherit left alignment cleanly */
+.iss-timeline .iss-heading > .iss-kicker,
+.iss-timeline .iss-heading > .iss-heading__title,
+.iss-timeline .iss-heading > .iss-heading__text,
+.iss-timeline-sections .iss-heading > .iss-kicker,
+.iss-timeline-sections .iss-heading > .iss-heading__title,
+.iss-timeline-sections .iss-heading > .iss-heading__text,
+.iss-timeline-latest .iss-heading > .iss-kicker,
+.iss-timeline-latest .iss-heading > .iss-heading__title,
+.iss-timeline-latest .iss-heading > .iss-heading__text {
+  margin-left: 0;
+  margin-right: 0;
+  text-align: inherit;
+}
+
+/* if plugin wrappers use flex/grid, anchor their children left */
+.iss-timeline__header,
+.iss-timeline__intro,
+.iss-timeline__summary-wrap,
+.iss-timeline-sections__header,
+.iss-timeline-sections__intro,
+.iss-timeline-latest__header,
+.iss-timeline-latest__intro {
+  justify-items: start;
+  align-items: flex-start;
+}
+
+/* buttons and text helpers inside timeline intros stay left */
+.iss-timeline .wp-block-buttons,
+.iss-timeline-sections .wp-block-buttons,
+.iss-timeline-latest .wp-block-buttons {
+  justify-content: flex-start;
+}
+
+.iss-timeline .has-text-align-center,
+.iss-timeline-sections .has-text-align-center,
+.iss-timeline-latest .has-text-align-center {
+  text-align: left !important;
+}
+
