@@ -26,10 +26,101 @@
 
 .iss-timeline__footer {
   margin-inline: auto;
+  width: 100%;
+  padding-top: 4rem;
+  border-top: 1px solid var(--iss-tl-line);
+  justify-content: right;
+}
 }
 
 .iss-timeline--latest {
   width: 100%;
+}
+
+/* =====================================================================
+   TIMELINE COLOR SCHEMES
+   ---------------------------------------------------------------------
+   Optional wrapper classes aligned with theme.json palette slugs:
+   - .iss-timeline--scheme-scarlet-red
+   - .iss-timeline--scheme-vaporous-white
+   - .iss-timeline--scheme-eerie-black
+   - .iss-timeline--scheme-cerebral-grey
+   - .iss-timeline--scheme-turtle-green
+   - .iss-timeline--scheme-pale-rock-blue
+   - .iss-timeline--scheme-sunrise-yellow
+   - .iss-timeline--scheme-russet-brown
+   ===================================================================== */
+
+.iss-timeline.iss-timeline--scheme-scarlet-red,
+.iss-timeline-sections.iss-timeline--scheme-scarlet-red,
+.iss-timeline-latest.iss-timeline--scheme-scarlet-red,
+.iss-timeline-sections.iss-timeline--scheme-scarlet-red .iss-timeline,
+.iss-timeline-latest.iss-timeline--scheme-scarlet-red .iss-timeline {
+  --iss-tl-primary: var(--wp--preset--color--scarlet-red, #e81d25);
+  --iss-tl-line: rgba(232, 29, 37, 0.28);
+}
+
+.iss-timeline.iss-timeline--scheme-vaporous-white,
+.iss-timeline-sections.iss-timeline--scheme-vaporous-white,
+.iss-timeline-latest.iss-timeline--scheme-vaporous-white,
+.iss-timeline-sections.iss-timeline--scheme-vaporous-white .iss-timeline,
+.iss-timeline-latest.iss-timeline--scheme-vaporous-white .iss-timeline {
+  --iss-tl-primary: var(--wp--preset--color--vaporous-white, #f9f9fa);
+  --iss-tl-line: rgba(249, 249, 250, 0.55);
+}
+
+.iss-timeline.iss-timeline--scheme-eerie-black,
+.iss-timeline-sections.iss-timeline--scheme-eerie-black,
+.iss-timeline-latest.iss-timeline--scheme-eerie-black,
+.iss-timeline-sections.iss-timeline--scheme-eerie-black .iss-timeline,
+.iss-timeline-latest.iss-timeline--scheme-eerie-black .iss-timeline {
+  --iss-tl-primary: var(--wp--preset--color--eerie-black, #1e1e1e);
+  --iss-tl-line: rgba(30, 30, 30, 0.35);
+}
+
+.iss-timeline.iss-timeline--scheme-cerebral-grey,
+.iss-timeline-sections.iss-timeline--scheme-cerebral-grey,
+.iss-timeline-latest.iss-timeline--scheme-cerebral-grey,
+.iss-timeline-sections.iss-timeline--scheme-cerebral-grey .iss-timeline,
+.iss-timeline-latest.iss-timeline--scheme-cerebral-grey .iss-timeline {
+  --iss-tl-primary: var(--wp--preset--color--cerebral-grey, #c0b8b5);
+  --iss-tl-line: rgba(192, 184, 181, 0.38);
+}
+
+.iss-timeline.iss-timeline--scheme-turtle-green,
+.iss-timeline-sections.iss-timeline--scheme-turtle-green,
+.iss-timeline-latest.iss-timeline--scheme-turtle-green,
+.iss-timeline-sections.iss-timeline--scheme-turtle-green .iss-timeline,
+.iss-timeline-latest.iss-timeline--scheme-turtle-green .iss-timeline {
+  --iss-tl-primary: var(--wp--preset--color--turtle-green, #579e7d);
+  --iss-tl-line: rgba(87, 158, 125, 0.32);
+}
+
+.iss-timeline.iss-timeline--scheme-pale-rock-blue,
+.iss-timeline-sections.iss-timeline--scheme-pale-rock-blue,
+.iss-timeline-latest.iss-timeline--scheme-pale-rock-blue,
+.iss-timeline-sections.iss-timeline--scheme-pale-rock-blue .iss-timeline,
+.iss-timeline-latest.iss-timeline--scheme-pale-rock-blue .iss-timeline {
+  --iss-tl-primary: var(--wp--preset--color--pale-rock-blue, #869fba);
+  --iss-tl-line: rgba(134, 159, 186, 0.34);
+}
+
+.iss-timeline.iss-timeline--scheme-sunrise-yellow,
+.iss-timeline-sections.iss-timeline--scheme-sunrise-yellow,
+.iss-timeline-latest.iss-timeline--scheme-sunrise-yellow,
+.iss-timeline-sections.iss-timeline--scheme-sunrise-yellow .iss-timeline,
+.iss-timeline-latest.iss-timeline--scheme-sunrise-yellow .iss-timeline {
+  --iss-tl-primary: var(--wp--preset--color--sunrise-yellow, #ebbc1e);
+  --iss-tl-line: rgba(235, 188, 30, 0.38);
+}
+
+.iss-timeline.iss-timeline--scheme-russet-brown,
+.iss-timeline-sections.iss-timeline--scheme-russet-brown,
+.iss-timeline-latest.iss-timeline--scheme-russet-brown,
+.iss-timeline-sections.iss-timeline--scheme-russet-brown .iss-timeline,
+.iss-timeline-latest.iss-timeline--scheme-russet-brown .iss-timeline {
+  --iss-tl-primary: var(--wp--preset--color--russet-brown, #753a18);
+  --iss-tl-line: rgba(117, 58, 24, 0.36);
 }
 
 /* =====================================================================
@@ -97,4 +188,3 @@
 .iss-timeline-latest .has-text-align-center {
   text-align: left !important;
 }
-

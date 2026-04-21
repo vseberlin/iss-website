@@ -97,6 +97,20 @@ function industriesalon_register_block_patterns(): void
             'categories' => array('industriesalon', 'media', 'cards'),
             'file' => '/patterns/iss-3-card-row.html',
         ),
+        array(
+            'name' => 'industriesalon/newsletter-funders',
+            'title' => 'ISS Newsletter + Förderer',
+            'description' => 'Newsletter signup section with sponsor/funder panel.',
+            'categories' => array('industriesalon', 'text', 'media'),
+            'file' => '/patterns/iss-newsletter-funders.html',
+        ),
+        array(
+            'name' => 'industriesalon/archive-landing',
+            'title' => 'ISS Archive Landing',
+            'description' => 'Archive and media landing page layout.',
+            'categories' => array('industriesalon', 'text', 'media'),
+            'file' => '/patterns/archive-landing.html',
+        ),
     );
 
     foreach ($patterns as $pattern) {
@@ -179,6 +193,18 @@ function industriesalon_enqueue_assets(): void
             $theme_uri . $header_rel,
             array('industriesalon-base'),
             (string) filemtime($header_abs)
+        );
+    }
+
+    // 3b. Footer styles
+    $footer_rel = '/assets/css/footer.css';
+    $footer_abs = $theme_dir . $footer_rel;
+    if (file_exists($footer_abs)) {
+        wp_enqueue_style(
+            'industriesalon-footer',
+            $theme_uri . $footer_rel,
+            array('industriesalon-base'),
+            (string) filemtime($footer_abs)
         );
     }
 
@@ -339,6 +365,30 @@ function industriesalon_enqueue_assets(): void
             $theme_uri . $three_card_row_rel,
             array('industriesalon-base'),
             (string) filemtime($three_card_row_abs)
+        );
+    }
+
+    // 17. Newsletter + funders pattern styles
+    $newsletter_funders_rel = '/assets/css/iss-newsletter-funders.css';
+    $newsletter_funders_abs = $theme_dir . $newsletter_funders_rel;
+    if (file_exists($newsletter_funders_abs)) {
+        wp_enqueue_style(
+            'industriesalon-newsletter-funders',
+            $theme_uri . $newsletter_funders_rel,
+            array('industriesalon-base'),
+            (string) filemtime($newsletter_funders_abs)
+        );
+    }
+
+    // 18. Archive landing pattern styles
+    $archive_landing_rel = '/assets/css/archive-landing.css';
+    $archive_landing_abs = $theme_dir . $archive_landing_rel;
+    if (file_exists($archive_landing_abs)) {
+        wp_enqueue_style(
+            'industriesalon-archive-landing',
+            $theme_uri . $archive_landing_rel,
+            array('industriesalon-base'),
+            (string) filemtime($archive_landing_abs)
         );
     }
 

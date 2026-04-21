@@ -1,275 +1,189 @@
 /* =====================================================================
-   FRONT PAGE LAYOUT FIXES
-   --------------------------------------------------------------------- */
+   FRONT PAGE
+   Cleaned hero, calmer rhythm, left-aligned structure
+   ===================================================================== */
 
-/*
-  Home canvas reset (without hard override):
-  - Previous rule used !important on html/body/.wp-site-blocks.
-  - We only need this reset on the front-page canvas.
-  - Scope to .home so global pages keep default behavior.
-*/
 .home .wp-site-blocks {
   margin-top: 0;
   padding-top: 0;
 }
 
-/* 
-   GUTENBERG OVERRIDE: 
-   The cover inner container must fill the height to allow bottom alignment.
-*/
-.wp-site-blocks .wp-block-cover.iss-front-hero > .wp-block-cover__inner-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  min-height: inherit;
-  max-width: var(--iss-content-width);
-  margin: 0 auto;
-  padding: 0 var(--iss-container-pad) clamp(2rem, 5vh, 4rem);
-  box-sizing: border-box;
-  overflow: visible;
+.home .iss-front-page-main {
+  overflow: clip;
 }
 
-.wp-site-blocks .wp-block-cover.iss-front-hero {
+.home .iss-front-page-main .iss-section {
+  width: 100%;
+}
+
+/* =====================================================================
+   HERO
+   ===================================================================== */
+
+.home .wp-block-cover.iss-front-hero {
   --iss-hero-min-h: 100svh;
-  --iss-banner-width: 460px;
-  --iss-hero-gap: 2.5rem;
-  --iss-banner-offset: 100px;
-  --iss-banner-pad-y: 1.65rem;
-  --iss-banner-pad-x: 2rem;
-  min-height: 100vh;
+  --iss-banner-width: 30rem;
+  --iss-hero-pad-bottom: clamp(2rem, 5vh, 4rem);
+  --iss-hero-overlay: linear-gradient(
+    90deg,
+    rgba(30, 30, 30, 0.78) 0%,
+    rgba(30, 30, 30, 0.48) 42%,
+    rgba(30, 30, 30, 0.16) 100%
+  );
+
+  position: relative;
   min-height: var(--iss-hero-min-h);
   margin: 0;
   padding: 0;
   overflow: visible;
+}
+
+.home .wp-block-cover.iss-front-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--iss-hero-overlay);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.home .wp-block-cover.iss-front-hero > .wp-block-cover__inner-container {
   position: relative;
-}
-
-/* =====================================================================
-   FRONT PAGE NOTICES (Overlapping Card)
-   --------------------------------------------------------------------- */
-
-.iss-front-page-main .iss-front-banner-slot {
-  position: relative;
-  transform: translateY(var(--iss-banner-offset));
-  width: 100%;
-  max-width: var(--iss-banner-width);
-  margin-left: 0;
-  margin-right: auto;
-  margin-bottom: 0;
-  z-index: 999;
-}
-
-@media (max-width: 782px) {
-  .iss-front-page-main .iss-front-banner-slot {
-    max-width: 90%;
-    margin-left: 0;
-  }
-}
-
-.iss-front-page-main .iss-front-banner-slot .iss-notice__inner {
-  display: grid;
-  gap: 0.75rem;
-  padding: var(--iss-banner-pad-y) var(--iss-banner-pad-x);
-  background: white;
-  color: #1e1e1e;
-  border: 1px solid rgba(30, 30, 30, 0.1);
-  border-left: 10px solid #e81d25;
-  border-radius: 12px;
-  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.3);
-}
-
-.iss-front-page-main .iss-notice--front_page_banner {
-  width: 100%;
-}
-
-/* =====================================================================
-   FRONT PAGE HERO CONTENT (Title & Cluster)
-   ===================================================================== */
-
-.iss-front-page-main .iss-front-hero__shell {
+  z-index: 2;
+  display: block;
   width: 100%;
   min-height: inherit;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0;
-  margin-bottom: 0;
-  padding-top: 0;
+  max-width: none;
+  margin: 0;
+  padding: calc(var(--iss-header-height) + 1.5rem) var(--iss-container-pad) var(--iss-hero-pad-bottom);
+  box-sizing: border-box;
   overflow: visible;
 }
 
-.iss-front-page-main .iss-front-hero__content {
-  width: 100%;
-  max-width: var(--iss-heading-max-width, 42rem);
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  align-items: center;
-  text-align: center;
-  padding-top: 0;
-  padding-left: 0;
-  transform: none;
-}
-
-.iss-front-page-main .iss-front-hero .iss-kicker {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.iss-front-page-main .iss-control-field {
-  display: block;
-}
-
-.iss-front-page-main .iss-front-hero .iss-control-field--general-tagline {
-  max-width: none;
-  margin: 0 auto;
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
-  font-weight: inherit;
-  line-height: 1.15;
-  color: var(--iss-white);
-  text-align: center;
-  text-shadow: none;
-}
-
-@media (min-width: 782px) {
-  .iss-front-page-main .iss-front-hero .iss-control-field--general-tagline {
-    font-size: clamp(1.75rem, 3vw, 2.5rem);
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
-
-@media (max-width: 782px) {
-  .iss-front-page-main .iss-front-hero__content {
-    padding-top: 0;
-    padding-left: 0;
-  }
-}
-
-
-/* Clearance for the section below */
-#programm {
-  padding-top: 240px;
-  background: white;
+.home .iss-front-hero__shell {
   position: relative;
-  z-index: 10;
-}
-
-/* --- HERO SECTION LAYOUT --- */
-@media (min-width: 1024px) {
-  .iss-front-hero__shell {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.5rem;
-    max-width: var(--iss-content-width);
-    margin: 0 auto;
-    min-height: inherit;
-    position: relative;
-    overflow: visible;
-    padding-left: 0;
-    padding-right: 0;
-  }
-
-  .iss-front-banner-slot {
-    order: 2;
-    position: absolute;
-    left: 0;
-    bottom: calc(-1 * var(--iss-banner-offset));
-    transform: none;
-    width: var(--iss-banner-width);
-    margin-top: 0;
-    margin-left: 0;
-    margin-right: 0;
-    z-index: 99;
-  }
-
-  .iss-front-hero__content {
-    order: 1;
-    flex: 0 0 auto;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 0;
-    z-index: 10;
-  }
-}
-
-@media (max-width: 1023px) {
-  .iss-front-hero__shell {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: center;
-    padding-top: calc(var(--iss-header-height) + 1rem);
-    height: auto;
-    width: 100%;
-    overflow-x: hidden;
-  }
-
-  .iss-front-hero__content {
-    width: 100%;
-    max-width: 100%;
-    padding: 0 1.5rem;
-    box-sizing: border-box;
-    margin: 0;
-    transform: none;
-  }
-
-  .iss-front-banner-slot {
-    order: 2;
-    width: 100%;
-    max-width: min(100%, var(--iss-banner-width));
-    margin-top: 1.5rem;
-    margin-left: 0;
-    margin-right: auto;
-    transform: none;
-    margin-bottom: 0;
-  }
-
-  #programm {
-    padding-top: 120px;
-  }
-}
-
-/* --- MISSION STATEMENT BLOCK --- */
-.iss-mission-statement-wrap .iss-mission-statement {
-  margin: 0;
-  max-width: 60ch;
-}
-
-.iss-mission-statement-wrap .iss-mission-statement .iss-heading__text.iss-mission-statement__text {
-  color: black;
-}
-
-.iss-mission-statement__title {
-  margin: 0;
-}
-
-
-@media (min-width: 1024px) {
-  .iss-mission-statement-wrap .iss-mission-statement {
-    margin-left: calc(var(--iss-banner-width) + var(--iss-hero-gap));
-  }
-}
-
-@media (max-width: 1023px) {
-  .iss-mission-statement-wrap .iss-mission-statement {
-    max-width: 100%;
-    margin-left: 0;
-  }
-}
-
-
-/* Keep top-level front-page heading blocks inside the shared content container. */
-.home .wp-site-blocks > .wp-block-group.iss-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 44rem);
+  gap: 1.5rem;
   width: 100%;
+  max-width: var(--iss-content-width);
+  margin: 0 auto;
+  min-height: inherit;
+  align-content: end;
+  justify-content: start;
+  overflow: visible;
+}
+
+.home .iss-front-hero__content {
+  max-width: 44rem;
+  color: var(--iss-white);
+}
+
+.home .iss-front-hero__content .iss-kicker,
+.home .iss-front-hero__content .iss-heading__title,
+.home .iss-front-hero__content .iss-heading__text {
+  color: var(--iss-white);
+}
+
+.home .iss-front-hero__title {
+  max-width: 13ch;
+  font-size: clamp(2.9rem, 6vw, 5.5rem);
+  line-height: 0.96;
+  text-wrap: balance;
+}
+
+.home .iss-front-hero__text {
+  max-width: 40rem;
+  font-size: clamp(1rem, 1vw + 0.8rem, 1.2rem);
+  line-height: 1.55;
+  color: rgba(249, 249, 250, 0.9);
+}
+
+.home .iss-front-hero__actions {
+  margin-top: 0.75rem;
+}
+
+.home .iss-front-hero__actions .wp-block-button.is-style-outline .wp-block-button__link {
+  border-color: rgba(249, 249, 250, 0.55);
+  color: var(--iss-white);
+  background: transparent;
+}
+
+.home .iss-front-hero__actions .wp-block-button.is-style-outline .wp-block-button__link:hover,
+.home .iss-front-hero__actions .wp-block-button.is-style-outline .wp-block-button__link:focus-visible {
+  border-color: var(--iss-white);
+  background: rgba(249, 249, 250, 0.1);
+}
+
+.home .iss-front-banner-slot {
+  position: absolute;
+  right: var(--iss-container-pad);
+  bottom: var(--iss-hero-pad-bottom);
+  width: min(100%, var(--iss-banner-width));
+  max-width: var(--iss-banner-width);
+  margin: 0;
+  transform: none;
+  z-index: 5;
+}
+
+.home .iss-front-banner-slot .iss-notice__inner {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.35rem 1.5rem;
+  background: rgba(249, 249, 250, 0.98);
+  color: var(--iss-black);
+  border: 1px solid rgba(30, 30, 30, 0.1);
+  border-left: 8px solid var(--iss-red);
+  border-radius: var(--iss-radius-md);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(8px);
+}
+
+.home .iss-section--mission {
+  padding-top: clamp(3.5rem, 6vw, 5.5rem);
+}
+
+.home .iss-mission-statement-wrap .iss-mission-statement {
+  max-width: 64ch;
+  margin: 0;
+}
+
+.home .iss-mission-statement-wrap .iss-mission-statement__title,
+.home .iss-mission-statement-wrap .iss-heading__title {
+  margin: 0;
+}
+
+.home .iss-mission-statement-wrap .iss-heading__text,
+.home .iss-mission-statement-wrap .iss-mission-statement__text {
+  color: var(--iss-black);
+}
+
+/* =====================================================================
+   GENERAL FRONT PAGE RHYTHM
+   ===================================================================== */
+
+.home .section {
+  padding-top: clamp(3.5rem, 6vw, 5.5rem);
+  padding-bottom: clamp(3.5rem, 6vw, 5.5rem);
+}
+
+.home .section--alt {
+  background: linear-gradient(180deg, rgba(192, 184, 181, 0.16), rgba(192, 184, 181, 0.08));
+}
+
+.home .iss-heading {
+  max-width: 46rem;
+}
+
+.home .iss-heading__text {
+  color: rgba(30, 30, 30, 0.72);
+}
+
+/* =====================================================================
+   VISIT PANEL
+   ===================================================================== */
+
+.home .iss-section--visit-info .iss-info-panel {
   max-width: var(--iss-content-width);
   margin-left: auto;
   margin-right: auto;
@@ -278,6 +192,177 @@
   box-sizing: border-box;
 }
 
-.iss-section {
+/* =====================================================================
+   CARD ROWS
+   ===================================================================== */
+
+.home .iss-3-card-row__grid,
+.home .iss-4-card-row__grid {
+  display: grid;
+  gap: var(--iss-gap);
+}
+
+.home .iss-3-card-row__grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.home .iss-4-card-row__grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.home .iss-3-card-row__card .wp-block-image,
+.home .iss-4-card-row__image {
+  margin: 0;
+}
+
+.home .iss-3-card-row__card .wp-block-image img,
+.home .iss-4-card-row__image img {
+  display: block;
   width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+
+.home .iss-3-card-row .iss-card {
+  box-shadow: none;
+}
+
+.home .iss-3-card-row .iss-card:hover,
+.home .iss-3-card-row .iss-card:focus-within {
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.1);
+}
+
+.home .iss-3-card-row .wp-block-buttons {
+  margin-top: auto;
+}
+
+.home .iss-3-card-row .wp-block-button.is-style-outline .wp-block-button__link {
+  padding: 0.7rem 1rem;
+}
+
+.home .iss-4-card-row__card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.home .iss-4-card-row__title {
+  font-size: clamp(1.1rem, 1rem + 0.35vw, 1.35rem);
+  line-height: 1.15;
+}
+
+/* =====================================================================
+   MEDIA TEXT
+   ===================================================================== */
+
+.home .iss-media-text__layout {
+  align-items: start;
+}
+
+.home .iss-media-text__inner {
+  max-width: 42rem;
+}
+
+.home .iss-media-text__media,
+.home .iss-media-text__image,
+.home .iss-media-text__image img {
+  width: 100%;
+  height: 100%;
+}
+
+.home .iss-media-text__image img {
+  display: block;
+  min-height: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+
+/* =====================================================================
+   NEWSLETTER BAND
+   ===================================================================== */
+
+.home .iss-section--newsletter .iss-container {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.home .iss-newsletter-band__grid {
+  gap: 2rem;
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  border: 1px solid var(--iss-border);
+  border-radius: var(--iss-radius-lg);
+  background: var(--iss-white);
+  box-shadow: var(--iss-shadow);
+}
+
+.home .iss-newsletter-band__lead,
+.home .iss-newsletter-band__note,
+.home .iss-newsletter-band__support-title {
+  color: rgba(30, 30, 30, 0.72);
+}
+
+.home .iss-newsletter-band__logo img {
+  width: 100%;
+  max-width: 14rem;
+  height: auto;
+}
+
+/* =====================================================================
+   RESPONSIVE
+   ===================================================================== */
+
+@media (max-width: 1100px) {
+  .home .iss-3-card-row__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home .iss-4-card-row__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 782px) {
+  .home .wp-block-cover.iss-front-hero {
+    --iss-banner-width: min(100%, 26rem);
+  }
+
+  .home .wp-block-cover.iss-front-hero > .wp-block-cover__inner-container {
+    padding-top: calc(var(--iss-header-height) + 1rem);
+    padding-bottom: 2rem;
+  }
+
+  .home .iss-front-banner-slot {
+    position: static;
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .home .iss-front-hero__title {
+    max-width: 11ch;
+    font-size: clamp(2.4rem, 10vw, 3.75rem);
+  }
+
+  .home .iss-front-hero__text {
+    max-width: 100%;
+  }
+
+  .home .iss-front-hero__actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .home .iss-section--mission {
+    padding-top: clamp(3.5rem, 6vw, 5.5rem);
+  }
+
+  .home .iss-4-card-row__grid,
+  .home .iss-newsletter-band__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .home .iss-4-card-row__grid {
+    grid-template-columns: 1fr;
+  }
 }

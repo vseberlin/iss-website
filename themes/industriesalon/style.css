@@ -700,3 +700,45 @@ body {
 .section .iss-indent .has-text-align-center {
   text-align: left !important;
 }
+
+/* =====================================================================
+   RIGHT FADE SEPARATOR (optical balance)
+   <!-- wp:group {"className":"iss-1to4-grid section section--with-rail"} -->
+   ===================================================================== */
+
+.section--with-rail {
+  position: relative;
+}
+
+.section--with-rail::after {
+  content: "";
+  position: absolute;
+
+  top: 0; /* align with section start */
+  right: var(--iss-container-pad);
+
+  height: 1px;
+  width: 33%;
+
+   background: linear-gradient(
+    to left,
+    rgba(232, 29, 37, 0.45),  /* main red */
+    rgba(232, 29, 37, 0.18),
+    rgba(232, 29, 37, 0)
+  );
+
+  pointer-events: none;
+}
+
+.section--with-rail-accent::after {
+  background: linear-gradient(
+    to left,
+    rgba(232, 29, 37, 0.35),
+    rgba(232, 29, 37, 0.15),
+    rgba(232, 29, 37, 0)
+  );
+}
+
+.section--alt {
+  background: #f3f1ef;
+}
