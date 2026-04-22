@@ -27,6 +27,10 @@
 .home .wp-block-cover.iss-front-hero {
   --iss-hero-min-h: 100svh;
   --iss-hero-pad-bottom: clamp(2rem, 5vh, 4rem);
+  --iss-hero-left-pad: max(var(--iss-container-pad), calc((100vw - var(--iss-content-width)) / 2 + var(--iss-container-pad)));
+  --iss-hero-right-pad: clamp(0.75rem, 2.2vw, 2.25rem);
+  --iss-banner-shift-x: -400px;
+  --iss-banner-shift-y: -200px;
   --iss-hero-overlay: linear-gradient(
     90deg,
     rgba(30, 30, 30, 0.78) 0%,
@@ -59,16 +63,22 @@
 .home .wp-block-cover.iss-front-hero > .wp-block-cover__inner-container {
   position: relative;
   z-index: 2;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, var(--iss-banner-width));
+  align-items: end;
+  align-content: end;
+  column-gap: clamp(1rem, 3vw, 2.5rem);
+  width: 100% !important;
   min-height: inherit;
-  max-width: none;
-  margin: 0;
-  padding: calc(var(--iss-header-height) + 1.5rem) var(--iss-container-pad) var(--iss-hero-pad-bottom);
+  max-width: none !important;
+  margin: 0 !important;
+  padding: calc(var(--iss-header-height) + 1.5rem) var(--iss-hero-right-pad) var(--iss-hero-pad-bottom) var(--iss-hero-left-pad);
   box-sizing: border-box;
   overflow: visible;
+}
+
+.home .iss-front-hero__row {
+  display: contents;
 }
 
 .home .iss-front-hero__shell {
@@ -77,8 +87,8 @@
   grid-template-columns: minmax(0, 44rem);
   gap: 1.5rem;
   width: 100%;
-  max-width: var(--iss-content-width);
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   min-height: 0;
   align-content: end;
   justify-content: start;
@@ -134,15 +144,19 @@
   --iss-banner-width: 23rem;
 }
 
-.home .wp-block-cover.iss-front-hero > .iss-front-banner-slot,
-.home .wp-block-cover.iss-front-hero > .wp-block-cover__inner-container > .iss-front-banner-slot {
-  position: absolute;
-  right: clamp(1.75rem, 4vw, 3.75rem);
-  top: 51%;
-  transform: translateY(-50%);
+.home .wp-block-cover.iss-front-hero .iss-front-banner-slot {
+  position: relative;
   width: min(100%, var(--iss-banner-width));
   max-width: var(--iss-banner-width);
+  grid-column: 2;
+  justify-self: end;
+  transform: translateX(var(--iss-banner-shift-x)) translateY(var(--iss-banner-shift-y));
   z-index: 5;
+}
+
+.home .wp-block-cover.iss-front-hero > .wp-block-cover__inner-container > .iss-front-hero__shell,
+.home .wp-block-cover.iss-front-hero > .wp-block-cover__inner-container > .iss-front-hero__row > .iss-front-hero__shell {
+  grid-column: 1;
 }
 
 .home .iss-front-banner-slot .iss-hero-note {
@@ -451,6 +465,22 @@
    RESPONSIVE
    ===================================================================== */
 @media (max-width: 1100px) {
+  .home .wp-block-cover.iss-front-hero > .wp-block-cover__inner-container {
+    grid-template-columns: 1fr;
+    row-gap: 1rem;
+    padding-left: var(--iss-container-pad);
+    padding-right: var(--iss-container-pad);
+  }
+
+  .home .wp-block-cover.iss-front-hero .iss-front-banner-slot {
+    grid-column: 1;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 0.75rem;
+    justify-self: stretch;
+    transform: none;
+  }
+
   .home .iss-3-card-row__grid {
     grid-template-columns: 1fr;
   }
@@ -461,17 +491,6 @@
 }
 
 @media (max-width: 782px) {
-  .home .wp-block-cover.iss-front-hero > .iss-front-banner-slot,
-  .home .wp-block-cover.iss-front-hero > .wp-block-cover__inner-container > .iss-front-banner-slot {
-    position: static;
-    top: auto;
-    right: auto;
-    transform: none;
-    width: 100%;
-    max-width: 100%;
-    margin-top: 0.75rem;
-  }
-
   .home .iss-front-banner-slot .iss-hero-note {
     min-height: 0;
     max-width: 100%;
