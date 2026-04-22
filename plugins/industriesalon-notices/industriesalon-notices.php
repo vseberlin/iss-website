@@ -602,38 +602,30 @@ final class Industriesalon_Notices {
     }
 
     public function render_front_notice(\WP_Post $notice): string {
-        $kicker     = get_post_meta($notice->ID, 'iss_kicker', true);
-        $kicker_style = (string) get_post_meta($notice->ID, 'iss_kicker_style', true);
-        $headline   = get_post_meta($notice->ID, 'iss_headline', true);
-        $badge      = get_post_meta($notice->ID, 'iss_badge', true);
-        $link_label = get_post_meta($notice->ID, 'iss_link_label', true);
-        $link_url   = $this->resolve_link_url($notice->ID);
+        $kicker     = trim((string) get_post_meta($notice->ID, 'iss_kicker', true));
+        $headline   = trim((string) get_post_meta($notice->ID, 'iss_headline', true));
+        $link_label = trim((string) get_post_meta($notice->ID, 'iss_link_label', true));
+        $link_url   = trim((string) $this->resolve_link_url($notice->ID));
+
+        $eyebrow_text = $kicker !== '' ? $kicker : __('Hinweis', 'industriesalon-notices');
+        $title_text   = $headline !== '' ? $headline : __('Heute im Industriesalon', 'industriesalon-notices');
+        $cta_text     = $link_label !== '' ? $link_label : __('Mehr erfahren', 'industriesalon-notices');
+        $cta_href     = $link_url !== '' ? $link_url : '#';
 
         ob_start();
         ?>
-        <div class="iss-notice iss-notice--<?php echo esc_attr(get_post_meta($notice->ID, 'iss_area', true)); ?>">
-            <div class="iss-notice__inner">
-                <?php if ($kicker) : ?>
-                    <?php echo $this->render_kicker_markup((string) $kicker, $kicker_style); ?>
-                <?php endif; ?>
-
-                <?php if ($badge && $badge !== 'none') : ?>
-                    <p class="iss-notice__badge"><?php echo esc_html($this->badge_options()[$badge] ?? $badge); ?></p>
-                <?php endif; ?>
-
-                <?php if ($headline) : ?>
-                    <h2 class="iss-notice__headline"><?php echo esc_html($headline); ?></h2>
-                <?php endif; ?>
-
-                <div class="iss-notice__text"><?php echo wp_kses_post(wpautop($notice->post_content)); ?></div>
-
-                <?php if ($link_url && $link_label) : ?>
-                    <p class="iss-notice__actions">
-                        <a class="iss-notice__button" href="<?php echo esc_url($link_url); ?>"<?php echo $this->link_target_attributes($notice->ID); ?>><?php echo esc_html($link_label); ?></a>
-                    </p>
-                <?php endif; ?>
-            </div>
-        </div>
+        <aside class="iss-hero-note" role="note" aria-label="Hinweis">
+            <span class="iss-hero-note__marker" aria-hidden="true"></span>
+            <p class="iss-hero-note__kicker"><?php echo esc_html($eyebrow_text); ?></p>
+            <h3 class="iss-hero-note__title"><?php echo esc_html($title_text); ?></h3>
+            <div class="iss-hero-note__text"><?php echo wp_kses_post(wpautop($notice->post_content)); ?></div>
+            <p class="iss-hero-note__link">
+                <a href="<?php echo esc_url($cta_href); ?>"<?php echo $link_url !== '' ? $this->link_target_attributes($notice->ID) : ''; ?>>
+                    <span class="iss-hero-note__link-icon" aria-hidden="true">→</span>
+                    <span><?php echo esc_html($cta_text); ?></span>
+                </a>
+            </p>
+        </aside>
         <?php
         return (string) ob_get_clean();
     }

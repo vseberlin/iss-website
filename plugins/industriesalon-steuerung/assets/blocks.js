@@ -161,8 +161,6 @@
       variant: { type: 'string', default: 'compact' },
       kicker: { type: 'string', default: '' },
       title: { type: 'string', default: '' },
-      primary_label: { type: 'string', default: 'Einfach vorbeikommen' },
-      primary_url: { type: 'string', default: '' },
       show_upcoming: { type: 'boolean', default: true },
       upcoming_label: { type: 'string', default: 'Demnächst' },
       upcoming_url: { type: 'string', default: '' },
@@ -231,17 +229,6 @@
               label: 'Titel',
               value: props.attributes.title,
               onChange: function (value) { props.setAttributes({ title: value }); }
-            }),
-            el(TextControl, {
-              label: 'Einfach vorbeikommen',
-              value: props.attributes.primary_label,
-              onChange: function (value) { props.setAttributes({ primary_label: value }); }
-            }),
-            el(TextControl, {
-              label: 'Link Ziel',
-              value: props.attributes.primary_url,
-              placeholder: 'https://…',
-              onChange: function (value) { props.setAttributes({ primary_url: value }); }
             }),
             el(ToggleControl, {
               label: 'Demnächst zeigen',

@@ -4,78 +4,65 @@
 - `ready_for_next_session`
 
 ## Date / Window
-- Date: 2026-04-16
+- Date: 2026-04-21
 - Timezone: Europe/Berlin
 
 ## Branch / Commit
 - Branch: `master`
-- HEAD: `0932002`
+- HEAD: `7c979e2`
 
-## What Was Done Today (final)
-- Verified active plugin path/version for SuperSaaS integration:
-  - Active plugin: `saas-api` v`1.2.0`
-  - Active path: `/home/vladimir/wp/plugins/saas-api`
-- Fixed SuperSaaS sync source configuration:
-  - `schedule_id` corrected to `829971` (`public`)
-  - Sync now reaches SuperSaaS and returns slots.
-- Implemented sync precedence behavior in `iss-calendar`:
-  - SaaS dates keep absolute priority (`event_start`, `event_end`, `sort_date` always refreshed from SaaS).
-  - Existing editorial `post_title`/`post_content` are preserved on updates.
-  - Unmapped SaaS slots are now imported (no longer skipped).
-  - Sync result now includes richer counters and upstream error message.
-- Extended timeline module:
-  - Added new dynamic block `industriesalon/timeline-latest` (next 4 upcoming items).
-  - Added scoped timeline stylesheet `iss-timeline/timeline.css`.
-  - Updated timeline markup to reference-style row layout (date/time column + content + pill buttons).
-  - Added editor controls for:
-    - title/kicker show-hide
-    - button visibility
-    - button text + URL overrides
-    - bottom CTA button text + URL + toggle
-  - Added `iss-container` class to timeline wrappers.
-- Fixed frontend bottom CTA behavior:
-  - Bottom button now renders if `bottomButtonUrl` exists, even when `showBottomButton` was not persisted.
+## What Was Done Today
+- Verified active runtime before edits:
+  - active theme: `industriesalon` `v1.1.0`
+  - active path: `/var/www/html/wp-content/themes/industriesalon`
+- Committed current `themes/industriesalon` changes:
+  - commit `7c979e2` with message `Update industriesalon theme`
+- Updated root `AGENTS.md` with environment quick reference:
+  - Docker services/URLs
+  - WP-CLI via `docker compose run --rm wpcli ... --allow-root`
+  - active theme verification commands
+  - DB template override caveat (`wp_template`)
+- Front-page hero banner structure update:
+  - moved `iss-front-banner-slot` to direct child of `.wp-block-cover.iss-front-hero`
+  - files:
+    - `themes/industriesalon/templates/front-page.html`
+    - `themes/industriesalon/assets/css/front-page.css`
+- Purged DB `wp_template` override for front page:
+  - deleted template post `ID 12602` (`post_name: front-page`)
+  - flushed WP cache
+- Banner renderer change (plugin output markup):
+  - confirmed active plugin source is `industriesalon-notices` (not `industriesalon-steuerung`) for block `industriesalon/notice-banner`
+  - changed rendered markup to:
+    - `<aside class="iss-hero-note" role="note">`
+    - `iss-hero-note__eyebrow`, `iss-hero-note__title`, `iss-hero-note__text`, `iss-hero-note__cta`
+  - plugin text now drives snippet content (with fallbacks if fields are empty)
+  - files:
+    - `plugins/industriesalon-notices/industriesalon-notices.php`
+    - `themes/industriesalon/assets/css/front-page.css` (selector updated from `.iss-notice__inner` to `.iss-hero-note`)
 
-## Files Changed (final commit)
-- `plugins/saas-api/iss-calendar/includes/calendar-sync.php`
-- `plugins/saas-api/iss-timeline/includes/timeline-render.php`
-- `plugins/saas-api/iss-timeline/includes/blocks.php`
-- `plugins/saas-api/iss-timeline/includes/shortcodes.php`
-- `plugins/saas-api/iss-timeline/blocks/timeline/block.json`
-- `plugins/saas-api/iss-timeline/blocks/timeline/index.js`
-- `plugins/saas-api/iss-timeline/blocks/timeline-latest/block.json` (new)
-- `plugins/saas-api/iss-timeline/blocks/timeline-latest/index.js` (new)
-- `plugins/saas-api/iss-timeline/timeline.css` (new)
-- `plugins/saas-api/saas-api.php`
-
-## Commits (today)
-- `b23f82b` — `chore: checkpoint current working state`
-- `6dc2edc` — `saas-api: prioritize SaaS dates and import unmapped slots`
-- `0932002` — `timeline: add editor controls and fix bottom CTA rendering`
-
-## Important Operational Notes
-- Timeline controls are server-rendered attributes; frontend reflects what is stored in block markup.
-- For legacy blocks missing `showBottomButton`, bottom CTA still appears if `bottomButtonUrl` is set (fallback logic added).
-- Timeline style is scoped to `iss-timeline*` classes; no global theme override was introduced.
+## Commits Created This Session
+- `7c979e2` — `Update industriesalon theme`
 
 ## Validation Performed
-- Sync endpoint/function tested via `wp-cli`:
-  - Fetch returns slots
-  - Sync returns created/updated/errors counters as expected
-- Timeline render tested via `wp-cli`:
-  - `iss_timeline_render_latest()` outputs updated markup
-  - Bottom CTA output confirmed
-  - Button text/URL overrides confirmed
-- JS editor scripts syntax checked with `node --check`.
+- Active theme/version/path checks via WP-CLI.
+- Active plugin checks via WP-CLI:
+  - `industriesalon-steuerung` `0.3.0`
+  - `industriesalon-notices` `0.1.2`
+- PHP lint passed:
+  - `plugins/industriesalon-notices/industriesalon-notices.php`
+- Cache flush completed after template/plugin changes.
 
-## Tomorrow: Recommended First Steps
-1. In WP editor, re-open timeline blocks and confirm new controls are visible:
-   - button text controls
-   - bottom CTA controls
-2. Frontend check:
-   - verify bottom CTA appears when URL is set
-   - verify button labels/visibility reflect saved controls
-3. Optional hard refresh / cache clear if editor JS panel appears stale after plugin updates.
+## Notes / Open Items
+- Important: `front-page` DB override was deleted, so disk template currently drives front page.
+- Uncommitted changes currently present:
+  - `AGENTS.md`
+  - `themes/industriesalon/templates/front-page.html`
+  - `themes/industriesalon/assets/css/front-page.css`
+  - `plugins/industriesalon-notices/industriesalon-notices.php`
+- Some unrelated non-theme working tree changes still exist.
 
 ## Continuity Prompt
 - Start next session with: `read /home/vladimir/wp/handoff_CURRENT.md`.
+- Before editing front-page banner again:
+  - verify whether a new `wp_template` `front-page` override was recreated
+  - verify banner markup source in `industriesalon-notices` render callback.

@@ -1,0 +1,45 @@
+<!-- wp:group {"className":"iss-home-tours section","layout":{"type":"constrained"}} -->
+<div class="wp-block-group iss-home-tours section">
+	<!-- wp:group {"className":"iss-container","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group iss-container">
+
+		<!-- wp:group {"className":"iss-tours-layout","layout":{"type":"constrained"}} -->
+		<div class="wp-block-group iss-tours-layout">
+
+			<!-- LEFT -->
+			<div class="iss-tours-layout__lead">
+				<!-- keep your lead card as is -->
+			</div>
+
+			<!-- RIGHT / QUERY LOOP -->
+			<div class="iss-tours-layout__grid">
+
+				<!-- wp:query {"queryId":1,"query":{"perPage":6,"postType":"fuehrung"}} -->
+				<div class="wp-block-query iss-tour-grid">
+
+					<!-- wp:post-template -->
+					<div class="iss-tour-card">
+
+						<!-- wp:post-featured-image {"isLink":true,"className":"iss-tour-card__media"} /-->
+
+						<div class="iss-tour-card__body">
+							<!-- wp:paragraph {"className":"iss-kicker iss-kicker--compact"} -->
+							<p class="iss-kicker iss-kicker--compact">Führung</p>
+							<!-- /wp:paragraph -->
+
+							<!-- wp:post-title {"isLink":true,"level":4,"className":"iss-tour-card__title"} /-->
+
+							<!-- wp:post-excerpt {"moreText":"Mehr","className":"iss-tour-card__text"} /-->
+						</div>
+
+					</div>
+					<!-- /wp:post-template -->
+
+				</div>
+				<!-- /wp:query -->
+
+			</div>
+
+		</div>
+	</div>
+</div>

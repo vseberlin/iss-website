@@ -1,0 +1,37 @@
+<svg width="1000" height="1000" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Industriesalon feature shape</title>
+  <desc>Soft circular field with roof mark derived from the Industriesalon icon proportions.</desc>
+
+  <!-- Main soft circle -->
+  <circle cx="500" cy="500" r="412" fill="#C0B8B5" fill-opacity="0.18"/>
+
+  <!-- Inner wash / dissolve -->
+  <path d="M824 220
+           C707 226 596 275 516 359
+           C438 441 398 548 398 690
+           C398 748 405 799 419 838
+           C298 798 210 687 186 552
+           C158 396 231 242 368 155
+           C503 70 685 92 824 220Z"
+        fill="white" fill-opacity="0.38"/>
+
+  <!-- Roof mark based on logo proportions -->
+  <path d="M220 780V351.5L370 219L500 335L631 219L781 351.5"
+        stroke="#C0B8B5"
+        stroke-opacity="0.82"
+        stroke-width="38"
+        stroke-linecap="butt"
+        stroke-linejoin="miter"/>
+
+  <!-- Soft red wash to the right, optional but subtle -->
+  <defs>
+    <radialGradient id="issRedWash" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(760 430) rotate(180) scale(310 260)">
+      <stop offset="0" stop-color="#E81D25" stop-opacity="0.10"/>
+      <stop offset="0.45" stop-color="#E81D25" stop-opacity="0.05"/>
+      <stop offset="0.8" stop-color="#E81D25" stop-opacity="0.015"/>
+      <stop offset="1" stop-color="#E81D25" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="760" cy="430" rx="310" ry="260" fill="url(#issRedWash)"/>
+</svg>

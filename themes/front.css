@@ -1,0 +1,275 @@
+/* =========================================================
+   ISS CSS SYSTEM
+   Layers:
+   1. TOKENS
+   2. BASE
+   3. LAYOUT
+   4. OBJECTS
+   5. COMPONENTS
+   6. UTILITIES
+   7. PAGE (scoped only)
+   ========================================================= */
+
+/* =========================================================
+   1. TOKENS
+   ========================================================= */
+
+:root {
+  --iss-black: #1e1e1e;
+  --iss-white: #ffffff;
+
+  --iss-red: #e81d25;
+  --iss-green: #579e7d;
+  --iss-blue: #3a6ea5;
+  --iss-yellow: #ebbc1e;
+  --iss-brown: #753a18;
+
+  --iss-grey: rgba(30,30,30,0.7);
+  --iss-border: rgba(30,30,30,0.12);
+
+  --iss-content-width: 1280px;
+  --iss-container-pad: 1.25rem;
+
+  --iss-radius-md: 14px;
+  --iss-radius-pill: 999px;
+
+  --iss-transition: 180ms ease;
+}
+
+/* =========================================================
+   2. BASE
+   ========================================================= */
+
+body {
+  color: var(--iss-black);
+  background: var(--iss-white);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* =========================================================
+   3. LAYOUT
+   (ONLY WIDTH + SPACING — NO VISUALS)
+   ========================================================= */
+
+.iss-section {
+  width: 100%;
+  padding: 3rem 0;
+}
+
+.iss-container {
+  width: 100%;
+  max-width: var(--iss-content-width);
+  margin-inline: auto;
+  padding-inline: var(--iss-container-pad);
+}
+
+/* Gutenberg normalization */
+.wp-block-group,
+.wp-block-columns {
+  max-width: var(--iss-content-width);
+  margin-inline: auto;
+}
+
+/* =========================================================
+   4. OBJECTS (STRUCTURE ONLY)
+   ========================================================= */
+
+/* Grid helper */
+.iss-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+/* Two-column editorial */
+.iss-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 781px) {
+  .iss-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   5. COMPONENTS
+   ========================================================= */
+
+/* -----------------------------------------
+   KICKER
+----------------------------------------- */
+
+.iss-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  padding-left: 0.8rem;
+  border-left: 3px solid var(--iss-red);
+
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.iss-kicker--light {
+  color: white;
+}
+
+.iss-kicker--green { border-color: var(--iss-green); }
+.iss-kicker--blue { border-color: var(--iss-blue); }
+.iss-kicker--yellow { border-color: var(--iss-yellow); }
+
+/* -----------------------------------------
+   HEADING BLOCK
+----------------------------------------- */
+
+.iss-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.iss-heading__title {
+  margin: 0;
+}
+
+.iss-heading__text {
+  color: var(--iss-grey);
+  max-width: 60ch;
+}
+
+/* -----------------------------------------
+   FEATURE SPLIT (aligned to your markup)
+----------------------------------------- */
+
+.iss-feature-stack {
+  display: flex;
+  gap: 1rem;
+}
+
+.iss-feature-stack__content {
+  flex: 1;
+}
+
+.iss-feature-stack__media-grid {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.iss-feature-stack__media {
+  flex: 1;
+  overflow: hidden;
+}
+
+.iss-feature-stack__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* MOBILE: stack + horizontal scroll */
+@media (max-width: 781px) {
+  .iss-feature-stack {
+    display: block;
+  }
+
+  .iss-feature-stack__media-grid {
+    overflow-x: auto;
+  }
+
+  .iss-feature-stack__media {
+    flex: 0 0 70%;
+  }
+}
+
+/* -----------------------------------------
+   INFO PANEL (single version — replaces BOTH)
+----------------------------------------- */
+
+.iss-info-panel {
+  max-width: var(--iss-content-width);
+  margin-inline: auto;
+}
+
+.iss-info-panel__grid {
+  display: grid;
+  grid-template-columns: 34% 66%;
+  gap: 2rem;
+}
+
+@media (max-width: 781px) {
+  .iss-info-panel__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.iss-info-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--iss-border);
+}
+
+.iss-info-row__actions {
+  text-align: right;
+}
+
+.iss-info-panel--red { --accent: var(--iss-red); }
+.iss-info-panel--green { --accent: var(--iss-green); }
+
+/* -----------------------------------------
+   BUTTON NORMALIZATION
+----------------------------------------- */
+
+.wp-block-button__link {
+  border-radius: var(--iss-radius-pill);
+  padding: 0.6rem 1.2rem;
+}
+
+/* -----------------------------------------
+   HEADER (simplified)
+----------------------------------------- */
+
+.iss-site-header {
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.iss-site-header__inner {
+  max-width: var(--iss-content-width);
+  margin: auto;
+  padding: 2rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* =========================================================
+   6. UTILITIES
+   ========================================================= */
+
+.u-left { text-align: left; }
+.u-center { text-align: center; }
+
+.u-mt-auto { margin-top: auto; }
+
+/* =========================================================
+   7. PAGE-SPECIFIC (STRICTLY SCOPED)
+   ========================================================= */
+
+.home .iss-front-hero {
+  min-height: 80vh;
+}
+
+.home .iss-front-banner-slot {
+  transform: translateY(30%);
+}

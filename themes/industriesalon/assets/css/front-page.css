@@ -16,13 +16,16 @@
   width: 100%;
 }
 
+/* Remove the gap at the top of the main content */
+.home #wp--skip-link--target {
+    margin-top: 0 !important;
+}
 /* =====================================================================
    HERO
    ===================================================================== */
 
 .home .wp-block-cover.iss-front-hero {
   --iss-hero-min-h: 100svh;
-  --iss-banner-width: 30rem;
   --iss-hero-pad-bottom: clamp(2rem, 5vh, 4rem);
   --iss-hero-overlay: linear-gradient(
     90deg,
@@ -38,6 +41,12 @@
   overflow: visible;
 }
 
+@supports (min-height: 100dvh) {
+  .home .wp-block-cover.iss-front-hero {
+    --iss-hero-min-h: 100dvh;
+  }
+}
+
 .home .wp-block-cover.iss-front-hero::before {
   content: "";
   position: absolute;
@@ -50,7 +59,9 @@
 .home .wp-block-cover.iss-front-hero > .wp-block-cover__inner-container {
   position: relative;
   z-index: 2;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   width: 100%;
   min-height: inherit;
   max-width: none;
@@ -68,7 +79,7 @@
   width: 100%;
   max-width: var(--iss-content-width);
   margin: 0 auto;
-  min-height: inherit;
+  min-height: 0;
   align-content: end;
   justify-content: start;
   overflow: visible;
@@ -115,28 +126,155 @@
   background: rgba(249, 249, 250, 0.1);
 }
 
-.home .iss-front-banner-slot {
+/* =====================================================================
+   HERO BANNER / NOTE
+   ===================================================================== */
+
+.home .wp-block-cover.iss-front-hero {
+  --iss-banner-width: 23rem;
+}
+
+.home .wp-block-cover.iss-front-hero > .iss-front-banner-slot,
+.home .wp-block-cover.iss-front-hero > .wp-block-cover__inner-container > .iss-front-banner-slot {
   position: absolute;
-  right: var(--iss-container-pad);
-  bottom: var(--iss-hero-pad-bottom);
+  right: clamp(1.75rem, 4vw, 3.75rem);
+  top: 51%;
+  transform: translateY(-50%);
   width: min(100%, var(--iss-banner-width));
   max-width: var(--iss-banner-width);
-  margin: 0;
-  transform: none;
   z-index: 5;
 }
 
-.home .iss-front-banner-slot .iss-notice__inner {
-  display: grid;
-  gap: 0.75rem;
-  padding: 1.35rem 1.5rem;
-  background: rgba(249, 249, 250, 0.98);
-  color: var(--iss-black);
-  border: 1px solid rgba(30, 30, 30, 0.1);
-  border-left: 8px solid var(--iss-red);
-  border-radius: var(--iss-radius-md);
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
-  backdrop-filter: blur(8px);
+.home .iss-front-banner-slot .iss-hero-note {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  width: 100%;
+  min-height: 20rem;
+  padding: 0.15rem 0 0.25rem 1.15rem;
+  background: none;
+  color: var(--iss-white);
+  border-left: 3px solid rgba(232, 29, 37, 0.95);
+  text-align: left;
+}
+
+/* top marker */
+
+.home .iss-front-banner-slot .iss-hero-note__marker {
+  position: absolute;
+  top: -0.2rem;
+  left: -0.42rem;
+  width: 0.65rem;
+  height: 0.65rem;
+  background: var(--iss-red);
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(232, 29, 37, 0.12);
+}
+
+/* kicker */
+
+.home .iss-front-banner-slot .iss-hero-note__kicker {
+  margin: 0 0 0.1rem;
+  color: rgba(249, 249, 250, 0.82);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* title */
+
+.home .iss-front-banner-slot .iss-hero-note__title {
+  margin: 0;
+  color: var(--iss-white);
+  font-size: clamp(1.7rem, 1.2rem + 0.8vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.02;
+  max-width: 11ch;
+  text-wrap: balance;
+}
+
+/* red separator between title and text */
+
+.home .iss-front-banner-slot .iss-hero-note__text {
+  position: relative;
+  margin-top: 0.7rem;
+  padding-top: 0.95rem;
+  max-width: 21ch;
+}
+
+.home .iss-front-banner-slot .iss-hero-note__text::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1.2rem;
+  height: 2px;
+  background: var(--iss-red);
+}
+
+.home .iss-front-banner-slot .iss-hero-note__text,
+.home .iss-front-banner-slot .iss-hero-note__text p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+/* line between text and link */
+
+.home .iss-front-banner-slot .iss-hero-note__link {
+  position: relative;
+  margin-top: 1rem;
+  padding-top: 0.95rem;
+}
+
+.home .iss-front-banner-slot .iss-hero-note__link::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  max-width: 8.5rem;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* link */
+
+.home .iss-front-banner-slot .iss-hero-note__link a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--iss-white);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--iss-transition), transform var(--iss-transition);
+}
+
+.home .iss-front-banner-slot .iss-hero-note__link-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  color: var(--iss-red);
+  font-size: 0.95rem;
+  line-height: 1;
+  transform: translateY(-0.02em);
+}
+
+.home .iss-front-banner-slot .iss-hero-note__link-text {
+  text-decoration: underline;
+  text-underline-offset: 0.16em;
+  text-decoration-thickness: 1px;
+}
+
+.home .iss-front-banner-slot .iss-hero-note__link a:hover,
+.home .iss-front-banner-slot .iss-hero-note__link a:focus-visible {
+  color: var(--iss-red);
+  transform: translateX(2px);
 }
 
 .home .iss-section--mission {
@@ -158,11 +296,13 @@
   color: var(--iss-black);
 }
 
+
+
 /* =====================================================================
    GENERAL FRONT PAGE RHYTHM
    ===================================================================== */
 
-.home .section {
+.home .section:not(.iss-section--mission-support) {
   padding-top: clamp(3.5rem, 6vw, 5.5rem);
   padding-bottom: clamp(3.5rem, 6vw, 5.5rem);
 }
@@ -310,7 +450,6 @@
 /* =====================================================================
    RESPONSIVE
    ===================================================================== */
-
 @media (max-width: 1100px) {
   .home .iss-3-card-row__grid {
     grid-template-columns: 1fr;
@@ -322,19 +461,38 @@
 }
 
 @media (max-width: 782px) {
-  .home .wp-block-cover.iss-front-hero {
-    --iss-banner-width: min(100%, 26rem);
+  .home .wp-block-cover.iss-front-hero > .iss-front-banner-slot,
+  .home .wp-block-cover.iss-front-hero > .wp-block-cover__inner-container > .iss-front-banner-slot {
+    position: static;
+    top: auto;
+    right: auto;
+    transform: none;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 0.75rem;
+  }
+
+  .home .iss-front-banner-slot .iss-hero-note {
+    min-height: 0;
+    max-width: 100%;
+  }
+
+  .home .iss-front-banner-slot .iss-hero-note__title,
+  .home .iss-front-banner-slot .iss-hero-note__text {
+    max-width: none;
+  }
+
+  .home .iss-front-banner-slot .iss-hero-note__link::before {
+    max-width: 100%;
   }
 
   .home .wp-block-cover.iss-front-hero > .wp-block-cover__inner-container {
-    padding-top: calc(var(--iss-header-height) + 1rem);
-    padding-bottom: 2rem;
+    padding-top: calc(var(--iss-header-height) + 0.75rem);
+    padding-bottom: clamp(1.25rem, 4vh, 2rem);
   }
 
-  .home .iss-front-banner-slot {
-    position: static;
-    width: 100%;
-    margin-top: 1rem;
+  .home .iss-front-hero__shell {
+    gap: 1rem;
   }
 
   .home .iss-front-hero__title {
@@ -357,12 +515,6 @@
 
   .home .iss-4-card-row__grid,
   .home .iss-newsletter-band__grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 640px) {
-  .home .iss-4-card-row__grid {
     grid-template-columns: 1fr;
   }
 }

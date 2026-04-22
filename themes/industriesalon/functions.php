@@ -111,6 +111,13 @@ function industriesalon_register_block_patterns(): void
             'categories' => array('industriesalon', 'text', 'media'),
             'file' => '/patterns/archive-landing.html',
         ),
+        array(
+            'name' => 'industriesalon/mission-support-strip',
+            'title' => 'ISS Mission Support Strip',
+            'description' => 'Mission statement with three supporting fact modules.',
+            'categories' => array('industriesalon', 'text'),
+            'file' => '/patterns/iss-section-mission-support-strip.html',
+        ),
     );
 
     foreach ($patterns as $pattern) {
@@ -389,6 +396,18 @@ function industriesalon_enqueue_assets(): void
             $theme_uri . $archive_landing_rel,
             array('industriesalon-base'),
             (string) filemtime($archive_landing_abs)
+        );
+    }
+
+    // 19. Mission support strip pattern styles
+    $mission_support_strip_rel = '/assets/css/mission-support-strip.css';
+    $mission_support_strip_abs = $theme_dir . $mission_support_strip_rel;
+    if (file_exists($mission_support_strip_abs)) {
+        wp_enqueue_style(
+            'industriesalon-mission-support-strip',
+            $theme_uri . $mission_support_strip_rel,
+            array('industriesalon-base'),
+            (string) filemtime($mission_support_strip_abs)
         );
     }
 
