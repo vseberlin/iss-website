@@ -261,12 +261,6 @@
   }
 }
 
-/* Front page one-off reset:
-   remove top spacing for this media-text section */
-.iss-front-page-main .iss-media-text.section {
-  padding-top: 0 !important;
-  margin-top: 0 !important;
-}
 
 .iss-front-page-main .iss-media-text.section .iss-media-text__layout {
   margin-top: 0 !important;
