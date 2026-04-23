@@ -4,23 +4,24 @@
     }
     window.__issNavInit = true;
 
-    function init() {
-        var header = document.querySelector('.iss-site-header');
-        if (!header) {
+    function initHeader(header, index) {
+        if (!header || header.dataset.issNavBound === '1') {
             return;
         }
+        header.dataset.issNavBound = '1';
 
         var toggle = header.querySelector('.iss-nav-toggle a, .iss-nav-toggle button, .iss-nav-toggle');
         var panel = header.querySelector('.iss-menu-shell');
         var overlay = header.querySelector('.iss-nav-overlay');
         var close = header.querySelector('.iss-menu-shell__close a, .iss-menu-shell__close button, .iss-menu-shell__close');
 
-        if (!header || !toggle || !panel || !overlay || !close) {
+        if (!toggle || !panel || !overlay || !close) {
             return;
         }
 
-        if (!panel.id) {
-            panel.id = 'iss-menu-shell';
+        panel.id = 'iss-menu-shell-' + (index + 1);
+        if (toggle.tagName && toggle.tagName.toLowerCase() === 'a') {
+            toggle.setAttribute('href', '#' + panel.id);
         }
 
         toggle.setAttribute('aria-expanded', 'false');
@@ -132,6 +133,17 @@
                 return;
             }
             closeNav(false);
+        });
+    }
+
+    function init() {
+        var headers = document.querySelectorAll('.iss-site-header');
+        if (!headers.length) {
+            return;
+        }
+
+        Array.prototype.forEach.call(headers, function (header, index) {
+            initHeader(header, index);
         });
     }
 

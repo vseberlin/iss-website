@@ -113,7 +113,8 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1100;
+  z-index: 1200;
+  pointer-events: none;
 }
 
 /* .iss-site-header__inner: Element class for `iss-site-header`; apply on `inner` element. */
@@ -126,6 +127,7 @@
   justify-content: space-between;
   gap: 1.5rem;
   padding: var(--iss-site-header-pad-top) var(--iss-container-pad) var(--iss-site-header-pad-bottom);
+  pointer-events: none;
 }
 
 /* .iss-site-brand: Base class for iss site brand; apply on primary wrapper/scope. */
@@ -133,6 +135,7 @@
   display: inline-flex;
   align-items: center;
   min-width: 0;
+  pointer-events: auto;
 }
 
 /* .iss-header-actions: Base class for iss header actions; apply on primary wrapper/scope. */
@@ -140,6 +143,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  pointer-events: auto;
 }
 
 /* .iss-site-header: Base class for iss site header; apply on primary wrapper/scope. */
@@ -205,11 +209,12 @@
 .iss-nav-overlay {
   position: fixed;
   inset: 0;
-  z-index: 1101;
+  z-index: 1201;
   background: rgba(0, 0, 0, 0.6);
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 /* .iss-nav-overlay: Base class for iss nav overlay; apply on primary wrapper/scope. */
@@ -217,6 +222,7 @@
 .iss-nav-overlay.is-open {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
 }
 
 /* .iss-menu-shell: Base class for iss menu shell; apply on primary wrapper/scope. */
@@ -224,7 +230,7 @@
   position: fixed;
   top: 0;
   right: 0;
-  z-index: 1102;
+  z-index: 1202;
   width: 100%;
   max-width: 420px;
   height: 100vh;
@@ -234,6 +240,7 @@
   visibility: hidden;
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: -10px 0 40px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
 }
 
 /* .iss-menu-shell: Base class for iss menu shell; apply on primary wrapper/scope. */
@@ -241,6 +248,7 @@
 .iss-menu-shell.is-open {
   transform: translateX(0);
   visibility: visible;
+  pointer-events: auto;
 }
 
 /* .iss-menu-shell__inner: Element class for `iss-menu-shell`; apply on `inner` element. */
