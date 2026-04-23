@@ -4,65 +4,83 @@
 - `ready_for_next_session`
 
 ## Date / Window
-- Date: 2026-04-21
+- Date: 2026-04-22
 - Timezone: Europe/Berlin
 
 ## Branch / Commit
 - Branch: `master`
-- HEAD: `7c979e2`
+- HEAD: `aa55a05`
 
 ## What Was Done Today
 - Verified active runtime before edits:
   - active theme: `industriesalon` `v1.1.0`
   - active path: `/var/www/html/wp-content/themes/industriesalon`
-- Committed current `themes/industriesalon` changes:
-  - commit `7c979e2` with message `Update industriesalon theme`
-- Updated root `AGENTS.md` with environment quick reference:
-  - Docker services/URLs
-  - WP-CLI via `docker compose run --rm wpcli ... --allow-root`
-  - active theme verification commands
-  - DB template override caveat (`wp_template`)
-- Front-page hero banner structure update:
-  - moved `iss-front-banner-slot` to direct child of `.wp-block-cover.iss-front-hero`
-  - files:
-    - `themes/industriesalon/templates/front-page.html`
-    - `themes/industriesalon/assets/css/front-page.css`
-- Purged DB `wp_template` override for front page:
-  - deleted template post `ID 12602` (`post_name: front-page`)
-  - flushed WP cache
-- Banner renderer change (plugin output markup):
-  - confirmed active plugin source is `industriesalon-notices` (not `industriesalon-steuerung`) for block `industriesalon/notice-banner`
-  - changed rendered markup to:
-    - `<aside class="iss-hero-note" role="note">`
-    - `iss-hero-note__eyebrow`, `iss-hero-note__title`, `iss-hero-note__text`, `iss-hero-note__cta`
-  - plugin text now drives snippet content (with fallbacks if fields are empty)
-  - files:
-    - `plugins/industriesalon-notices/industriesalon-notices.php`
-    - `themes/industriesalon/assets/css/front-page.css` (selector updated from `.iss-notice__inner` to `.iss-hero-note`)
-
-## Commits Created This Session
-- `7c979e2` — `Update industriesalon theme`
+- Installed and activated `iss-fuehrungen`:
+  - source zip installed from `themes/industriesalon/assets/css/staging/iss-fuehrungen.zip`
+  - status now: `active` `v1.0.0`
+- Removed `calendar_tag` ownership from `iss-fuehrungen` plugin package and installed copy:
+  - removed from admin UI/meta in:
+    - `plugins/iss-fuehrungen/includes/admin-fuehrung.php`
+    - `plugins/iss-fuehrungen/includes/meta-fuehrung.php`
+- Removed obsolete `saas-api` manual mapping UI remnants:
+  - deleted `plugins/saas-api/iss-calendar/includes/calendar-editor.php`
+  - removed include from `plugins/saas-api/iss-calendar/iss-calendar.php`
+  - `calendar_tag` / `calendar_saas_title` no longer registered as post meta
+- Installed `classic-editor-and-classic-widgets` plugin from staging zip:
+  - zip: `themes/industriesalon/assets/css/staging/classic-editor-and-classic-widgets.zip`
+  - installed by unpacking into `plugins/classic-editor-and-classic-widgets`
+  - status: `inactive` `v1.5.1`
+- Wired Führungen filter helper into theme:
+  - include added in `themes/industriesalon/functions.php`
+  - helper file now loaded from:
+    - `themes/industriesalon/assets/css/staging/industriesalon-fuehrungen-filters.php`
+- Reworked Führungen filters to client-side tabs (no URL redirect/reload):
+  - tabs are injected above query loop (`Alle`, `Gruppen`, `Individuell`, `Kinder/Familie`, `Besonders`, `Bus`, `Regular`)
+  - card filtering now hides the Query Loop wrapper item (`li.wp-block-post`) to avoid grid gaps
+  - legacy label/slug normalization added (`group/individual/special` -> `gruppen/individuell/besonders`)
 
 ## Validation Performed
-- Active theme/version/path checks via WP-CLI.
-- Active plugin checks via WP-CLI:
-  - `industriesalon-steuerung` `0.3.0`
+- WP-CLI runtime checks:
+  - confirmed active theme/plugin states
+  - confirmed `iss/tour-calendar` and `iss/tour-dates` blocks registered
+- Helper runtime checks:
+  - helper function load check passed
+  - `/fuehrungen/` and `/a-fuhrungen/` return `HTTP 200`
+  - resolved fatal from `query_loop_block_query_vars` signature mismatch (`WP_Block` vs `array`)
+- Linkage audit snapshot:
+  - `fuehrung` posts had no active source mapping at audit time
+  - source map had `ELEKTRO` entry without `source_post_id`
+  - future `iss_calendar_item` entries existed but were mostly unlinked (`source_post_id=0`)
+
+## Current Runtime Snapshot
+- Active theme: `industriesalon` `1.1.0`
+- Active plugins:
+  - `iss-fuehrungen` `1.0.0`
+  - `saas-api` `1.2.0`
   - `industriesalon-notices` `0.1.2`
-- PHP lint passed:
-  - `plugins/industriesalon-notices/industriesalon-notices.php`
-- Cache flush completed after template/plugin changes.
+  - `industriesalon-steuerung` `0.3.0`
+- Installed but inactive:
+  - `classic-editor-and-classic-widgets` `1.5.1`
+
+## Uncommitted Changes (important)
+- This session touched:
+  - `plugins/saas-api/iss-calendar/iss-calendar.php`
+  - `plugins/saas-api/iss-calendar/includes/calendar-editor.php` (deleted)
+  - `themes/industriesalon/functions.php`
+  - `themes/industriesalon/assets/css/staging/industriesalon-fuehrungen-filters.php`
+  - `themes/industriesalon/assets/css/staging/iss-fuehrungen.zip`
+  - `plugins/iss-fuehrungen/*` (installed from zip)
+  - `plugins/classic-editor-and-classic-widgets/*` (installed)
+- There are also unrelated working-tree changes from before this session.
 
 ## Notes / Open Items
-- Important: `front-page` DB override was deleted, so disk template currently drives front page.
-- Uncommitted changes currently present:
-  - `AGENTS.md`
-  - `themes/industriesalon/templates/front-page.html`
-  - `themes/industriesalon/assets/css/front-page.css`
-  - `plugins/industriesalon-notices/industriesalon-notices.php`
-- Some unrelated non-theme working tree changes still exist.
+- On `a-fuhrungen`, Query Loop cards currently render category terms (`group`, `individual`, `special`) in card markup; helper currently normalizes these for tabs.
+- If taxonomy output is standardized to `fuehrung_typ`, simplify helper normalization map.
+- Mapping/data linking between `fuehrung` and `iss_calendar_item` still needs content-level assignment (not a code error).
 
 ## Continuity Prompt
 - Start next session with: `read /home/vladimir/wp/handoff_CURRENT.md`.
-- Before editing front-page banner again:
-  - verify whether a new `wp_template` `front-page` override was recreated
-  - verify banner markup source in `industriesalon-notices` render callback.
+- If continuing Führungen UI work:
+  - verify current `a-fuhrungen` section markup still includes class `iss-fuehrungen-query`
+  - verify tab filter behavior after any template/content edits
+  - optionally migrate card term output from `category` to `fuehrung_typ`.

@@ -13,108 +13,10 @@ Tags: block-theme, full-site-editing, custom-colors, custom-spacing, editor-styl
 */
 
 /* =====================================================================
-   FILE: style.css
-   ROLE: Global authority stylesheet.
-   PURPOSE:
-   - Own shared design tokens and low-level layout primitives.
-   - Define section intros, kicker logic, alignment behavior, and
-     site-wide structural helpers that multiple templates rely on.
-   - Stay free of page-specific composition rules. Those belong in
-     patterns.css. Card internals belong in cards.css.
-
-   HOW TO MAINTAIN THIS FILE:
-   1. Edit tokens here first when a visual change should affect the
-      whole site.
-   2. Add new global helpers here only if they are reusable across
-      multiple templates or plugins.
-   3. Do not place one-off landing-page or hero fixes here.
-   4. Keep selector depth low. This file should remain the calmest layer
-      in the stack.
-
-   PRIMARY CONTROL SURFACE
-   -----------------------
-   VARIABLES IN :root
-   --iss-red / --iss-white / --iss-black / --iss-grey / --iss-green /
-   --iss-blue / --iss-yellow / --iss-brown
-       Core theme colors. Change only if the brand palette changes.
-       They follow the Industriesalon palette in theme.json and the
-       uploaded brand guide.
-
-   --iss-content-width
-       Master content width for normal site sections. Increase or reduce
-       this to make the whole site feel wider or tighter.
-
-   --iss-container-pad
-       Horizontal breathing room inside containers. This is the main safe
-       control for edge distance on tablet and mobile.
-
-   --iss-gap
-       Default inter-component gap for shared grid/flex patterns that do
-       not define their own local gap token.
-
-   --iss-header-height
-       Reference value used by heroes and sticky-header-aware layouts.
-       Update this if header height changes visibly.
-
-   --iss-border
-       Default border color for cards, panels, separators, and quiet
-       structural lines.
-
-   --iss-radius-sm / --iss-radius-md / --iss-radius-lg / --iss-radius-pill
-       Corner system. Use sm for minor surfaces, md for cards and panels,
-       lg for large framed blocks, pill for buttons and chips.
-
-   --iss-shadow
-       Default soft elevation for cards and panel surfaces.
-
-   --iss-transition
-       Shared motion timing for hover/focus micro-interactions.
-
-   MAIN CONTROL CLASSES
-   --------------------
-   .iss-container
-       Standard content cage. Use this for almost every normal section.
-
-   .section
-       Vertical rhythm wrapper. Use for top/bottom section spacing.
-
-   .iss-kicker + modifiers
-       Small section label with left accent rail.
-       Variants:
-       - --compact: dense cards and lists
-       - --lg: larger hero and opener use
-       - --light: dark backgrounds
-       - --muted / --green / --blue / --yellow: tone variants
-
-   .iss-heading + modifiers
-       Standard intro wrapper for kicker + title + text.
-       Variants:
-       - --uncaged: remove max width cap
-       - --pad-right: reserve internal right spacing
-       - --margin-right: add outer right offset
-       - --center / --right: alternate alignment
-
-   .iss-indent + modifiers
-       Text intro block with a simple left rail instead of full heading
-       composition.
-       Variants mirror .iss-heading: --uncaged, --pad-right,
-       --margin-right, --light, --muted.
-
-   .iss-separator + modifiers
-       Quiet section breaks.
-       - default: full-width hairline
-       - --indent: shorter left-aligned line
-       - --accent: short red thematic break
-
-   .section--with-rail
-       Decorative right-side fade rail for selected sections only. Use
-       sparingly so it stays meaningful.
-
-   LOAD ORDER
-   ----------
-   theme.json -> style.css -> cards.css -> patterns.css -> plugin CSS
+   FILE GUIDE: GLOBAL AUTHORITY STYLESHEET
+   Scope: Design tokens, base layout primitives, and global alignment rules.
+   Keep page- or pattern-specific selectors out of this file.
    ===================================================================== */
-
 
 :root {
   /* Core Colors - Mapped to theme.json presets */
@@ -145,7 +47,7 @@ Tags: block-theme, full-site-editing, custom-colors, custom-spacing, editor-styl
   --iss-transition: 0.2s ease;
 }
 
-/* Legacy aliases for older classes/templates. Keep until old markup is fully retired. */
+/* Backward compatibility for old variable names during transition */
 :root {
   --is--color-red: var(--iss-red);
   --is--color-white: var(--iss-white);
@@ -207,26 +109,8 @@ body {
 
 /* =====================================================================
    GROUP: KICKER SYSTEM
-   PURPOSE:
-   Shared small-label treatment used before headings, card titles, and
-   section intros.
-
-   USE THIS WHEN:
-   - A section needs a compact category label.
-   - A card needs a lighter pre-title cue.
-   - A hero needs a brand-consistent preheading.
-
-   PRIMARY HOOKS:
-   .iss-kicker
-   .iss-kicker--compact
-   .iss-kicker--lg
-   .iss-kicker--muted
-   .iss-kicker--light
-   .iss-kicker--green / --blue / --yellow
-
-   TUNE CAREFULLY:
-   Border width, padding-left, letter spacing, and opacity define the
-   character of this pattern. Small changes affect the whole site.
+   Use: Lightweight section label before heading or intro text.
+   Apply `.iss-kicker` and optional modifier classes on label text nodes.
    ===================================================================== */
 
 /* Base kicker */
@@ -328,26 +212,8 @@ body {
 
 /* =====================================================================
    GROUP: HEADING COMPOSITION
-   PURPOSE:
-   Standard wrapper for section openers: kicker, title, and intro text.
-
-   USE THIS WHEN:
-   - You need a predictable intro block at the top of a section.
-   - Editors should be able to reuse the same intro rhythm everywhere.
-
-   PRIMARY HOOKS:
-   .iss-heading
-   .iss-heading__title
-   .iss-heading__text
-   .iss-heading--uncaged
-   .iss-heading--pad-right
-   .iss-heading--margin-right
-   .iss-heading--center
-   .iss-heading--right
-
-   CONTROL NOTES:
-   --iss-heading-max-width keeps intros readable.
-   Use --uncaged only when a layout already controls measure.
+   Use: Shared kicker + title + text intro block for sections.
+   Apply `.iss-heading` wrapper with `__title` and `__text` elements.
    ===================================================================== */
 
 /* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
@@ -427,18 +293,8 @@ body {
 
 /* =====================================================================
    GROUP: SECTION SEPARATORS
-   PURPOSE:
-   Simple visual breaks between large blocks without introducing another
-   heavy design element.
-
-   USE THIS WHEN:
-   - White space alone feels too open.
-   - A thematic break is needed between unrelated content zones.
-
-   PRIMARY HOOKS:
-   .iss-separator
-   .iss-separator--indent
-   .iss-separator--accent
+   Use: Visual dividers between large content sections.
+   Apply `.iss-separator` and optional style modifiers.
    ===================================================================== */
 
 /* Option 1 — subtle hairline (recommended default) */   
@@ -471,22 +327,8 @@ body {
 
 /* =====================================================================
    GROUP: INDENTED TEXT INTRO
-   PURPOSE:
-   Alternative intro pattern for text-led sections that do not need a
-   full kicker + title stack.
-
-   USE THIS WHEN:
-   - You want a simpler left-rail text block.
-   - The title is already handled elsewhere.
-   - You need an editorial note or context paragraph.
-
-   PRIMARY HOOKS:
-   .iss-indent
-   .iss-indent--uncaged
-   .iss-indent--pad-right
-   .iss-indent--margin-right
-   .iss-indent--light
-   .iss-indent--muted
+   Use: Alternative section intro block with accent left rail.
+   Apply `.iss-indent` wrapper with optional spacing modifiers.
    ===================================================================== */
 
 /* .iss-indent: Base class for iss indent; apply on primary wrapper/scope. */
@@ -532,23 +374,11 @@ body {
 
 /* =====================================================================
    GROUP: GLOBAL LEFT-ALIGN FLOW
-   PURPOSE:
-   Keep intro trios left-aligned without uncaging normal post content or
-   pulling constrained Gutenberg blocks to the screen edge.
-
-   USE THIS WHEN:
-   - Section intros should align to the left edge of the content cage.
-   - Single pages, posts, and tour templates need stable heading flow.
-   - Normal post content must still respect the theme container width.
-
-   IMPORTANT:
-   This block deliberately avoids global margin resets on every
-   constrained child. Do not reintroduce broad rules such as
-   `.iss-container > *` or `.wp-block-group.is-layout-constrained > *`
-   with forced margins, because those uncage content on single templates.
+   Use: Force section intro alignment to left in Gutenberg constrained layout.
+   Apply automatically via existing `.section` + `.iss-container` classes.
    ===================================================================== */
 
-/* Section wrappers stay left-oriented, but the container itself remains caged. */
+/* Section wrappers */
 /* .section: Base class for section; apply on primary wrapper/scope. */
 .section,
 /* .iss-container: Base class for iss container; apply on primary wrapper/scope. */
@@ -556,55 +386,29 @@ body {
   text-align: left;
 }
 
-/* Narrow intro blocks anchor left inside normal sections and single templates. */
+/* Keep narrow intro blocks anchored to the left edge instead of centered */
 /* .section: Base class for section; apply on primary wrapper/scope. */
 /* .iss-container: Base class for iss container; apply on primary wrapper/scope. */
 /* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
 .section > .iss-container > .iss-heading,
 /* .section: Base class for section; apply on primary wrapper/scope. */
+/* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
+.section .iss-heading,
+/* .section: Base class for section; apply on primary wrapper/scope. */
 /* .iss-container: Base class for iss container; apply on primary wrapper/scope. */
 /* .iss-indent: Base class for iss indent; apply on primary wrapper/scope. */
 .section > .iss-container > .iss-indent,
-/* .iss-tour-page: Base class for iss tour page; apply on primary wrapper/scope. */
-/* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
-.iss-tour-page .iss-heading,
-/* .iss-tour-page: Base class for iss tour page; apply on primary wrapper/scope. */
+/* .section: Base class for section; apply on primary wrapper/scope. */
 /* .iss-indent: Base class for iss indent; apply on primary wrapper/scope. */
-.iss-tour-page .iss-indent,
-/* .single: Base class for single; apply on primary wrapper/scope. */
-/* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
-.single .iss-heading,
-/* .single: Base class for single; apply on primary wrapper/scope. */
-/* .iss-indent: Base class for iss indent; apply on primary wrapper/scope. */
-.single .iss-indent,
-/* .page: Base class for page; apply on primary wrapper/scope. */
-/* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
-.page .iss-heading,
-/* .page: Base class for page; apply on primary wrapper/scope. */
-/* .iss-indent: Base class for iss indent; apply on primary wrapper/scope. */
-.page .iss-indent {
-  margin-left: 0;
-  margin-right: auto;
+.section .iss-indent {
+  margin-left: 0 !important;
+  margin-right: auto !important;
 }
 
-/* Heading trios follow left alignment unless an explicit alternate modifier is used. */
+/* Text inside section intros must inherit left alignment */
 /* .section: Base class for section; apply on primary wrapper/scope. */
 /* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
-.section .iss-heading:not(.iss-heading--center):not(.iss-heading--right),
-/* .iss-tour-page: Base class for iss tour page; apply on primary wrapper/scope. */
-/* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
-.iss-tour-page .iss-heading:not(.iss-heading--center):not(.iss-heading--right),
-/* .single: Base class for single; apply on primary wrapper/scope. */
-/* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
-.single .iss-heading:not(.iss-heading--center):not(.iss-heading--right),
-/* .page: Base class for page; apply on primary wrapper/scope. */
-/* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
-.page .iss-heading:not(.iss-heading--center):not(.iss-heading--right) {
-  align-items: flex-start;
-  text-align: left;
-}
-
-/* Text inside intro blocks inherits left alignment cleanly. */
+.section .iss-heading,
 /* .section: Base class for section; apply on primary wrapper/scope. */
 /* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
 /* .iss-kicker: Base class for iss kicker; apply on primary wrapper/scope. */
@@ -617,88 +421,79 @@ body {
 /* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
 /* .iss-heading__text: Element class for `iss-heading`; apply on `text` element. */
 .section .iss-heading > .iss-heading__text,
-/* .iss-tour-page: Base class for iss tour page; apply on primary wrapper/scope. */
-/* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
-/* .iss-kicker: Base class for iss kicker; apply on primary wrapper/scope. */
-.iss-tour-page .iss-heading > .iss-kicker,
-/* .iss-tour-page: Base class for iss tour page; apply on primary wrapper/scope. */
-/* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
-/* .iss-heading__title: Element class for `iss-heading`; apply on `title` element. */
-.iss-tour-page .iss-heading > .iss-heading__title,
-/* .iss-tour-page: Base class for iss tour page; apply on primary wrapper/scope. */
-/* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
-/* .iss-heading__text: Element class for `iss-heading`; apply on `text` element. */
-.iss-tour-page .iss-heading > .iss-heading__text,
-/* .single: Base class for single; apply on primary wrapper/scope. */
-/* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
-/* .iss-kicker: Base class for iss kicker; apply on primary wrapper/scope. */
-.single .iss-heading > .iss-kicker,
-/* .single: Base class for single; apply on primary wrapper/scope. */
-/* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
-/* .iss-heading__title: Element class for `iss-heading`; apply on `title` element. */
-.single .iss-heading > .iss-heading__title,
-/* .single: Base class for single; apply on primary wrapper/scope. */
-/* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
-/* .iss-heading__text: Element class for `iss-heading`; apply on `text` element. */
-.single .iss-heading > .iss-heading__text,
-/* .page: Base class for page; apply on primary wrapper/scope. */
-/* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
-/* .iss-kicker: Base class for iss kicker; apply on primary wrapper/scope. */
-.page .iss-heading > .iss-kicker,
-/* .page: Base class for page; apply on primary wrapper/scope. */
-/* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
-/* .iss-heading__title: Element class for `iss-heading`; apply on `title` element. */
-.page .iss-heading > .iss-heading__title,
-/* .page: Base class for page; apply on primary wrapper/scope. */
-/* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
-/* .iss-heading__text: Element class for `iss-heading`; apply on `text` element. */
-.page .iss-heading > .iss-heading__text,
 /* .section: Base class for section; apply on primary wrapper/scope. */
 /* .iss-indent: Base class for iss indent; apply on primary wrapper/scope. */
 .section .iss-indent,
 /* .section: Base class for section; apply on primary wrapper/scope. */
 /* .iss-indent: Base class for iss indent; apply on primary wrapper/scope. */
-.section .iss-indent > *,
-/* .iss-tour-page: Base class for iss tour page; apply on primary wrapper/scope. */
-/* .iss-indent: Base class for iss indent; apply on primary wrapper/scope. */
-.iss-tour-page .iss-indent,
-/* .iss-tour-page: Base class for iss tour page; apply on primary wrapper/scope. */
-/* .iss-indent: Base class for iss indent; apply on primary wrapper/scope. */
-.iss-tour-page .iss-indent > *,
-/* .single: Base class for single; apply on primary wrapper/scope. */
-/* .iss-indent: Base class for iss indent; apply on primary wrapper/scope. */
-.single .iss-indent,
-/* .single: Base class for single; apply on primary wrapper/scope. */
-/* .iss-indent: Base class for iss indent; apply on primary wrapper/scope. */
-.single .iss-indent > *,
-/* .page: Base class for page; apply on primary wrapper/scope. */
-/* .iss-indent: Base class for iss indent; apply on primary wrapper/scope. */
-.page .iss-indent,
-/* .page: Base class for page; apply on primary wrapper/scope. */
-/* .iss-indent: Base class for iss indent; apply on primary wrapper/scope. */
-.page .iss-indent > * {
-  text-align: left;
+.section .iss-indent > * {
+  text-align: left !important;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+/* Gutenberg constrained/default layout wrappers often re-center children */
+/* .section: Base class for section; apply on primary wrapper/scope. */
+/* .wp-block-group: Base class for wp block group; apply on primary wrapper/scope. */
+.section .wp-block-group,
+/* .section: Base class for section; apply on primary wrapper/scope. */
+/* .wp-block-columns: Base class for wp block columns; apply on primary wrapper/scope. */
+.section .wp-block-columns,
+/* .section: Base class for section; apply on primary wrapper/scope. */
+/* .wp-block-column: Base class for wp block column; apply on primary wrapper/scope. */
+.section .wp-block-column {
+  text-align: inherit;
+}
+
+/* Direct children inside the container should start from the left edge */
+/* .section: Base class for section; apply on primary wrapper/scope. */
+/* .iss-container: Base class for iss container; apply on primary wrapper/scope. */
+/* .wp-block-group: Base class for wp block group; apply on primary wrapper/scope. */
+.section > .iss-container > .wp-block-group,
+/* .section: Base class for section; apply on primary wrapper/scope. */
+/* .iss-container: Base class for iss container; apply on primary wrapper/scope. */
+/* .wp-block-columns: Base class for wp block columns; apply on primary wrapper/scope. */
+.section > .iss-container > .wp-block-columns,
+/* .section: Base class for section; apply on primary wrapper/scope. */
+/* .iss-container: Base class for iss container; apply on primary wrapper/scope. */
+/* .wp-block-cover: Base class for wp block cover; apply on primary wrapper/scope. */
+.section > .iss-container > .wp-block-cover,
+/* .section: Base class for section; apply on primary wrapper/scope. */
+/* .iss-container: Base class for iss container; apply on primary wrapper/scope. */
+/* .wp-block-media-text: Base class for wp block media text; apply on primary wrapper/scope. */
+.section > .iss-container > .wp-block-media-text,
+/* .section: Base class for section; apply on primary wrapper/scope. */
+/* .iss-container: Base class for iss container; apply on primary wrapper/scope. */
+/* .wp-block-query: Base class for wp block query; apply on primary wrapper/scope. */
+.section > .iss-container > .wp-block-query {
   margin-left: 0;
   margin-right: 0;
 }
 
-/* Keep buttons left inside section intros and single side panels. */
+/* Headings and text blocks used as section openers */
 /* .section: Base class for section; apply on primary wrapper/scope. */
-/* .wp-block-buttons: Base class for wp block buttons; apply on primary wrapper/scope. */
-.section .wp-block-buttons,
-/* .iss-tour-page: Base class for iss tour page; apply on primary wrapper/scope. */
-/* .wp-block-buttons: Base class for wp block buttons; apply on primary wrapper/scope. */
-.iss-tour-page .wp-block-buttons,
-/* .single: Base class for single; apply on primary wrapper/scope. */
-/* .wp-block-buttons: Base class for wp block buttons; apply on primary wrapper/scope. */
-.single .wp-block-buttons,
-/* .page: Base class for page; apply on primary wrapper/scope. */
-/* .wp-block-buttons: Base class for wp block buttons; apply on primary wrapper/scope. */
-.page .wp-block-buttons {
-  justify-content: flex-start;
+.section h1,
+/* .section: Base class for section; apply on primary wrapper/scope. */
+.section h2,
+/* .section: Base class for section; apply on primary wrapper/scope. */
+.section h3,
+/* .section: Base class for section; apply on primary wrapper/scope. */
+.section h4,
+/* .section: Base class for section; apply on primary wrapper/scope. */
+.section h5,
+/* .section: Base class for section; apply on primary wrapper/scope. */
+.section h6,
+/* .section: Base class for section; apply on primary wrapper/scope. */
+.section p {
+  text-align: inherit;
 }
 
-
+/* Buttons should not drift to center */
+/* .section: Base class for section; apply on primary wrapper/scope. */
+/* .wp-block-buttons: Base class for wp block buttons; apply on primary wrapper/scope. */
+.section .wp-block-buttons {
+  justify-content: flex-start;
+}
 
 /* Kicker stays visually left even inside flex wrappers */
 /* .section: Base class for section; apply on primary wrapper/scope. */
@@ -711,17 +506,8 @@ body {
 
 /* =====================================================================
    GROUP: SECTION RAIL ACCENT
-   PURPOSE:
-   Adds a quiet right-side fading line at section start for pages that
-   need a bit more directional structure.
-
-   USE THIS WHEN:
-   - A section feels visually empty.
-   - You want asymmetry without adding another full decoration block.
-
-   PRIMARY HOOKS:
-   .section--with-rail
-   .section--with-rail-accent
+   Use: Decorative top rail accent for selected section wrappers.
+   Apply `.section--with-rail` on sections that need a right fade marker.
    ===================================================================== */
 
 /* .section--with-rail: Modifier class for `section`; combine for `with-rail` variant. */
