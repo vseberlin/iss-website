@@ -203,13 +203,95 @@ body {
     padding-bottom: 5rem;
   }
 }
-/* .section: Base class for section; apply on primary wrapper/scope. */
+
+/* =========================================================
+   SECTION SURFACE SYSTEM
+   Contract:
+   - apply only on `.section` wrappers
+   - patterns choose surface explicitly
+   - keep backgrounds neutral; red is accent only
+   - structure default: `.section > .iss-container`
+
+   Usage examples:
+   1) Plain default section
+      <section class="section section--plain">
+        <div class="iss-container">...</div>
+      </section>
+
+   2) Soft grouped content
+      <section class="section section--soft">
+        <div class="iss-container">...</div>
+      </section>
+
+   3) Inset featured block
+      <section class="section section--inset">
+        <div class="iss-container">...</div>
+      </section>
+
+   4) Archive/timeline directional rhythm
+      <section class="section section--fade-right">
+        <div class="iss-container">...</div>
+      </section>
+
+   5) Legacy compatibility
+      - `section--alt` maps to `section--tint`
+      - use `section--tint` for new patterns
+   ========================================================= */
+
+.section--plain {
+  background: transparent;
+}
+
+/* Soft neutral gradient grouping (default zebra replacement). */
+.section--tint,
 .section--alt {
   background: linear-gradient(
     180deg,
-    rgba(192, 184, 181, 0.16),
-    rgba(192, 184, 181, 0.08)
+    rgba(192, 184, 181, 0.10) 0%,
+    rgba(192, 184, 181, 0.05) 100%
   );
+}
+
+.section--soft {
+  background: #f6f6f7;
+}
+
+/* Inset panel on full-width section; keeps content cage unchanged. */
+.section--inset {
+  position: relative;
+  isolation: isolate;
+}
+
+.section--inset::before {
+  content: "";
+  position: absolute;
+  inset: 1.25rem 0;
+  max-width: var(--iss-content-width);
+  margin: 0 auto;
+  background: #f4f4f5;
+  border: 1px solid rgba(30, 30, 30, 0.06);
+  border-radius: var(--iss-radius-lg);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Directional tonal rail; useful for archive/timeline sections. */
+.section--fade-right {
+  position: relative;
+  overflow: clip;
+}
+
+.section--fade-right::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(192, 184, 181, 0.05) 70%,
+    rgba(192, 184, 181, 0.12) 100%
+  );
+  pointer-events: none;
 }
 
 
@@ -793,5 +875,3 @@ body {
     rgba(232, 29, 37, 0)
   );
 }
-
-
