@@ -321,5 +321,14 @@
         }
       }
     }
-  }
+  },
+  "customTemplates": [
+    {
+      "name": "hero-page",
+      "title": "Hero Page",
+      "postTypes": [
+        "page"
+      ]
+    }
+  ]
 }

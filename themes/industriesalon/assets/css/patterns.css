@@ -1398,6 +1398,416 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* =====================================================================
+   HERO PAGE TEMPLATE
+   Reuses front-hero composition for non-home pages with controlled hero
+   height and the same banner/text offset behavior.
+   ===================================================================== */
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-hero-page-main: Base class for hero-page main wrapper. */
+.page-template-hero-page .iss-hero-page-main {
+  overflow: clip;
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* #wp--skip-link--target: Main skip-link target wrapper rendered by WP. */
+.page-template-hero-page #wp--skip-link--target {
+  margin-top: 0 !important;
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-section--hero: Hero wrapper should not inherit generic section paddings. */
+.page-template-hero-page .iss-section--hero {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .wp-block-cover: Base class for wp block cover. */
+/* .iss-front-hero: Base class for front hero shell reused in hero-page. */
+.page-template-hero-page .wp-block-cover.iss-front-hero {
+  --iss-hero-min-h: 80svh;
+  --iss-hero-pad-bottom: clamp(2rem, 5vh, 4rem);
+  --iss-hero-left-pad: max(var(--iss-container-pad), calc((100vw - var(--iss-content-width)) / 2 + var(--iss-container-pad)));
+  --iss-hero-right-pad: clamp(0.75rem, 2.2vw, 2.25rem);
+  --iss-banner-shift-x: -400px;
+  --iss-banner-shift-y: -200px;
+  --iss-banner-width: 23rem;
+  --iss-hero-overlay: linear-gradient(
+    90deg,
+    rgba(30, 30, 30, 0.78) 0%,
+    rgba(30, 30, 30, 0.48) 42%,
+    rgba(30, 30, 30, 0.16) 100%
+  );
+
+  position: relative;
+  min-height: var(--iss-hero-min-h);
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+}
+
+@supports (min-height: 100dvh) {
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .wp-block-cover: Base class for wp block cover. */
+/* .iss-front-hero: Base class for front hero shell reused in hero-page. */
+  .page-template-hero-page .wp-block-cover.iss-front-hero {
+    --iss-hero-min-h: 80dvh;
+  }
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .wp-block-cover: Base class for wp block cover. */
+/* .iss-front-hero: Base class for front hero shell reused in hero-page. */
+.page-template-hero-page .wp-block-cover.iss-front-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--iss-hero-overlay);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .wp-block-cover__inner-container: Element class for wp cover inner container. */
+.page-template-hero-page .wp-block-cover.iss-front-hero > .wp-block-cover__inner-container {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, var(--iss-banner-width));
+  align-items: end;
+  align-content: end;
+  column-gap: clamp(1rem, 3vw, 2.5rem);
+  width: 100% !important;
+  min-height: inherit;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: calc(var(--iss-header-height) + 1.5rem) var(--iss-hero-right-pad) var(--iss-hero-pad-bottom) var(--iss-hero-left-pad);
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-front-hero__row: Element class for row wrapper. */
+.page-template-hero-page .iss-front-hero__row {
+  display: contents;
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-front-hero__shell: Element class for content shell. */
+.page-template-hero-page .iss-front-hero__shell {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 44rem);
+  gap: 1.5rem;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  min-height: 0;
+  align-content: end;
+  justify-content: start;
+  overflow: visible;
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-front-hero__content: Element class for hero copy column. */
+.page-template-hero-page .iss-front-hero__content {
+  max-width: 44rem;
+  color: var(--iss-white);
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-front-hero__content: Element class for hero copy column. */
+.page-template-hero-page .iss-front-hero__content .iss-kicker,
+.page-template-hero-page .iss-front-hero__content .iss-heading__title,
+.page-template-hero-page .iss-front-hero__content .iss-heading__text {
+  color: var(--iss-white);
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-front-hero__title: Element class for hero title. */
+.page-template-hero-page .iss-front-hero__title {
+  max-width: 13ch;
+  font-size: clamp(2.9rem, 6vw, 5.5rem);
+  line-height: 0.96;
+  text-wrap: balance;
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-front-hero__text: Element class for hero text. */
+.page-template-hero-page .iss-front-hero__text {
+  max-width: 40rem;
+  font-size: clamp(1rem, 1vw + 0.8rem, 1.2rem);
+  line-height: 1.55;
+  color: rgba(249, 249, 250, 0.9);
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-front-hero__actions: Element class for hero action row. */
+.page-template-hero-page .iss-front-hero__actions {
+  margin-top: 0.75rem;
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-front-hero__actions: Element class for hero action row. */
+.page-template-hero-page .iss-front-hero__actions .wp-block-button.is-style-outline .wp-block-button__link {
+  border-color: rgba(249, 249, 250, 0.55);
+  color: var(--iss-white);
+  background: transparent;
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-front-hero__actions: Element class for hero action row. */
+.page-template-hero-page .iss-front-hero__actions .wp-block-button.is-style-outline .wp-block-button__link:hover,
+.page-template-hero-page .iss-front-hero__actions .wp-block-button.is-style-outline .wp-block-button__link:focus-visible {
+  border-color: var(--iss-white);
+  background: rgba(249, 249, 250, 0.1);
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-front-banner-slot: Base class for notice banner slot. */
+.page-template-hero-page .wp-block-cover.iss-front-hero .iss-front-banner-slot {
+  position: relative;
+  width: min(100%, var(--iss-banner-width));
+  max-width: var(--iss-banner-width);
+  grid-column: 2;
+  justify-self: end;
+  transform: translateX(var(--iss-banner-shift-x)) translateY(var(--iss-banner-shift-y));
+  z-index: 5;
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-front-hero__shell: Element class for content shell. */
+.page-template-hero-page .wp-block-cover.iss-front-hero > .wp-block-cover__inner-container > .iss-front-hero__shell,
+.page-template-hero-page .wp-block-cover.iss-front-hero > .wp-block-cover__inner-container > .iss-front-hero__row > .iss-front-hero__shell {
+  grid-column: 1;
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-hero-note: Base class for notice banner body. */
+.page-template-hero-page .iss-front-banner-slot .iss-hero-note {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  width: 100%;
+  min-height: 20rem;
+  padding: 0.15rem 0 0.25rem 1.15rem;
+  background: none;
+  color: var(--iss-white);
+  border-left: 3px solid rgba(232, 29, 37, 0.95);
+  text-align: left;
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-hero-note__marker: Element class for marker dot. */
+.page-template-hero-page .iss-front-banner-slot .iss-hero-note__marker {
+  position: absolute;
+  top: -0.2rem;
+  left: -0.42rem;
+  width: 0.65rem;
+  height: 0.65rem;
+  background: var(--iss-red);
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(232, 29, 37, 0.12);
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-hero-note__kicker: Element class for note kicker. */
+.page-template-hero-page .iss-front-banner-slot .iss-hero-note__kicker {
+  margin: 0 0 0.1rem;
+  color: rgba(249, 249, 250, 0.82);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-hero-note__title: Element class for note title. */
+.page-template-hero-page .iss-front-banner-slot .iss-hero-note__title {
+  margin: 0;
+  color: var(--iss-white);
+  font-size: clamp(1.7rem, 1.2rem + 0.8vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.02;
+  max-width: 11ch;
+  text-wrap: balance;
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-hero-note__text: Element class for note copy. */
+.page-template-hero-page .iss-front-banner-slot .iss-hero-note__text {
+  position: relative;
+  margin-top: 0.7rem;
+  padding-top: 0.95rem;
+  max-width: 21ch;
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-hero-note__text: Element class for note copy separator. */
+.page-template-hero-page .iss-front-banner-slot .iss-hero-note__text::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1.2rem;
+  height: 2px;
+  background: var(--iss-red);
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-hero-note__text: Element class for note copy text nodes. */
+.page-template-hero-page .iss-front-banner-slot .iss-hero-note__text,
+.page-template-hero-page .iss-front-banner-slot .iss-hero-note__text p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-hero-note__link: Element class for note CTA wrapper. */
+.page-template-hero-page .iss-front-banner-slot .iss-hero-note__link {
+  position: relative;
+  margin-top: 1rem;
+  padding-top: 0.95rem;
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-hero-note__link: Element class for note CTA separator. */
+.page-template-hero-page .iss-front-banner-slot .iss-hero-note__link::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  max-width: 8.5rem;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-hero-note__link: Element class for note CTA link. */
+.page-template-hero-page .iss-front-banner-slot .iss-hero-note__link a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--iss-white);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--iss-transition), transform var(--iss-transition);
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-hero-note__link-icon: Element class for note CTA icon. */
+.page-template-hero-page .iss-front-banner-slot .iss-hero-note__link-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  color: var(--iss-red);
+  font-size: 0.95rem;
+  line-height: 1;
+  transform: translateY(-0.02em);
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-hero-note__link-text: Element class for note CTA text. */
+.page-template-hero-page .iss-front-banner-slot .iss-hero-note__link-text {
+  text-decoration: underline;
+  text-underline-offset: 0.16em;
+  text-decoration-thickness: 1px;
+}
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-hero-note__link: Element class for note CTA hover/focus state. */
+.page-template-hero-page .iss-front-banner-slot .iss-hero-note__link a:hover,
+.page-template-hero-page .iss-front-banner-slot .iss-hero-note__link a:focus-visible {
+  color: var(--iss-red);
+  transform: translateX(2px);
+}
+
+@media (max-width: 1100px) {
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .wp-block-cover__inner-container: Element class for wp cover inner container. */
+  .page-template-hero-page .wp-block-cover.iss-front-hero > .wp-block-cover__inner-container {
+    grid-template-columns: 1fr;
+    row-gap: 1rem;
+    padding-left: var(--iss-container-pad);
+    padding-right: var(--iss-container-pad);
+  }
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-front-banner-slot: Base class for notice banner slot. */
+  .page-template-hero-page .wp-block-cover.iss-front-hero .iss-front-banner-slot {
+    grid-column: 1;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 0.75rem;
+    justify-self: stretch;
+    transform: none;
+  }
+}
+
+@media (max-width: 782px) {
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-hero-note: Base class for note panel on mobile. */
+  .page-template-hero-page .iss-front-banner-slot .iss-hero-note {
+    min-height: 0;
+    max-width: 100%;
+  }
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-hero-note__title: Element class for note title on mobile. */
+/* .iss-hero-note__text: Element class for note text on mobile. */
+  .page-template-hero-page .iss-front-banner-slot .iss-hero-note__title,
+  .page-template-hero-page .iss-front-banner-slot .iss-hero-note__text {
+    max-width: none;
+  }
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-hero-note__link: Element class for note link separator on mobile. */
+  .page-template-hero-page .iss-front-banner-slot .iss-hero-note__link::before {
+    max-width: 100%;
+  }
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .wp-block-cover__inner-container: Element class for wp cover inner container on mobile. */
+  .page-template-hero-page .wp-block-cover.iss-front-hero > .wp-block-cover__inner-container {
+    padding-top: calc(var(--iss-header-height) + 0.75rem);
+    padding-bottom: clamp(1.25rem, 4vh, 2rem);
+  }
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-front-hero__shell: Element class for content shell on mobile. */
+  .page-template-hero-page .iss-front-hero__shell {
+    gap: 1rem;
+  }
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-front-hero__title: Element class for hero title on mobile. */
+  .page-template-hero-page .iss-front-hero__title {
+    max-width: 11ch;
+    font-size: clamp(2.4rem, 10vw, 3.75rem);
+  }
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-front-hero__text: Element class for hero text on mobile. */
+  .page-template-hero-page .iss-front-hero__text {
+    max-width: 100%;
+  }
+
+/* .page-template-hero-page: Base class for hero-page template body scope. */
+/* .iss-front-hero__actions: Element class for action row on mobile. */
+  .page-template-hero-page .iss-front-hero__actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
 /* =====================================================
    MICROBLOCKS
    cleaner icon version
