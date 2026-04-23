@@ -845,7 +845,7 @@
 /* .home: Base class for home; apply on primary wrapper/scope. */
 /* .iss-front-banner-slot: Base class for iss front banner slot; apply on primary wrapper/scope. */
 /* .iss-hero-note: Base class for iss hero note; apply on primary wrapper/scope. */
-.home .iss-front-banner-slot .iss-hero-note {
+.home .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -864,7 +864,7 @@
 /* .home: Base class for home; apply on primary wrapper/scope. */
 /* .iss-front-banner-slot: Base class for iss front banner slot; apply on primary wrapper/scope. */
 /* .iss-hero-note__marker: Element class for `iss-hero-note`; apply on `marker` element. */
-.home .iss-front-banner-slot .iss-hero-note__marker {
+.home .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__marker {
   position: absolute;
   top: -0.2rem;
   left: -0.42rem;
@@ -880,7 +880,7 @@
 /* .home: Base class for home; apply on primary wrapper/scope. */
 /* .iss-front-banner-slot: Base class for iss front banner slot; apply on primary wrapper/scope. */
 /* .iss-hero-note__kicker: Element class for `iss-hero-note`; apply on `kicker` element. */
-.home .iss-front-banner-slot .iss-hero-note__kicker {
+.home .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__kicker {
   margin: 0 0 0.1rem;
   color: rgba(249, 249, 250, 0.82);
   font-size: 0.72rem;
@@ -895,7 +895,7 @@
 /* .home: Base class for home; apply on primary wrapper/scope. */
 /* .iss-front-banner-slot: Base class for iss front banner slot; apply on primary wrapper/scope. */
 /* .iss-hero-note__title: Element class for `iss-hero-note`; apply on `title` element. */
-.home .iss-front-banner-slot .iss-hero-note__title {
+.home .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__title {
   margin: 0;
   color: var(--iss-white);
   font-size: clamp(1.7rem, 1.2rem + 0.8vw, 2.25rem);
@@ -910,7 +910,7 @@
 /* .home: Base class for home; apply on primary wrapper/scope. */
 /* .iss-front-banner-slot: Base class for iss front banner slot; apply on primary wrapper/scope. */
 /* .iss-hero-note__text: Element class for `iss-hero-note`; apply on `text` element. */
-.home .iss-front-banner-slot .iss-hero-note__text {
+.home .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__text {
   position: relative;
   margin-top: 0.7rem;
   padding-top: 0.95rem;
@@ -920,7 +920,7 @@
 /* .home: Base class for home; apply on primary wrapper/scope. */
 /* .iss-front-banner-slot: Base class for iss front banner slot; apply on primary wrapper/scope. */
 /* .iss-hero-note__text: Element class for `iss-hero-note`; apply on `text` element. */
-.home .iss-front-banner-slot .iss-hero-note__text::before {
+.home .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__text::before {
   content: "";
   position: absolute;
   top: 0;
@@ -933,11 +933,11 @@
 /* .home: Base class for home; apply on primary wrapper/scope. */
 /* .iss-front-banner-slot: Base class for iss front banner slot; apply on primary wrapper/scope. */
 /* .iss-hero-note__text: Element class for `iss-hero-note`; apply on `text` element. */
-.home .iss-front-banner-slot .iss-hero-note__text,
+.home .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__text,
 /* .home: Base class for home; apply on primary wrapper/scope. */
 /* .iss-front-banner-slot: Base class for iss front banner slot; apply on primary wrapper/scope. */
 /* .iss-hero-note__text: Element class for `iss-hero-note`; apply on `text` element. */
-.home .iss-front-banner-slot .iss-hero-note__text p {
+.home .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__text p {
   margin: 0;
   color: rgba(255, 255, 255, 0.8);
   font-size: 1rem;
@@ -949,7 +949,7 @@
 /* .home: Base class for home; apply on primary wrapper/scope. */
 /* .iss-front-banner-slot: Base class for iss front banner slot; apply on primary wrapper/scope. */
 /* .iss-hero-note__link: Element class for `iss-hero-note`; apply on `link` element. */
-.home .iss-front-banner-slot .iss-hero-note__link {
+.home .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__link {
   position: relative;
   margin-top: 1rem;
   padding-top: 0.95rem;
@@ -958,7 +958,7 @@
 /* .home: Base class for home; apply on primary wrapper/scope. */
 /* .iss-front-banner-slot: Base class for iss front banner slot; apply on primary wrapper/scope. */
 /* .iss-hero-note__link: Element class for `iss-hero-note`; apply on `link` element. */
-.home .iss-front-banner-slot .iss-hero-note__link::before {
+.home .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__link::before {
   content: "";
   position: absolute;
   top: 0;
@@ -974,7 +974,7 @@
 /* .home: Base class for home; apply on primary wrapper/scope. */
 /* .iss-front-banner-slot: Base class for iss front banner slot; apply on primary wrapper/scope. */
 /* .iss-hero-note__link: Element class for `iss-hero-note`; apply on `link` element. */
-.home .iss-front-banner-slot .iss-hero-note__link a {
+.home .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__link a {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -987,7 +987,7 @@
 /* .home: Base class for home; apply on primary wrapper/scope. */
 /* .iss-front-banner-slot: Base class for iss front banner slot; apply on primary wrapper/scope. */
 /* .iss-hero-note__link-icon: Element class for `iss-hero-note`; apply on `link-icon` element. */
-.home .iss-front-banner-slot .iss-hero-note__link-icon {
+.home .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__link-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1001,7 +1001,7 @@
 /* .home: Base class for home; apply on primary wrapper/scope. */
 /* .iss-front-banner-slot: Base class for iss front banner slot; apply on primary wrapper/scope. */
 /* .iss-hero-note__link-text: Element class for `iss-hero-note`; apply on `link-text` element. */
-.home .iss-front-banner-slot .iss-hero-note__link-text {
+.home .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__link-text {
   text-decoration: underline;
   text-underline-offset: 0.16em;
   text-decoration-thickness: 1px;
@@ -1010,11 +1010,11 @@
 /* .home: Base class for home; apply on primary wrapper/scope. */
 /* .iss-front-banner-slot: Base class for iss front banner slot; apply on primary wrapper/scope. */
 /* .iss-hero-note__link: Element class for `iss-hero-note`; apply on `link` element. */
-.home .iss-front-banner-slot .iss-hero-note__link a:hover,
+.home .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__link a:hover,
 /* .home: Base class for home; apply on primary wrapper/scope. */
 /* .iss-front-banner-slot: Base class for iss front banner slot; apply on primary wrapper/scope. */
 /* .iss-hero-note__link: Element class for `iss-hero-note`; apply on `link` element. */
-.home .iss-front-banner-slot .iss-hero-note__link a:focus-visible {
+.home .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__link a:focus-visible {
   color: var(--iss-red);
   transform: translateX(2px);
 }
@@ -1325,7 +1325,7 @@
 /* .home: Base class for home; apply on primary wrapper/scope. */
 /* .iss-front-banner-slot: Base class for iss front banner slot; apply on primary wrapper/scope. */
 /* .iss-hero-note: Base class for iss hero note; apply on primary wrapper/scope. */
-  .home .iss-front-banner-slot .iss-hero-note {
+  .home .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note {
     min-height: 0;
     max-width: 100%;
   }
@@ -1333,18 +1333,18 @@
 /* .home: Base class for home; apply on primary wrapper/scope. */
 /* .iss-front-banner-slot: Base class for iss front banner slot; apply on primary wrapper/scope. */
 /* .iss-hero-note__title: Element class for `iss-hero-note`; apply on `title` element. */
-  .home .iss-front-banner-slot .iss-hero-note__title,
+  .home .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__title,
 /* .home: Base class for home; apply on primary wrapper/scope. */
 /* .iss-front-banner-slot: Base class for iss front banner slot; apply on primary wrapper/scope. */
 /* .iss-hero-note__text: Element class for `iss-hero-note`; apply on `text` element. */
-  .home .iss-front-banner-slot .iss-hero-note__text {
+  .home .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__text {
     max-width: none;
   }
 
 /* .home: Base class for home; apply on primary wrapper/scope. */
 /* .iss-front-banner-slot: Base class for iss front banner slot; apply on primary wrapper/scope. */
 /* .iss-hero-note__link: Element class for `iss-hero-note`; apply on `link` element. */
-  .home .iss-front-banner-slot .iss-hero-note__link::before {
+  .home .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__link::before {
     max-width: 100%;
   }
 
@@ -1587,7 +1587,7 @@
 
 /* .page-template-hero-page: Base class for hero-page template body scope. */
 /* .iss-hero-note: Base class for notice banner body. */
-.page-template-hero-page .iss-front-banner-slot .iss-hero-note {
+.page-template-hero-page .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -1603,7 +1603,7 @@
 
 /* .page-template-hero-page: Base class for hero-page template body scope. */
 /* .iss-hero-note__marker: Element class for marker dot. */
-.page-template-hero-page .iss-front-banner-slot .iss-hero-note__marker {
+.page-template-hero-page .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__marker {
   position: absolute;
   top: -0.2rem;
   left: -0.42rem;
@@ -1616,7 +1616,7 @@
 
 /* .page-template-hero-page: Base class for hero-page template body scope. */
 /* .iss-hero-note__kicker: Element class for note kicker. */
-.page-template-hero-page .iss-front-banner-slot .iss-hero-note__kicker {
+.page-template-hero-page .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__kicker {
   margin: 0 0 0.1rem;
   color: rgba(249, 249, 250, 0.82);
   font-size: 0.72rem;
@@ -1628,7 +1628,7 @@
 
 /* .page-template-hero-page: Base class for hero-page template body scope. */
 /* .iss-hero-note__title: Element class for note title. */
-.page-template-hero-page .iss-front-banner-slot .iss-hero-note__title {
+.page-template-hero-page .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__title {
   margin: 0;
   color: var(--iss-white);
   font-size: clamp(1.7rem, 1.2rem + 0.8vw, 2.25rem);
@@ -1640,7 +1640,7 @@
 
 /* .page-template-hero-page: Base class for hero-page template body scope. */
 /* .iss-hero-note__text: Element class for note copy. */
-.page-template-hero-page .iss-front-banner-slot .iss-hero-note__text {
+.page-template-hero-page .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__text {
   position: relative;
   margin-top: 0.7rem;
   padding-top: 0.95rem;
@@ -1649,7 +1649,7 @@
 
 /* .page-template-hero-page: Base class for hero-page template body scope. */
 /* .iss-hero-note__text: Element class for note copy separator. */
-.page-template-hero-page .iss-front-banner-slot .iss-hero-note__text::before {
+.page-template-hero-page .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__text::before {
   content: "";
   position: absolute;
   top: 0;
@@ -1661,8 +1661,8 @@
 
 /* .page-template-hero-page: Base class for hero-page template body scope. */
 /* .iss-hero-note__text: Element class for note copy text nodes. */
-.page-template-hero-page .iss-front-banner-slot .iss-hero-note__text,
-.page-template-hero-page .iss-front-banner-slot .iss-hero-note__text p {
+.page-template-hero-page .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__text,
+.page-template-hero-page .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__text p {
   margin: 0;
   color: rgba(255, 255, 255, 0.8);
   font-size: 1rem;
@@ -1671,7 +1671,7 @@
 
 /* .page-template-hero-page: Base class for hero-page template body scope. */
 /* .iss-hero-note__link: Element class for note CTA wrapper. */
-.page-template-hero-page .iss-front-banner-slot .iss-hero-note__link {
+.page-template-hero-page .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__link {
   position: relative;
   margin-top: 1rem;
   padding-top: 0.95rem;
@@ -1679,7 +1679,7 @@
 
 /* .page-template-hero-page: Base class for hero-page template body scope. */
 /* .iss-hero-note__link: Element class for note CTA separator. */
-.page-template-hero-page .iss-front-banner-slot .iss-hero-note__link::before {
+.page-template-hero-page .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__link::before {
   content: "";
   position: absolute;
   top: 0;
@@ -1692,7 +1692,7 @@
 
 /* .page-template-hero-page: Base class for hero-page template body scope. */
 /* .iss-hero-note__link: Element class for note CTA link. */
-.page-template-hero-page .iss-front-banner-slot .iss-hero-note__link a {
+.page-template-hero-page .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__link a {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -1704,7 +1704,7 @@
 
 /* .page-template-hero-page: Base class for hero-page template body scope. */
 /* .iss-hero-note__link-icon: Element class for note CTA icon. */
-.page-template-hero-page .iss-front-banner-slot .iss-hero-note__link-icon {
+.page-template-hero-page .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__link-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1717,7 +1717,7 @@
 
 /* .page-template-hero-page: Base class for hero-page template body scope. */
 /* .iss-hero-note__link-text: Element class for note CTA text. */
-.page-template-hero-page .iss-front-banner-slot .iss-hero-note__link-text {
+.page-template-hero-page .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__link-text {
   text-decoration: underline;
   text-underline-offset: 0.16em;
   text-decoration-thickness: 1px;
@@ -1725,8 +1725,8 @@
 
 /* .page-template-hero-page: Base class for hero-page template body scope. */
 /* .iss-hero-note__link: Element class for note CTA hover/focus state. */
-.page-template-hero-page .iss-front-banner-slot .iss-hero-note__link a:hover,
-.page-template-hero-page .iss-front-banner-slot .iss-hero-note__link a:focus-visible {
+.page-template-hero-page .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__link a:hover,
+.page-template-hero-page .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__link a:focus-visible {
   color: var(--iss-red);
   transform: translateX(2px);
 }
@@ -1756,7 +1756,7 @@
 @media (max-width: 782px) {
 /* .page-template-hero-page: Base class for hero-page template body scope. */
 /* .iss-hero-note: Base class for note panel on mobile. */
-  .page-template-hero-page .iss-front-banner-slot .iss-hero-note {
+  .page-template-hero-page .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note {
     min-height: 0;
     max-width: 100%;
   }
@@ -1764,14 +1764,14 @@
 /* .page-template-hero-page: Base class for hero-page template body scope. */
 /* .iss-hero-note__title: Element class for note title on mobile. */
 /* .iss-hero-note__text: Element class for note text on mobile. */
-  .page-template-hero-page .iss-front-banner-slot .iss-hero-note__title,
-  .page-template-hero-page .iss-front-banner-slot .iss-hero-note__text {
+  .page-template-hero-page .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__title,
+  .page-template-hero-page .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__text {
     max-width: none;
   }
 
 /* .page-template-hero-page: Base class for hero-page template body scope. */
 /* .iss-hero-note__link: Element class for note link separator on mobile. */
-  .page-template-hero-page .iss-front-banner-slot .iss-hero-note__link::before {
+  .page-template-hero-page .iss-front-banner-slot .wp-block-industriesalon-notice-banner.iss-notice-skin--front .iss-hero-note__link::before {
     max-width: 100%;
   }
 

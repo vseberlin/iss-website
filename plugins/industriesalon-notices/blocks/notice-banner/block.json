@@ -10,6 +10,10 @@
     "area": {
       "type": "string",
       "default": "front_page_banner"
+    },
+    "skin": {
+      "type": "string",
+      "default": ""
     }
   },
   "textdomain": "industriesalon-notices",

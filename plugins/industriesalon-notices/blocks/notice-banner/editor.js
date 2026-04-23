@@ -15,6 +15,10 @@
         type: "string",
         default: "front_page_banner",
       },
+      skin: {
+        type: "string",
+        default: "",
+      },
     },
     edit: function (props) {
       var blockProps = useBlockProps();
@@ -38,6 +42,18 @@
               ],
               onChange: function (value) {
                 props.setAttributes({ area: value });
+              },
+            }),
+            el(SelectControl, {
+              label: "Skin",
+              value: props.attributes.skin || "",
+              options: [
+                { label: "Aus Hinweis übernehmen", value: "" },
+                { label: "Front Banner", value: "front" },
+                { label: "Landing Note", value: "landing" },
+              ],
+              onChange: function (value) {
+                props.setAttributes({ skin: value });
               },
             })
           )

@@ -273,6 +273,7 @@ final class Industriesalon_Notices {
 
     public function render_display_box(\WP_Post $post): void {
         $area             = $this->get_meta($post->ID, 'iss_area', 'front_page_banner');
+        $skin             = $this->get_meta($post->ID, 'iss_skin', 'front');
         $scope            = $this->get_meta($post->ID, 'iss_scope', 'global');
         $audience         = $this->get_meta($post->ID, 'iss_audience', 'public');
         $is_active        = (bool) $this->get_meta($post->ID, 'iss_is_active', 0);
@@ -305,6 +306,16 @@ final class Industriesalon_Notices {
                     <option value="<?php echo esc_attr($value); ?>" <?php selected($scope, $value); ?>><?php echo esc_html($label); ?></option>
                 <?php endforeach; ?>
             </select>
+        </p>
+
+        <p>
+            <label for="iss_skin"><strong><?php esc_html_e('Skin', 'industriesalon-notices'); ?></strong></label><br>
+            <select class="widefat" id="iss_skin" name="iss_skin">
+                <?php foreach ($this->skin_options() as $value => $label) : ?>
+                    <option value="<?php echo esc_attr($value); ?>" <?php selected($skin, $value); ?>><?php echo esc_html($label); ?></option>
+                <?php endforeach; ?>
+            </select>
+            <span class="description"><?php esc_html_e('Steuert die visuelle Banner-Variante (Front Banner oder Landing Note).', 'industriesalon-notices'); ?></span>
         </p>
 
         <p data-iss-scope-selected>
@@ -387,6 +398,7 @@ final class Industriesalon_Notices {
             'iss_badge'        => array_keys($this->badge_options()),
             'iss_link_type'    => array_keys($this->link_type_options()),
             'iss_area'      => array_keys($this->area_options()),
+            'iss_skin'      => array_keys($this->skin_options()),
             'iss_scope'     => array_keys($this->scope_options()),
             'iss_audience'  => array_keys($this->audience_options()),
         ];
@@ -517,6 +529,7 @@ final class Industriesalon_Notices {
         if ($area === '') {
             $area = 'front_page_banner';
         }
+        $skin_from_block = isset($attributes['skin']) ? sanitize_key((string) $attributes['skin']) : '';
 
         $current_object_id = (int) get_the_ID();
         if ($current_object_id <= 0) {
@@ -524,9 +537,17 @@ final class Industriesalon_Notices {
         }
 
         $notice = $this->find_notice($area, ['public'], $current_object_id);
-        
-        $attrs = function_exists('get_block_wrapper_attributes') 
-            ? get_block_wrapper_attributes() 
+
+        $skin = $this->sanitize_skin_value($skin_from_block);
+        if ($skin === '' && $notice instanceof \WP_Post) {
+            $skin = $this->sanitize_skin_value((string) get_post_meta($notice->ID, 'iss_skin', true));
+        }
+        if ($skin === '') {
+            $skin = 'front';
+        }
+
+        $attrs = function_exists('get_block_wrapper_attributes')
+            ? get_block_wrapper_attributes(['class' => 'iss-notice-skin--' . $skin])
             : '';
 
         if (! $notice) {
@@ -892,6 +913,18 @@ final class Industriesalon_Notices {
             'selected_pages_banner' => __('Ausgewählte Seiten (Banner)', 'industriesalon-notices'),
             'admin_notice'      => __('Admin-Hinweis', 'industriesalon-notices'),
         ];
+    }
+
+    private function skin_options(): array {
+        return [
+            'front'   => __('Front Banner', 'industriesalon-notices'),
+            'landing' => __('Landing Note', 'industriesalon-notices'),
+        ];
+    }
+
+    private function sanitize_skin_value(string $value): string {
+        $value = sanitize_key($value);
+        return in_array($value, array_keys($this->skin_options()), true) ? $value : '';
     }
 
     private function scope_options(): array {
