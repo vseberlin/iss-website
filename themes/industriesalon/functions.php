@@ -130,6 +130,13 @@ function industriesalon_register_block_patterns(): void
             'categories' => array('industriesalon', 'text'),
             'file' => '/patterns/iss-section-mission-support-strip.html',
         ),
+        array(
+            'name' => 'industriesalon/landing-hero-with-note',
+            'title' => 'ISS Landing Hero + Note',
+            'description' => 'Full-width landing hero with right-side note banner (iss-hero-note).',
+            'categories' => array('industriesalon', 'text', 'media'),
+            'file' => '/patterns/iss-landing-hero-with-note.html',
+        ),
     );
 
     foreach ($patterns as $pattern) {

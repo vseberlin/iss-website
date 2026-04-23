@@ -518,7 +518,12 @@ final class Industriesalon_Notices {
             $area = 'front_page_banner';
         }
 
-        $notice = $this->find_notice($area, ['public'], get_the_ID());
+        $current_object_id = (int) get_the_ID();
+        if ($current_object_id <= 0) {
+            $current_object_id = (int) get_queried_object_id();
+        }
+
+        $notice = $this->find_notice($area, ['public'], $current_object_id);
         
         $attrs = function_exists('get_block_wrapper_attributes') 
             ? get_block_wrapper_attributes() 
@@ -884,6 +889,7 @@ final class Industriesalon_Notices {
         return [
             'front_page_banner' => __('Startseiten-Banner', 'industriesalon-notices'),
             'site_notice'       => __('Website-Hinweis', 'industriesalon-notices'),
+            'selected_pages_banner' => __('Ausgewählte Seiten (Banner)', 'industriesalon-notices'),
             'admin_notice'      => __('Admin-Hinweis', 'industriesalon-notices'),
         ];
     }
