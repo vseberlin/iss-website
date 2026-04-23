@@ -17,6 +17,7 @@ add_action('after_setup_theme', function () {
             'style.css',
             'assets/css/cards.css',
             'assets/css/patterns.css',
+            'assets/css/overrides.css',
         )
     );
 });
@@ -212,6 +213,23 @@ function industriesalon_enqueue_assets(): void
             $theme_uri . $patterns_rel,
             $patterns_dependencies,
             (string) filemtime($patterns_abs)
+        );
+    }
+
+    $overrides_rel = '/assets/css/overrides.css';
+    $overrides_abs = $theme_dir . $overrides_rel;
+    if (file_exists($overrides_abs)) {
+        $overrides_dependencies = file_exists($patterns_abs)
+            ? array('industriesalon-patterns')
+            : (file_exists($cards_abs)
+                ? array('industriesalon-cards')
+                : array('industriesalon-base'));
+
+        wp_enqueue_style(
+            'industriesalon-overrides',
+            $theme_uri . $overrides_rel,
+            $overrides_dependencies,
+            (string) filemtime($overrides_abs)
         );
     }
 

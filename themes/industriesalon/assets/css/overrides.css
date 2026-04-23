@@ -1,0 +1,30 @@
+/* =====================================================================
+   FILE: overrides.css
+   ROLE: Gutenberg conflict fixes only (loaded last).
+   PURPOSE:
+   - Keep narrowly scoped CSS fixes that resolve Gutenberg/runtime clashes.
+   - Avoid polluting global design files (`style.css`, `cards.css`, `patterns.css`).
+
+   FORMAT FOR EVERY RULE:
+   Page: <template or context>
+   Block: <core/custom block and class>
+   Why: <what Gutenberg/runtime behavior breaks and why this override exists>
+   ===================================================================== */
+
+/* Page: single-tour / single-tour-on-demand related cards
+   Block: core/query -> ul.wp-block-post-template.is-layout-flow > li inside .iss-card-grid
+   Why: Gutenberg flow layout injects per-item block margins; first row gets uneven vertical start.
+        Reset list-item margins so all cards start on the same baseline. */
+.iss-card-grid > .wp-block-post-template.is-layout-flow > li,
+.iss-card-grid > .wp-block-post-template.wp-block-post-template.is-layout-flow > li {
+  margin-block-start: 0 !important;
+  margin-block-end: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 0;
+}
+
+/* Specific override for this section */
+.section.iss-tour-main {
+    padding-top: 0rem; /* or your desired value */
+}

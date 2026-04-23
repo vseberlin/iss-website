@@ -1068,11 +1068,7 @@
   padding-bottom: clamp(3.5rem, 6vw, 5.5rem);
 }
 
-/* .home: Base class for home; apply on primary wrapper/scope. */
-/* .section--alt: Modifier class for `section`; combine for `alt` variant. */
-.home .section--alt {
-  background: linear-gradient(180deg, rgba(192, 184, 181, 0.16), rgba(192, 184, 181, 0.08));
-}
+
 
 /* .home: Base class for home; apply on primary wrapper/scope. */
 /* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
@@ -2841,6 +2837,18 @@
   gap: clamp(2rem, 3vw, 4rem);
 }
 
+/* Controlled desktop order: hero media left / hero text right.
+   Main section keeps content left / aside right. */
+.iss-tour-hero__media-col,
+.iss-tour-main__content-col {
+  order: 1;
+}
+
+.iss-tour-hero__content-col,
+.iss-tour-main__aside-col {
+  order: 2;
+}
+
 /* .iss-tour-hero__intro: Element class for `iss-tour-hero`; apply on `intro` element. */
 .iss-tour-hero__intro {
   display: flex;
@@ -2881,6 +2889,23 @@
   max-height: 480px;
   object-fit: cover;
   border-radius: var(--iss-radius-md);
+}
+
+/* Keep hero viewport stable when gallery swaps images with mixed ratios. */
+.iss-tour-hero__media-col .iss-media-card {
+  aspect-ratio: 16 / 9;
+}
+
+.iss-tour-hero__media-col .iss-media-card > .wp-block-post-featured-image {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+.iss-tour-hero__media-col .iss-media-card > .wp-block-post-featured-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* .iss-tour-main__content: Element class for `iss-tour-main`; apply on `content` element. */
@@ -3003,42 +3028,34 @@
   margin-top: 1.5rem;
 }
 
-/* Keep heading trio and card text left-aligned on single tour templates. */
-.iss-tour-page .iss-heading:not(.iss-heading--center):not(.iss-heading--right) {
-  align-items: flex-start;
-  text-align: left;
-  margin-left: 0;
-  margin-right: auto;
-}
-
-.iss-tour-page .iss-heading > .iss-kicker,
-.iss-tour-page .iss-heading > .iss-heading__title,
-.iss-tour-page .iss-heading > .iss-heading__text {
-  text-align: left;
-  margin-left: 0;
-  margin-right: 0;
-}
-
-.iss-tour-page .iss-heading > .iss-kicker,
-.iss-tour-page .iss-card__body > .iss-kicker {
-  justify-content: flex-start;
-}
-
-.iss-tour-page .iss-card__body {
-  align-items: flex-start;
-  text-align: left;
-}
-
-.iss-tour-page .iss-card__body > * {
-  text-align: left;
-  margin-left: 0;
-  margin-right: 0;
-}
-
 @media (max-width: 1023px) {
 /* .iss-tour-page: Base class for iss tour page; apply on primary wrapper/scope. */
   .iss-tour-page {
     padding-top: 7rem;
+  }
+
+/* Stack tour columns on tablet/mobile for predictable reading flow. */
+  .iss-tour-hero__grid,
+  .iss-tour-main__grid {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+/* Mobile/tablet hero flow: text first, media second. */
+  .iss-tour-hero__content-col {
+    order: 1;
+  }
+
+  .iss-tour-hero__media-col {
+    order: 2;
+  }
+
+  .iss-tour-hero__content-col,
+  .iss-tour-main__content-col,
+  .iss-tour-hero__media-col,
+  .iss-tour-main__aside-col {
+    flex-basis: 100% !important;
+    width: 100%;
   }
 
 /* .iss-tour-hero__title: Element class for `iss-tour-hero`; apply on `title` element. */

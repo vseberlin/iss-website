@@ -203,6 +203,14 @@ body {
     padding-bottom: 5rem;
   }
 }
+/* .section: Base class for section; apply on primary wrapper/scope. */
+.section--alt {
+  background: linear-gradient(
+    180deg,
+    rgba(192, 184, 181, 0.16),
+    rgba(192, 184, 181, 0.08)
+  );
+}
 
 
 /* =====================================================================
@@ -682,6 +690,32 @@ body {
   margin-right: 0;
 }
 
+/* Enforce left alignment inside heading trios and card bodies, even when
+   Gutenberg constrained-layout auto margins are present. */
+.iss-heading > .iss-kicker,
+.iss-heading > .iss-heading__title,
+.iss-heading > .iss-heading__text,
+.iss-card__body > .iss-kicker,
+.iss-card__body > .iss-card__title,
+.iss-card__body > .iss-card__text,
+.iss-card__body > .wp-block-post-title,
+.iss-card__body > .wp-block-post-excerpt {
+  text-align: left !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  align-self: flex-start;
+}
+
+.iss-card__body {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.iss-heading > .iss-kicker,
+.iss-card__body > .iss-kicker {
+  justify-content: flex-start;
+}
+
 /* Keep buttons left inside section intros and single side panels. */
 /* .section: Base class for section; apply on primary wrapper/scope. */
 /* .wp-block-buttons: Base class for wp block buttons; apply on primary wrapper/scope. */
@@ -760,7 +794,4 @@ body {
   );
 }
 
-/* .section--alt: Modifier class for `section`; combine for `alt` variant. */
-.section--alt {
-  background: #f3f1ef;
-}
+

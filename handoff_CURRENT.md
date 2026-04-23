@@ -77,6 +77,9 @@
 - On `a-fuhrungen`, Query Loop cards currently render category terms (`group`, `individual`, `special`) in card markup; helper currently normalizes these for tabs.
 - If taxonomy output is standardized to `fuehrung_typ`, simplify helper normalization map.
 - Mapping/data linking between `fuehrung` and `iss_calendar_item` still needs content-level assignment (not a code error).
+- Confirmed layout rule for tour single templates:
+  - in `themes/industriesalon/templates/single-tour.html` and `themes/industriesalon/templates/single-tour-on-demand.html`, keep wrapper/group markup without `layout":{"type":"constrained"}` attributes.
+  - reason: constrained layout classes (`is-layout-constrained` / `has-global-padding`) introduced horizontal offsets that broke desired alignment.
 
 ## Continuity Prompt
 - Start next session with: `read /home/vladimir/wp/handoff_CURRENT.md`.
