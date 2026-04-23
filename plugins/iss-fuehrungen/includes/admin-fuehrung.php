@@ -325,3 +325,101 @@ function iss_fuehrungen_relink_calendar_series_for_tour($post_id, $tag = '') {
         update_post_meta($calendar_item_id, 'source_post_type', ISS_FUEHRUNGEN_POST_TYPE);
     }
 }
+
+add_action('admin_notices', function () {
+    if (!function_exists('get_current_screen')) {
+        return;
+    }
+
+    $screen = get_current_screen();
+    if (!$screen || $screen->base !== 'post' || $screen->post_type !== ISS_FUEHRUNGEN_POST_TYPE) {
+        return;
+    }
+
+    $post_id = isset($_GET['post']) ? (int) $_GET['post'] : 0;
+    if ($post_id <= 0) {
+        return;
+    }
+
+    if (!iss_fuehrungen_calendar_warning_required($post_id)) {
+        return;
+    }
+
+    $edit_url = admin_url('post.php?post=' . $post_id . '&action=edit');
+    echo '<div class="notice notice-warning"><p>';
+    echo esc_html__('Für diese Führung sind keine zukünftigen Kalender-Termine verknüpft, obwohl der Buchungsmodus einen Kalender erwartet.', 'iss-fuehrungen');
+    echo ' ';
+    echo '<a href="' . esc_url($edit_url) . '#iss_calendar_tag">' . esc_html__('Kalender-Verknüpfung prüfen', 'iss-fuehrungen') . '</a>';
+    echo '</p></div>';
+});
+
+function iss_fuehrungen_calendar_warning_required($post_id) {
+    $post_id = (int) $post_id;
+    if ($post_id <= 0) {
+        return false;
+    }
+
+    if (!function_exists('iss_fuehrung_get_effective_booking_mode')) {
+        return false;
+    }
+
+    $mode = iss_fuehrung_get_effective_booking_mode($post_id);
+    $calendar_expected = in_array($mode, ['calendar', 'hybrid'], true);
+    if (!$calendar_expected) {
+        return false;
+    }
+
+    if (iss_fuehrungen_has_linked_future_calendar_events($post_id)) {
+        return false;
+    }
+
+    return true;
+}
+
+function iss_fuehrungen_has_linked_future_calendar_events($post_id) {
+    if (!defined('ISS_CALENDAR_ITEM_POST_TYPE')) {
+        return false;
+    }
+
+    $post_id = (int) $post_id;
+    if ($post_id <= 0) {
+        return false;
+    }
+
+    $items = get_posts([
+        'post_type' => ISS_CALENDAR_ITEM_POST_TYPE,
+        'post_status' => 'publish',
+        'posts_per_page' => 100,
+        'fields' => 'ids',
+        'meta_key' => 'event_start',
+        'orderby' => 'meta_value',
+        'order' => 'ASC',
+        'meta_query' => [
+            [
+                'key' => 'source_post_id',
+                'value' => $post_id,
+                'compare' => '=',
+                'type' => 'NUMERIC',
+            ],
+        ],
+    ]);
+
+    if (empty($items)) {
+        return false;
+    }
+
+    $now_ts = current_time('timestamp');
+    foreach ($items as $item_id) {
+        $start = (string) get_post_meta((int) $item_id, 'event_start', true);
+        if ($start === '') {
+            continue;
+        }
+
+        $event_ts = strtotime($start);
+        if ($event_ts !== false && $event_ts >= $now_ts) {
+            return true;
+        }
+    }
+
+    return false;
+}
