@@ -329,6 +329,13 @@
       "postTypes": [
         "page"
       ]
+    },
+    {
+      "name": "front-page-test",
+      "title": "Front Page Test (Default Layout)",
+      "postTypes": [
+        "page"
+      ]
     }
   ]
 }

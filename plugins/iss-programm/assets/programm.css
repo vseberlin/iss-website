@@ -1,3 +1,20 @@
+/* Calendar + modal token bridge for industriesalon theme standards. */
+:root {
+  --site-color-bg: var(--iss-white, var(--wp--preset--color--vaporous-white, #f9f9fa));
+  --site-color-surface: color-mix(in srgb, var(--iss-grey, #c0b8b5) 10%, var(--site-color-bg));
+  --site-color-text: var(--iss-black, var(--wp--preset--color--eerie-black, #1e1e1e));
+  --site-color-text-muted: color-mix(in srgb, var(--site-color-text) 66%, transparent);
+  --site-color-text-inverse: var(--site-color-bg);
+  --site-color-accent: var(--iss-red, var(--wp--preset--color--scarlet-red, #e81d25));
+  --site-color-accent-hover: color-mix(in srgb, var(--site-color-accent) 84%, #000);
+  --site-color-border: var(--iss-border, rgba(30, 30, 30, 0.14));
+  --site-space-4: var(--iss-gap, 1.5rem);
+  --site-radius-s: var(--iss-radius-sm, 8px);
+  --site-radius-m: var(--iss-radius-md, 16px);
+  --site-shadow-card: var(--iss-shadow, 0 14px 40px rgba(0, 0, 0, 0.08));
+  --site-width-wide: var(--iss-content-width, 1720px);
+}
+
 .is-tour-calendar {
   width: min(var(--site-width-wide), calc(100% - 2rem));
   margin: clamp(2rem, 4vw, 3.5rem) auto;
@@ -144,6 +161,13 @@
   max-width: 100%;
 }
 
+.is-tour-calendar .flatpickr-innerContainer,
+.is-tour-calendar .flatpickr-rContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
 .is-tour-calendar .dayContainer {
   min-width: 0;
 }
@@ -159,6 +183,42 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+.is-tour-calendar .flatpickr-weekdays {
+  order: 1;
+  width: 100%;
+  margin: 0 0 0.45rem;
+  color: var(--site-color-text-muted);
+}
+
+.is-tour-calendar .flatpickr-weekdaycontainer {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  width: 100%;
+}
+
+.is-tour-calendar .flatpickr-weekday {
+  width: auto;
+  max-width: none;
+  text-align: center;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.is-tour-calendar .flatpickr-days {
+  order: 2;
+  margin-top: 0;
+}
+
+.is-tour-calendar .flatpickr-day {
+  border-radius: var(--site-radius-s);
+}
+
+.is-tour-calendar .flatpickr-day.flatpickr-disabled,
+.is-tour-calendar .flatpickr-day.notAllowed {
+  opacity: 0.35;
 }
 
 .is-tour-calendar .flatpickr-weekdays {
@@ -530,7 +590,8 @@
 .is-tour-calendar-modal {
   position: fixed;
   inset: 0;
-  z-index: 99999;
+  z-index: 2147483000;
+  isolation: isolate;
   display: grid;
   place-items: center;
   padding: 1.25rem;
@@ -543,19 +604,22 @@
 .is-tour-calendar-modal__overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  z-index: 1;
+  background: color-mix(in srgb, var(--site-color-text) 46%, transparent);
 }
 
 .is-tour-calendar-modal__panel {
   position: relative;
+  z-index: 2;
   width: min(640px, 100%);
   max-height: min(82vh, 900px);
   overflow: auto;
-  padding: 1rem;
+  padding: 1.25rem;
   background: var(--site-color-bg);
   border: 1px solid var(--site-color-border);
   border-radius: var(--site-radius-m);
   box-shadow: var(--site-shadow-card);
+  pointer-events: auto;
 }
 
 .is-tour-calendar-modal__close {

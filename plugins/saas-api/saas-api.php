@@ -1,18 +1,16 @@
 <?php
 /**
  * Plugin Name: SuperSaaS API
- * Description: Fetches filtered tour availability from SuperSaaS and renders an Ollie-friendly public calendar.
+ * Description: SuperSaaS data adapter: settings, sync, local slot storage, mapping, and booking REST endpoints.
  * Version: 1.2.0
  */
 
 if (!defined('ABSPATH')) exit;
 
-define('IS_SAAS_VERSION', '1.2.0');
 define('IS_SAAS_OPTION_GROUP', 'is_saas_options');
 define('IS_SAAS_OPTION_NAME', 'is_saas_settings');
 
 require_once __DIR__ . '/iss-calendar/iss-calendar.php';
-require_once __DIR__ . '/iss-timeline/iss-timeline.php';
 
 register_activation_hook(__FILE__, 'iss_calendar_activate_sync');
 register_deactivation_hook(__FILE__, 'iss_calendar_deactivate_sync');
@@ -138,6 +136,49 @@ function is_saas_build_slot_response($slot, $title, $start) {
     ];
 }
 
+function is_saas_resolve_calendar_item_title($item_id) {
+    $item_id = (int) $item_id;
+    if ($item_id <= 0) {
+        return '';
+    }
+
+    $source_post_id = (int) get_post_meta($item_id, 'source_post_id', true);
+    if ($source_post_id > 0) {
+        $linked_title = trim((string) get_the_title($source_post_id));
+        if ($linked_title !== '') {
+            return $linked_title;
+        }
+    }
+
+    return (string) get_the_title($item_id);
+}
+
+function is_saas_resolve_calendar_item_content_url($item_id) {
+    $item_id = (int) $item_id;
+    if ($item_id <= 0) {
+        return null;
+    }
+
+    if (function_exists('iss_calendar_get_item_source_permalink')) {
+        $source_link = (string) iss_calendar_get_item_source_permalink($item_id);
+        if ($source_link !== '') {
+            return $source_link;
+        }
+    }
+
+    $source_post_id = (int) get_post_meta($item_id, 'source_post_id', true);
+    if ($source_post_id <= 0) {
+        return null;
+    }
+
+    $source_link = get_permalink($source_post_id);
+    if (!is_string($source_link) || trim($source_link) === '') {
+        return null;
+    }
+
+    return $source_link;
+}
+
 function is_saas_field_schedule_id() {
     $settings = is_saas_get_settings();
     printf(
@@ -203,8 +244,6 @@ add_action('rest_api_init', function () {
 
 
 function is_tours_get_slots(WP_REST_Request $request) {
-    $settings = is_saas_get_settings();
-
     $tag = strtoupper(sanitize_text_field($request->get_param('tag')));
     $source_post_id = (int) $request->get_param('post_id');
 
@@ -215,7 +254,7 @@ function is_tours_get_slots(WP_REST_Request $request) {
         }
     }
 
-    if (!$tag) {
+    if (!$tag && $source_post_id <= 0) {
         // Return empty array (UI will show fallback link). Also signals the reason via header.
         $res = new WP_REST_Response(['source' => 'nomap', 'slots' => []], 200);
         $res->header('X-IS-Tours-Source', 'nomap');
@@ -224,23 +263,19 @@ function is_tours_get_slots(WP_REST_Request $request) {
         return $res;
     }
 
-	    $cache_key = 'is_tours_slots_' . md5($tag);
-	    $cached = get_transient($cache_key);
-	    if ($cached !== false) {
+    if ($tag !== '' && $source_post_id <= 0) {
+        $cache_key = 'is_tours_slots_' . md5($tag);
+        $cached = get_transient($cache_key);
+    } else {
+        $cached = false;
+    }
+
+    if ($cached !== false) {
         $cached_at = is_tours_get_cached_at_by_tag($tag);
         $source = is_tours_get_cached_source_by_tag($tag);
         if ($source === '' || $source === 'cache') {
-            $source = 'saas';
-            if (is_array($cached)) {
-                foreach ($cached as $row) {
-                    if (!is_array($row)) continue;
-                    if (array_key_exists('booking_url', $row) && $row['booking_url']) {
-                        $source = 'cpt';
-                        break;
-                    }
-                }
-            }
-            is_tours_set_cached_source_by_tag($tag, $source, 60 * 60 * 6);
+            $source = 'cpt';
+            is_tours_set_cached_source_by_tag($tag, $source, 60 * 10);
         }
         $payload = ['source' => $source, 'slots' => is_array($cached) ? $cached : []];
         $etag = is_tours_build_etag($payload);
@@ -260,26 +295,29 @@ function is_tours_get_slots(WP_REST_Request $request) {
         return $res;
 	    }
 
-    if (!function_exists('iss_calendar_get_slots_with_fallback')) {
+    if (
+        !function_exists('iss_calendar_get_slots_fallback_for_tag')
+        && !function_exists('iss_calendar_get_items_for_post')
+    ) {
         return new WP_REST_Response([
             'error' => 'Calendar module missing',
         ], 500);
     }
 
-    $result = iss_calendar_get_slots_with_fallback($tag, $settings);
-    $slots = isset($result['slots']) && is_array($result['slots']) ? $result['slots'] : [];
-    $source = isset($result['source']) ? (string) $result['source'] : 'unknown';
-    $err = isset($result['error']) ? $result['error'] : null;
+    $slots = is_tours_get_cpt_slots($tag, $source_post_id);
+    $source = 'cpt';
 
     if (!empty($slots)) {
-        $ttl = ($source === 'saas') ? (60 * 60 * 6) : (60 * 10);
-        is_tours_set_cached_slots_by_tag($tag, $slots, $ttl);
-        is_tours_set_cached_source_by_tag($tag, $source, $ttl);
+        if ($tag !== '') {
+            $ttl = 60 * 10;
+            is_tours_set_cached_slots_by_tag($tag, $slots, $ttl);
+            is_tours_set_cached_source_by_tag($tag, $source, $ttl);
+        }
 
         $payload = ['source' => $source, 'slots' => $slots];
         $etag = is_tours_build_etag($payload);
-        $cached_at = is_tours_get_cached_at_by_tag($tag);
-        $max_age = ($source === 'saas') ? 300 : 60;
+        $cached_at = $tag !== '' ? is_tours_get_cached_at_by_tag($tag) : 0;
+        $max_age = 60;
         $maybe = is_tours_maybe_304($request, $etag, $cached_at, $max_age);
         if ($maybe) {
             $maybe->header('X-IS-Tours-Source', $source);
@@ -302,173 +340,11 @@ function is_tours_get_slots(WP_REST_Request $request) {
         return $res;
     }
 
-    if ($err instanceof WP_Error) {
-        return new WP_REST_Response([
-            'source' => 'error',
-            'slots' => [],
-            'error' => 'Availability fetch failed',
-            'fallback' => true,
-            'details' => $err->get_error_message(),
-        ], 502);
-    }
-
     $res = new WP_REST_Response(['source' => $source, 'slots' => []], 200);
     $res->header('X-IS-Tours-Source', $source);
     $res->header('Cache-Control', 'no-store');
     return $res;
 }
-
-function is_saas_register_frontend_assets() {
-    wp_register_style(
-        'is-tour-calendar-flatpickr',
-        plugin_dir_url(__FILE__) . 'vendor/flatpickr/flatpickr.min.css',
-        [],
-        '4.6.13'
-    );
-
-    wp_register_script(
-        'is-tour-calendar-flatpickr',
-        plugin_dir_url(__FILE__) . 'vendor/flatpickr/flatpickr.min.js',
-        [],
-        '4.6.13',
-        true
-    );
-
-    wp_register_script(
-        'is-tour-calendar-flatpickr-l10n-de',
-        plugin_dir_url(__FILE__) . 'vendor/flatpickr/l10n/de.js',
-        ['is-tour-calendar-flatpickr'],
-        '4.6.13',
-        true
-    );
-
-    wp_register_script(
-        'is-tour-calendar',
-        plugin_dir_url(__FILE__) . 'saas-api.js',
-        ['is-tour-calendar-flatpickr', 'is-tour-calendar-flatpickr-l10n-de'],
-        IS_SAAS_VERSION,
-        true
-    );
-
-    wp_register_style(
-        'is-tour-calendar',
-        plugin_dir_url(__FILE__) . 'saas-api.css',
-        [],
-        IS_SAAS_VERSION
-    );
-
-    wp_register_style(
-        'iss-timeline',
-        plugin_dir_url(__FILE__) . 'iss-timeline/timeline.css',
-        [],
-        IS_SAAS_VERSION
-    );
-
-    wp_add_inline_script(
-        'is-tour-calendar',
-        'window.IS_TOUR_CALENDAR = ' . wp_json_encode([
-            'restUrl' => rest_url('is-tours/v1/slots'),
-        ]) . ';',
-        'before'
-    );
-
-    wp_add_inline_script(
-        'is-tour-calendar',
-        'window.IS_TOUR_CALENDAR = Object.assign({}, window.IS_TOUR_CALENDAR, {' .
-        '"bookUrl": ' . wp_json_encode(rest_url('is-tours/v1/book')) .
-        '});',
-        'after'
-    );
-}
-add_action('wp_enqueue_scripts', 'is_saas_register_frontend_assets');
-
-function is_saas_enqueue_calendar_assets() {
-    if (!wp_style_is('is-tour-calendar-flatpickr', 'registered')) {
-        is_saas_register_frontend_assets();
-    }
-
-    wp_enqueue_style('is-tour-calendar-flatpickr');
-    wp_enqueue_style('is-tour-calendar');
-    wp_enqueue_script('is-tour-calendar-flatpickr');
-    wp_enqueue_script('is-tour-calendar-flatpickr-l10n-de');
-    wp_enqueue_script('is-tour-calendar');
-}
-
-function is_saas_enqueue_timeline_assets() {
-    if (!wp_style_is('iss-timeline', 'registered')) {
-        is_saas_register_frontend_assets();
-    }
-
-    wp_enqueue_style('iss-timeline');
-}
-
-	add_shortcode('is_tour_calendar', function ($atts) {
-	    $atts = shortcode_atts([
-	        'tag'          => '',
-	        'title'        => 'Termine wählen',
-	        'fallback_url' => '',
-	    ], $atts);
-
-        is_saas_enqueue_calendar_assets();
-
-	    $tag = esc_attr(strtoupper($atts['tag']));
-	    $title = esc_html($atts['title']);
-	    $fallback = esc_url($atts['fallback_url']);
-	    $source_post_id = get_the_ID();
-	    $source_post_type = $source_post_id ? get_post_type($source_post_id) : '';
-	    if (!$source_post_id) {
-	        $source_post_id = '';
-	    }
-	    $slot_select_id = 'is-tour-slot-' . sanitize_key($tag) . '-' . wp_rand(1000, 9999);
-
-	    iss_calendar_remember_source_mapping($tag, $fallback, $source_post_id, $source_post_type);
-
-	    ob_start();
-	    ?>
-	    <section class="is-tour-calendar wp-block-group alignwide has-global-padding is-layout-constrained" data-tag="<?php echo $tag; ?>" data-fallback="<?php echo $fallback; ?>" data-source-post-id="<?php echo esc_attr($source_post_id); ?>" data-source-post-type="<?php echo esc_attr($source_post_type); ?>">
-	        <div class="is-tour-calendar__inner wp-block-group is-layout-constrained">
-	            <div class="is-tour-calendar__header wp-block-group is-layout-constrained">
-	                <p class="is-tour-calendar__eyebrow has-small-font-size">Kalender</p>
-	                <h3 class="is-tour-calendar__heading wp-block-heading"><?php echo $title; ?></h3>
-	                <p class="is-tour-calendar__status has-small-font-size">Termine werden geladen …</p>
-	                <?php if (!empty($fallback)) : ?>
-	                    <p class="is-tour-calendar__fallback has-small-font-size">
-	                        <a class="is-tour-calendar__fallback-link" href="<?php echo esc_url($fallback); ?>">Direkt buchen</a>
-	                    </p>
-	                <?php endif; ?>
-	            </div>
-
-		            <div class="is-tour-calendar__layout">
-		                <div class="is-tour-calendar__calendar">
-		                    <input type="text" class="is-tour-calendar__date-input" aria-label="Datum auswählen" />
-
-		                    <div class="is-tour-calendar__slots-panel">
-		                        <p class="is-tour-calendar__selected-date has-small-font-size">Bitte wählen Sie einen Tag.</p>
-		                        <div class="is-tour-calendar__appointments">
-		                            <p class="is-tour-calendar__appointments-title">
-		                                <span class="is-tour-calendar__appointments-title-label">Verfügbare Termine am</span>
-		                                <span class="is-tour-calendar__appointments-title-date"></span>
-		                            </p>
-		                            <div class="is-tour-calendar__appointments-divider" aria-hidden="true"></div>
-		                            <div class="is-tour-calendar__appointments-list"></div>
-		                        </div>
-		                        <div class="is-tour-calendar__slot-select-wrap">
-		                            <label class="is-tour-calendar__slot-label" for="<?php echo esc_attr($slot_select_id); ?>">
-		                                Uhrzeit
-		                            </label>
-		                            <select id="<?php echo esc_attr($slot_select_id); ?>" class="is-tour-calendar__slot-select" disabled>
-		                                <option value="">Bitte zuerst ein Datum wählen</option>
-		                            </select>
-		                        </div>
-		                        <div class="is-tour-calendar__booking"></div>
-		                    </div>
-		                </div>
-		            </div>
-		        </div>
-		    </section>
-	    <?php
-    return ob_get_clean();
-});
 
 /**
  * Return cached slots for a given tag, or an empty array when not cached.
@@ -631,6 +507,62 @@ function is_tours_get_next_slot($tag) {
     return null;
 }
 
+function is_tours_get_cpt_slots($tag, $source_post_id = 0) {
+    $tag = strtoupper(sanitize_text_field((string) $tag));
+    $source_post_id = (int) $source_post_id;
+
+    if ($source_post_id > 0 && function_exists('iss_calendar_get_items_for_post')) {
+        $items = iss_calendar_get_items_for_post($source_post_id, [
+            'public_only' => true,
+            'future_only' => true,
+            'limit' => 250,
+        ]);
+
+        $slots = [];
+        foreach ($items as $item) {
+            if (!($item instanceof WP_Post)) {
+                continue;
+            }
+
+            $item_id = (int) $item->ID;
+            $external_id = trim((string) get_post_meta($item_id, 'external_id', true));
+            $start = trim((string) get_post_meta($item_id, 'event_start', true));
+            if ($external_id === '' || $start === '') {
+                continue;
+            }
+
+            $end = trim((string) get_post_meta($item_id, 'event_end', true));
+            $end = $end !== '' ? $end : null;
+            $cap_raw = get_post_meta($item_id, 'capacity_total', true);
+            $avail_raw = get_post_meta($item_id, 'capacity_available', true);
+
+            $capacity = ($cap_raw === '' || $cap_raw === null) ? null : (int) $cap_raw;
+            $available = ($avail_raw === '' || $avail_raw === null) ? null : (int) $avail_raw;
+            $booking_url = trim((string) get_post_meta($item_id, 'booking_url', true));
+
+            $slots[] = [
+                'id' => (string) $external_id,
+                'title' => is_saas_resolve_calendar_item_title($item_id),
+                'start' => $start,
+                'end' => $end,
+                'capacity' => $capacity,
+                'available' => $available,
+                'booking_url' => $booking_url !== '' ? $booking_url : null,
+                'content_url' => is_saas_resolve_calendar_item_content_url($item_id),
+            ];
+        }
+
+        return $slots;
+    }
+
+    if ($tag !== '' && function_exists('iss_calendar_get_slots_fallback_for_tag')) {
+        $fallback = iss_calendar_get_slots_fallback_for_tag($tag);
+        return is_array($fallback) ? $fallback : [];
+    }
+
+    return [];
+}
+
 function is_tours_create_booking(WP_REST_Request $request) {
     $payload = json_decode($request->get_body(), true);
     if (!is_array($payload)) {
@@ -671,15 +603,16 @@ function is_tours_create_booking(WP_REST_Request $request) {
     if (!in_array($payment, ['onsite', 'mollie'], true)) { $errors[] = 'Ungültige Zahlungsart.'; }
     if ($tag === '' && $source_post_id <= 0) { $errors[] = 'Keine Zuordnung vorhanden.'; }
 
-    if ($tag !== '') {
-        $slots = is_tours_get_cached_slots_by_tag($tag);
-        if (empty($slots) && function_exists('iss_calendar_get_slots_fallback_for_tag')) {
-            $fallback_slots = iss_calendar_get_slots_fallback_for_tag($tag);
-            if (!empty($fallback_slots)) {
-                // Prime cache from CPT fallback so the rest of the code path can reuse it.
-                is_tours_set_cached_slots_by_tag($tag, $fallback_slots, 60 * 10);
+    if ($tag !== '' || $source_post_id > 0) {
+        $slots = [];
+        if ($tag !== '') {
+            $slots = is_tours_get_cached_slots_by_tag($tag);
+        }
+        if (empty($slots)) {
+            $slots = is_tours_get_cpt_slots($tag, $source_post_id);
+            if ($tag !== '' && !empty($slots)) {
+                is_tours_set_cached_slots_by_tag($tag, $slots, 60 * 10);
                 is_tours_set_cached_source_by_tag($tag, 'cpt', 60 * 10);
-                $slots = $fallback_slots;
             }
         }
 
@@ -696,28 +629,7 @@ function is_tours_create_booking(WP_REST_Request $request) {
                 $errors[] = 'Slot ist ausgebucht.';
             }
         } else {
-            // If the live API/cache is empty (e.g. API down), allow CPT-backed slots too.
-            $settings = is_saas_get_settings();
-            $source_calendar = is_saas_get_schedule_path($settings);
-            if ($source_calendar === '') {
-                $source_calendar = (string) ($settings['schedule_id'] ?? '');
-            }
-
-            if (function_exists('iss_calendar_find_item_post_id') && $source_calendar !== '') {
-                $slot_post_id = iss_calendar_find_item_post_id($slot_id, $source_calendar);
-                if ($slot_post_id) {
-                    if ($source_post_id > 0) {
-                        $slot_source_post_id = (int) get_post_meta($slot_post_id, 'source_post_id', true);
-                        if ($slot_source_post_id > 0 && $slot_source_post_id !== $source_post_id) {
-                            $errors[] = 'Ungültiger Slot.';
-                        }
-                    }
-                    $avail_raw = get_post_meta($slot_post_id, 'capacity_available', true);
-                    if ($avail_raw !== '' && $avail_raw !== null && (int) $avail_raw <= 0) {
-                        $errors[] = 'Slot ist ausgebucht.';
-                    }
-                }
-            }
+            $errors[] = 'Ungültiger Slot.';
         }
     }
 

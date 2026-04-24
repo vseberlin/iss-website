@@ -5,6 +5,25 @@ function iss_timeline_get_now_mysql() {
     return current_time('mysql');
 }
 
+function iss_timeline_get_future_horizon_months() {
+    $months = (int) apply_filters('iss_timeline_future_horizon_months', 6);
+    if ($months < 1) {
+        $months = 1;
+    }
+    return $months;
+}
+
+function iss_timeline_get_future_horizon_end_mysql() {
+    try {
+        $tz = wp_timezone();
+        $now = new DateTimeImmutable('now', $tz);
+        $end = $now->modify('+' . iss_timeline_get_future_horizon_months() . ' months');
+        return $end->format('Y-m-d H:i:s');
+    } catch (Throwable $e) {
+        return current_time('mysql');
+    }
+}
+
 function iss_timeline_build_visibility_meta_query() {
     // Visible items only.
     // Back-compat: if `is_visible` is not set, fall back to `is_public`.
@@ -84,7 +103,7 @@ function iss_timeline_get_items_advanced($args = []) {
         'limit' => 50,
         'order' => 'ASC',
         'group' => '',
-        'range' => 'all', // all|future|past
+        'range' => 'future', // all|future|past
         'month' => '', // YYYY-MM
         'type' => '',  // all|fuehrungen|veranstaltungen|...
     ];
@@ -105,6 +124,12 @@ function iss_timeline_get_items_advanced($args = []) {
             'key' => 'sort_date',
             'value' => iss_timeline_get_now_mysql(),
             'compare' => '>=',
+            'type' => 'DATETIME',
+        ];
+        $meta_query[] = [
+            'key' => 'sort_date',
+            'value' => iss_timeline_get_future_horizon_end_mysql(),
+            'compare' => '<=',
             'type' => 'DATETIME',
         ];
     } elseif ($range === 'past') {
@@ -163,4 +188,3 @@ function iss_timeline_get_items_advanced($args = []) {
     $q = new WP_Query($query_args);
     return $q->posts;
 }
-

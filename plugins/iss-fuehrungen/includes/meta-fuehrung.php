@@ -40,15 +40,6 @@ function iss_fuehrungen_meta_fields() {
             },
             'default' => 'auto',
         ],
-        'calendar_tag' => [
-            'type' => 'string',
-            'sanitize' => static function ($value) {
-                $value = strtoupper(sanitize_text_field((string) $value));
-                $value = preg_replace('/[^A-Z0-9_-]+/', '', $value);
-                return trim((string) $value);
-            },
-            'default' => '',
-        ],
         'allow_on_demand_with_calendar' => [
             'type' => 'boolean',
             'sanitize' => static function ($value) {

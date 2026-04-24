@@ -9,38 +9,38 @@
 
 ## Branch / Commit
 - Branch: `master`
-- HEAD at handoff write: `eda3876`
+- HEAD at handoff write: `0407f4f`
 
 ## What Was Done This Session
-- Added section surface contract and usage docs:
-  - `themes/industriesalon/style.css`
-  - `themes/industriesalon/zebra.md`
-  - committed as `9e71f7d`.
-- Implemented tour booking mapping workflow in plugin:
-  - reintroduced `calendar_tag` as structured tour meta,
-  - added non-technical tag selection UI with source-map suggestions,
-  - on tour save: sync map + attempt relink of matching calendar series,
-  - committed as `eda3876`.
-- Added admin warning in tour edit screen:
-  - warns if booking mode expects calendar (`calendar|hybrid`) but no linked future dates are found.
-  - file: `plugins/iss-fuehrungen/includes/admin-fuehrung.php`.
+- Continued plugin-stack refactor and moved runtime calendar/timeline rendering to `plugins/iss-programm`.
+- Removed stale legacy dynamic block runtime in `plugins/saas-api` and aligned active dynamic blocks in `iss-programm`.
+- Stabilized CPT-first workflow for booking and timeline:
+  - `saas-api` REST now serves slots from local CPT flow.
+  - sync horizon remains extended (future months) and sync preserves editorial/link mappings.
+- Improved mapping model and editorial UX:
+  - entry→content dropdown mapping in timeline editor,
+  - hides manual public fields when content mapping exists,
+  - mapping save now propagates to series and updates source/series map consistently.
+- Fixed linked-content behavior:
+  - calendar/timeline prefer linked content title when `source_post_id` exists,
+  - slot payload includes `content_url`,
+  - calendar date labels can link directly to mapped content.
+- Removed temporary redirect-based behavior; system now relies on persisted CPT mapping only.
+- Refreshed active front-page template (`wp_template` / front-page) to current disk template and validated timeline block renders from CPT data.
 
 ## Runtime Verification Snapshot
-- Active theme verified previously in this environment: `industriesalon` (`1.1.0`).
-- `iss_calendar_source_map` currently includes:
-  - `ELEKTRO -> source_post_id 12183` (`fuehrung`).
-- Frontend for `/fuehrungen/elektropolis-tour/` currently shows no linked future dates in booking panel (warning logic intentionally surfaces this state in admin).
+- Active theme: `industriesalon` (`1.1.0`).
+- Active plugins include: `saas-api`, `iss-programm`, `iss-fuehrungen`, `industriesalon-steuerung`.
+- `is-tours/v1/slots?post_id=12183` returns CPT-backed slots with linked content URL.
+- Front page timeline block renders upcoming CPT items.
 
 ## Open Item (Important)
-- Calendar items are currently mostly `source_post_id=0` in DB snapshots; mapping exists but linkage is not consistently materialized.
-- Next session should resolve linking persistence at source of truth (sync import path in `saas-api`), not only at tour save side effects.
+- Existing rows that were mapped before latest save-hook propagation may need one manual re-save of the mapping on affected entries to trigger series relink with current logic.
 
 ## Suggested Next Step
-1. Diagnose why sync writes `source_post_id=0` despite `iss_calendar_source_map` being populated for `ELEKTRO`.
-2. Fix import/linking in `plugins/saas-api/iss-calendar/includes/calendar-sync.php`.
-3. Run manual sync and verify:
-   - linked rows for `tour:elektropolis`,
-   - single page booking panel shows next date again.
+1. In timeline/editor mapping UI, re-save affected linked entries once.
+2. Trigger sync and verify both single tour page calendar + front page timeline reflect identical linked CPT source.
+3. Optional: add a small admin action for explicit "relink this series now" to avoid manual re-save.
 
 ## Continuity Prompt
 - Start next session with: `read /home/vladimir/wp/handoff_CURRENT.md`.

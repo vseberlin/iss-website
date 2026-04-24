@@ -362,8 +362,8 @@ function iss_timeline_render_items_list($items, $opts = []) {
 }
 
 function iss_timeline_render($attributes = [], $content = '', $block = null) {
-    if (function_exists('is_saas_enqueue_timeline_assets')) {
-        is_saas_enqueue_timeline_assets();
+    if (function_exists('iss_programm_enqueue_timeline_assets')) {
+        iss_programm_enqueue_timeline_assets();
     }
 
     $attributes = is_array($attributes) ? $attributes : [];
@@ -373,7 +373,7 @@ function iss_timeline_render($attributes = [], $content = '', $block = null) {
     $yearGrouping = array_key_exists('yearGrouping', $attributes) ? (bool) $attributes['yearGrouping'] : true;
 
     $items = function_exists('iss_timeline_get_items_advanced')
-        ? iss_timeline_get_items_advanced(['limit' => $limit, 'order' => 'ASC', 'group' => $group])
+        ? iss_timeline_get_items_advanced(['limit' => $limit, 'order' => 'ASC', 'group' => $group, 'range' => 'future'])
         : [];
     $render_opts = iss_timeline_build_render_options($attributes);
 
@@ -402,8 +402,8 @@ function iss_timeline_render($attributes = [], $content = '', $block = null) {
 }
 
 function iss_timeline_render_latest($attributes = [], $content = '', $block = null) {
-    if (function_exists('is_saas_enqueue_timeline_assets')) {
-        is_saas_enqueue_timeline_assets();
+    if (function_exists('iss_programm_enqueue_timeline_assets')) {
+        iss_programm_enqueue_timeline_assets();
     }
 
     $attributes = is_array($attributes) ? $attributes : [];
@@ -472,8 +472,8 @@ function iss_timeline_collect_future_month_options($horizon_months = 12) {
 }
 
 function iss_timeline_render_sections($attributes = [], $content = '', $block = null) {
-    if (function_exists('is_saas_enqueue_timeline_assets')) {
-        is_saas_enqueue_timeline_assets();
+    if (function_exists('iss_programm_enqueue_timeline_assets')) {
+        iss_programm_enqueue_timeline_assets();
     }
 
     $attributes = is_array($attributes) ? $attributes : [];
@@ -528,7 +528,10 @@ function iss_timeline_render_sections($attributes = [], $content = '', $block = 
     $out .= '<div class="iss-timeline__section iss-timeline__section--monthly">';
     $out .= '<' . $section_heading_tag . ' class="iss-timeline__section-title">' . esc_html($monthly_title) . '</' . $section_heading_tag . '>';
 
-    $months = iss_timeline_collect_future_month_options(18);
+    $horizon_months = function_exists('iss_timeline_get_future_horizon_months')
+        ? iss_timeline_get_future_horizon_months()
+        : 6;
+    $months = iss_timeline_collect_future_month_options($horizon_months);
     $out .= '<form class="iss-timeline__filters" method="get">';
     foreach ($_GET as $k => $v) {
         $k = (string) $k;

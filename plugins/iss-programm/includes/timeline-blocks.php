@@ -24,4 +24,5 @@ add_action('init', function () {
             'render_callback' => 'iss_timeline_render_latest',
         ]);
     }
+
 });

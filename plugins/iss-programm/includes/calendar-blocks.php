@@ -19,4 +19,5 @@ add_action('init', function () {
             'render_callback' => 'iss_render_tour_calendar',
         ]);
     }
+
 });

@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+  initExternalBookingTriggers();
+
   document.querySelectorAll('.is-tour-calendar').forEach(async (widget) => {
     let tag = widget.dataset.tag;
     const fallbackUrl = widget.dataset.fallback;
@@ -40,9 +42,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      const query = tag
-        ? `tag=${encodeURIComponent(tag)}`
-        : `post_id=${encodeURIComponent(sourcePostId)}`;
+      const params = new URLSearchParams();
+      if (tag) {
+        params.set('tag', tag);
+      }
+      if (sourcePostId) {
+        params.set('post_id', sourcePostId);
+      }
+      const query = params.toString();
 
       const res = await fetch(`${restUrl}?${query}`, {
         credentials: 'same-origin'
@@ -626,4 +633,81 @@ function createBookingForm(widget, slot) {
   });
 
   return wrap;
+}
+
+function initExternalBookingTriggers() {
+  const root = document.documentElement;
+  if (root.dataset.isTourBookingTriggersBound === '1') {
+    return;
+  }
+  root.dataset.isTourBookingTriggersBound = '1';
+
+  document.addEventListener('click', (event) => {
+    const trigger = event.target && event.target.closest
+      ? event.target.closest('.js-is-tour-slot-trigger')
+      : null;
+
+    if (!trigger) {
+      return;
+    }
+
+    const slotId = String(trigger.dataset.slotId || '').trim();
+    const start = String(trigger.dataset.start || '').trim();
+    if (!slotId || !start) {
+      return;
+    }
+
+    const widget = resolveBookingWidget(trigger);
+    if (!widget) {
+      return;
+    }
+
+    event.preventDefault();
+
+    const sourcePostId = String(trigger.dataset.sourcePostId || '').trim();
+    const sourcePostType = String(trigger.dataset.sourcePostType || '').trim();
+    if (sourcePostId) {
+      widget.dataset.sourcePostId = sourcePostId;
+    }
+    if (sourcePostType) {
+      widget.dataset.sourcePostType = sourcePostType;
+    }
+
+    const slot = {
+      id: slotId,
+      start,
+      title: String(trigger.dataset.title || ''),
+      available: null,
+      capacity: null
+    };
+
+    const parsedStart = parseDate(start);
+    if (parsedStart) {
+      slot._date = parsedStart;
+    }
+
+    openBookingForm(widget, slot, trigger);
+  });
+}
+
+function resolveBookingWidget(trigger) {
+  const targetSelector = String(trigger.dataset.calendarTarget || '').trim();
+  if (targetSelector) {
+    try {
+      const target = document.querySelector(targetSelector);
+      if (target) {
+        return target;
+      }
+    } catch {}
+  }
+
+  const scope = trigger.closest('.iss-tour-page, main, article');
+  if (scope && scope.querySelector) {
+    const inScope = scope.querySelector('.is-tour-calendar');
+    if (inScope) {
+      return inScope;
+    }
+  }
+
+  return document.querySelector('.is-tour-calendar');
 }

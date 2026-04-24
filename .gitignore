@@ -9,6 +9,10 @@
 !/themes/industriesalon/
 !/themes/industriesalon/**
 
-# Keep only the SaaS API plugin.
+# Keep only selected plugin paths for this repo snapshot.
+!/plugins/
+/plugins/*
+!/plugins/iss-programm/
+!/plugins/iss-programm/**
 
 # Keep themes (note: `themes/` is its own git repo here).

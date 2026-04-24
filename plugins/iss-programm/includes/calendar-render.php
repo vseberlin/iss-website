@@ -2,6 +2,49 @@
 
 if (!defined('ABSPATH')) exit;
 
+function iss_programm_calendar_item_display_title($item_id) {
+    $item_id = (int) $item_id;
+    if ($item_id <= 0) {
+        return '';
+    }
+
+    $source_post_id = (int) get_post_meta($item_id, 'source_post_id', true);
+    if ($source_post_id > 0) {
+        $linked_title = trim((string) get_the_title($source_post_id));
+        if ($linked_title !== '') {
+            return $linked_title;
+        }
+    }
+
+    return (string) get_the_title($item_id);
+}
+
+function iss_programm_calendar_item_content_url($item_id) {
+    $item_id = (int) $item_id;
+    if ($item_id <= 0) {
+        return '';
+    }
+
+    if (function_exists('iss_calendar_get_item_source_permalink')) {
+        $source_link = (string) iss_calendar_get_item_source_permalink($item_id);
+        if ($source_link !== '') {
+            return $source_link;
+        }
+    }
+
+    $source_post_id = (int) get_post_meta($item_id, 'source_post_id', true);
+    if ($source_post_id <= 0) {
+        return '';
+    }
+
+    $source_link = get_permalink($source_post_id);
+    if (!is_string($source_link) || trim($source_link) === '') {
+        return '';
+    }
+
+    return $source_link;
+}
+
 /**
  * Normalize one event into readable frontend data.
  *
@@ -46,7 +89,7 @@ function iss_calendar_prepare_item($item_id) {
 
     return [
         'id' => $item_id,
-        'title' => get_the_title($item_id),
+        'title' => iss_programm_calendar_item_display_title($item_id),
         'start_raw' => $start,
         'end_raw' => $end,
         'date_label' => $start_ts ? wp_date('j. F Y', $start_ts) : '',
@@ -55,6 +98,7 @@ function iss_calendar_prepare_item($item_id) {
         'availability' => $availability,
         'available' => $available,
         'booking_url' => $booking_url,
+        'content_url' => iss_programm_calendar_item_content_url($item_id),
         'note' => $note,
         'start_ts' => $start_ts,
         'end_ts' => $end_ts,
@@ -93,6 +137,7 @@ function iss_calendar_render_dates($attributes = [], $content = '') {
     if ($post_id <= 0) {
         return '';
     }
+    $post_type = (string) get_post_type($post_id);
 
     $items = iss_calendar_get_items_for_post($post_id, [
         'public_only' => true,
@@ -124,17 +169,36 @@ function iss_calendar_render_dates($attributes = [], $content = '') {
         $data = iss_calendar_prepare_item($item->ID);
         $label = isset($data['datetime_label']) ? (string) $data['datetime_label'] : '';
         if ($label === '') {
-            $label = get_the_title($item->ID);
+            $label = isset($data['title']) ? (string) $data['title'] : '';
         }
 
         $booking_url = isset($data['booking_url']) ? (string) $data['booking_url'] : '';
         $is_sold_out = isset($data['availability']) && (string) $data['availability'] === 'sold_out';
+        $slot_id = trim((string) get_post_meta($item->ID, 'external_id', true));
+        $slot_start = isset($data['start_raw']) ? trim((string) $data['start_raw']) : '';
+        $slot_title = isset($data['title']) ? trim((string) $data['title']) : '';
 
         $out .= '<li class="iss-tour-dates__item">';
-        $out .= '<span class="iss-tour-dates__label">' . esc_html($label) . '</span>';
+        $content_url = isset($data['content_url']) ? trim((string) $data['content_url']) : '';
+        if ($content_url !== '') {
+            $out .= '<a class="iss-tour-dates__label" href="' . esc_url($content_url) . '">' . esc_html($label) . '</a>';
+        } else {
+            $out .= '<span class="iss-tour-dates__label">' . esc_html($label) . '</span>';
+        }
 
         if ($booking_url !== '') {
-            $out .= ' <a class="iss-tour-dates__link" href="' . esc_url($booking_url) . '">';
+            $link_classes = 'iss-tour-dates__link';
+            $link_attrs = '';
+            if ($slot_id !== '' && $slot_start !== '') {
+                $link_classes .= ' js-is-tour-slot-trigger';
+                $link_attrs .= ' data-slot-id="' . esc_attr($slot_id) . '"';
+                $link_attrs .= ' data-start="' . esc_attr($slot_start) . '"';
+                $link_attrs .= ' data-title="' . esc_attr($slot_title) . '"';
+                $link_attrs .= ' data-source-post-id="' . esc_attr((string) $post_id) . '"';
+                $link_attrs .= ' data-source-post-type="' . esc_attr($post_type) . '"';
+            }
+
+            $out .= ' <a class="' . esc_attr($link_classes) . '" href="' . esc_url($booking_url) . '"' . $link_attrs . '>';
             $out .= $is_sold_out ? esc_html__('Ausgebucht', 'iss-calendar') : esc_html__('Buchen', 'iss-calendar');
             $out .= '</a>';
         }
@@ -158,6 +222,10 @@ function iss_calendar_render_dates($attributes = [], $content = '') {
 function iss_render_tour_calendar($attributes = [], $content = '') {
     $attributes = is_array($attributes) ? $attributes : [];
 
+    if (function_exists('iss_programm_enqueue_calendar_assets')) {
+        iss_programm_enqueue_calendar_assets();
+    }
+
     $title = isset($attributes['title']) ? sanitize_text_field((string) $attributes['title']) : 'Termine wählen';
     $fallback_url = isset($attributes['fallbackUrl']) ? esc_url_raw((string) $attributes['fallbackUrl']) : '';
 
@@ -178,8 +246,8 @@ function iss_render_tour_calendar($attributes = [], $content = '') {
         }
     }
 
-    if ($tag === '') {
-        // Can't render an interactive calendar without a tag.
+    if ($tag === '' && $post_id <= 0) {
+        // Can't render an interactive calendar without a tag or source post.
         $attrs = function_exists('get_block_wrapper_attributes')
             ? get_block_wrapper_attributes([
                 'class' => 'is-tour-calendar wp-block-group alignwide has-global-padding is-layout-constrained',
@@ -194,7 +262,7 @@ function iss_render_tour_calendar($attributes = [], $content = '') {
         return '<div ' . $attrs . '><p class="is-tour-calendar__status has-small-font-size">' . $msg . $link . '</p></div>';
     }
 
-    if (function_exists('iss_calendar_remember_source_mapping')) {
+    if ($tag !== '' && function_exists('iss_calendar_remember_source_mapping')) {
         iss_calendar_remember_source_mapping($tag, $fallback_url, $post_id, $post_type);
     }
 

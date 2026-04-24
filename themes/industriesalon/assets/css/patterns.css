@@ -652,12 +652,12 @@
 /* .wp-block-cover: Base class for wp block cover; apply on primary wrapper/scope. */
 /* .iss-front-hero: Base class for iss front hero; apply on primary wrapper/scope. */
 .home .wp-block-cover.iss-front-hero {
-  --iss-hero-min-h: 100svh;
+  --iss-hero-min-h: 80svh;
   --iss-hero-pad-bottom: clamp(2rem, 5vh, 4rem);
   --iss-hero-left-pad: max(var(--iss-container-pad), calc((100vw - var(--iss-content-width)) / 2 + var(--iss-container-pad)));
   --iss-hero-right-pad: clamp(0.75rem, 2.2vw, 2.25rem);
   --iss-banner-shift-x: -400px;
-  --iss-banner-shift-y: -200px;
+  --iss-banner-shift-y: 140px;
   --iss-hero-overlay: linear-gradient(
     90deg,
     rgba(30, 30, 30, 0.78) 0%,
@@ -672,12 +672,12 @@
   overflow: visible;
 }
 
-@supports (min-height: 100dvh) {
+@supports (min-height: 80dvh) {
 /* .home: Base class for home; apply on primary wrapper/scope. */
 /* .wp-block-cover: Base class for wp block cover; apply on primary wrapper/scope. */
 /* .iss-front-hero: Base class for iss front hero; apply on primary wrapper/scope. */
   .home .wp-block-cover.iss-front-hero {
-    --iss-hero-min-h: 100dvh;
+    --iss-hero-min-h: 80dvh;
   }
 }
 

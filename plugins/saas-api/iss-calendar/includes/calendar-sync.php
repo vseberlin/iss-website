@@ -5,30 +5,6 @@ if (!defined('ABSPATH')) exit;
 define('ISS_CALENDAR_SYNC_HOOK', 'iss_calendar_cron_sync');
 define('ISS_CALENDAR_LAST_SYNC_OPTION', 'iss_calendar_last_sync_at');
 
-add_action('admin_menu', function () {
-    add_management_page(
-        'SaaS Calendar Sync',
-        'SaaS Calendar Sync',
-        'manage_options',
-        'iss-calendar-sync',
-        'iss_calendar_render_sync_page'
-    );
-});
-
-add_action('admin_post_iss_calendar_sync', function () {
-    if (!current_user_can('manage_options')) {
-        wp_die('Not allowed.');
-    }
-
-    check_admin_referer('iss_calendar_sync');
-
-    $result = iss_calendar_sync_supersaas_to_cpt();
-    set_transient('iss_calendar_sync_result', $result, 60);
-
-    wp_safe_redirect(admin_url('tools.php?page=iss-calendar-sync'));
-    exit;
-});
-
 add_action(ISS_CALENDAR_SYNC_HOOK, function () {
     iss_calendar_sync_supersaas_to_cpt();
 });
@@ -44,82 +20,6 @@ function iss_calendar_deactivate_sync() {
     if ($ts) {
         wp_unschedule_event($ts, ISS_CALENDAR_SYNC_HOOK);
     }
-}
-
-function iss_calendar_render_sync_page() {
-    if (!current_user_can('manage_options')) return;
-
-    $result = get_transient('iss_calendar_sync_result');
-    if ($result !== false) {
-        delete_transient('iss_calendar_sync_result');
-    }
-
-    $map = function_exists('iss_calendar_get_source_map') ? iss_calendar_get_source_map() : [];
-
-    echo '<div class="wrap">';
-    echo '<h1>SaaS Calendar Sync</h1>';
-
-    if (is_array($result)) {
-        $created = (int) ($result['created'] ?? 0);
-        $updated = (int) ($result['updated'] ?? 0);
-        $errors = (int) ($result['errors'] ?? 0);
-        $imported_unmapped = (int) ($result['imported_unmapped'] ?? 0);
-        $preserved_title = (int) ($result['preserved_title'] ?? 0);
-        $preserved_description = (int) ($result['preserved_description'] ?? 0);
-        $error_message = isset($result['error_message']) ? trim((string) $result['error_message']) : '';
-        printf(
-            '<div class="notice notice-success"><p>Sync done. Created: %d, Updated: %d, Errors: %d, Imported (unmapped): %d, Preserved title: %d, Preserved description: %d.</p></div>',
-            $created,
-            $updated,
-            $errors,
-            $imported_unmapped,
-            $preserved_title,
-            $preserved_description
-        );
-        if ($error_message !== '') {
-            echo '<div class="notice notice-error"><p>' . esc_html($error_message) . '</p></div>';
-        }
-    }
-
-    echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
-    echo '<input type="hidden" name="action" value="iss_calendar_sync" />';
-    wp_nonce_field('iss_calendar_sync');
-    submit_button('Sync now');
-    echo '</form>';
-
-    echo '<h2>Source map</h2>';
-    if (empty($map)) {
-        echo '<p>No tags mapped yet. Render pages containing the calendar shortcode to populate the map automatically.</p>';
-    } else {
-        echo '<table class="widefat striped"><thead><tr><th>Tag</th><th>Source Post</th><th>Fallback URL</th><th>Last Seen</th></tr></thead><tbody>';
-        foreach ($map as $tag => $entry) {
-            if (!is_array($entry)) continue;
-            $post_id = isset($entry['source_post_id']) ? (int) $entry['source_post_id'] : 0;
-            $post_type = isset($entry['source_post_type']) ? (string) $entry['source_post_type'] : '';
-            $fallback_url = isset($entry['fallback_url']) ? (string) $entry['fallback_url'] : '';
-            $last_seen_at = isset($entry['last_seen_at']) ? (string) $entry['last_seen_at'] : '';
-
-            $post_label = $post_id ? ('#' . $post_id . ' ' . get_the_title($post_id)) : '—';
-            $post_edit = $post_id ? get_edit_post_link($post_id) : '';
-            if ($post_edit) {
-                $post_label = sprintf('<a href="%s">%s</a>', esc_url($post_edit), esc_html($post_label));
-            } else {
-                $post_label = esc_html($post_label);
-            }
-
-            printf(
-                '<tr><td>%s</td><td>%s<br><code>%s</code></td><td>%s</td><td>%s</td></tr>',
-                esc_html((string) $tag),
-                $post_label,
-                esc_html($post_type),
-                $fallback_url ? ('<a href="' . esc_url($fallback_url) . '" target="_blank" rel="noopener">link</a>') : '—',
-                esc_html($last_seen_at)
-            );
-        }
-        echo '</tbody></table>';
-    }
-
-    echo '</div>';
 }
 
 /**
@@ -145,15 +45,24 @@ function iss_calendar_supersaas_fetch_free_slots($settings = null) {
         return new WP_Error('iss_calendar_config', 'Missing SuperSaaS configuration.');
     }
 
-    $cache_key = 'iss_calendar_free_' . md5($base_url . '|' . $account_name . '|' . $schedule_id);
+    $future_months = (int) apply_filters('iss_calendar_sync_future_months', 6);
+    if ($future_months < 1) {
+        $future_months = 1;
+    }
+
+    $cache_key = 'iss_calendar_free_' . md5($base_url . '|' . $account_name . '|' . $schedule_id . '|m:' . $future_months);
     $cached = get_transient($cache_key);
     if (is_array($cached)) {
         return $cached;
     }
 
     $base_url = untrailingslashit($base_url);
-    $from = rawurlencode(current_time('Y-m-d H:i:s'));
-    $url = $base_url . '/api/free/' . rawurlencode($schedule_id) . '.json?from=' . $from;
+    $tz = wp_timezone();
+    $from_dt = new DateTimeImmutable('now', $tz);
+    $to_dt = $from_dt->modify('+' . $future_months . ' months');
+    $from = rawurlencode($from_dt->format('Y-m-d H:i:s'));
+    $to = rawurlencode($to_dt->format('Y-m-d H:i:s'));
+    $url = $base_url . '/api/free/' . rawurlencode($schedule_id) . '.json?from=' . $from . '&to=' . $to;
 
     $response = wp_remote_get($url, [
         'timeout' => 20,
@@ -532,16 +441,207 @@ function iss_calendar_get_slots_fallback_for_tag($tag) {
 
         $out[] = [
             'id' => (string) $external_id,
-            'title' => get_the_title($post_id),
+            'title' => function_exists('is_saas_resolve_calendar_item_title')
+                ? is_saas_resolve_calendar_item_title($post_id)
+                : (string) get_the_title($post_id),
             'start' => $start,
             'end' => $end,
             'capacity' => $capacity,
             'available' => $available,
             'booking_url' => $booking_url,
+            'content_url' => function_exists('is_saas_resolve_calendar_item_content_url')
+                ? is_saas_resolve_calendar_item_content_url($post_id)
+                : null,
         ];
     }
 
     return $out;
+}
+
+function iss_calendar_map_entry_title_candidates($entry) {
+    if (!is_array($entry)) {
+        return [];
+    }
+
+    $candidates = [];
+
+    $mapped_title = isset($entry['supersaas_title']) ? trim((string) $entry['supersaas_title']) : '';
+    if ($mapped_title !== '') {
+        $candidates[] = $mapped_title;
+    }
+
+    $source_post_id = isset($entry['source_post_id']) ? (int) $entry['source_post_id'] : 0;
+    if ($source_post_id > 0) {
+        $source_title = trim((string) get_the_title($source_post_id));
+        if ($source_title !== '') {
+            $candidates[] = $source_title;
+            $candidates[] = preg_replace('/(?:\\s|-)*(tour|fuehrung|führung)$/iu', '', $source_title);
+        }
+    }
+
+    $cleaned = [];
+    foreach ($candidates as $candidate) {
+        $candidate = trim((string) $candidate);
+        if ($candidate === '') {
+            continue;
+        }
+        $clean = function_exists('iss_calendar_clean_supersaas_title')
+            ? iss_calendar_clean_supersaas_title($candidate)
+            : $candidate;
+        $clean = trim((string) $clean);
+        if ($clean !== '') {
+            $cleaned[] = $clean;
+        }
+    }
+
+    return array_values(array_unique($cleaned));
+}
+
+function iss_calendar_match_fuehrung_by_title_candidates($candidates) {
+    if (!is_array($candidates) || empty($candidates)) {
+        return 0;
+    }
+
+    $normalize = static function ($value) {
+        $value = trim((string) $value);
+        if ($value === '') {
+            return '';
+        }
+
+        $value = preg_replace('/(?:\\s|-)*(tour|fuehrung|führung)$/iu', '', $value);
+        $value = trim((string) $value);
+        if ($value === '') {
+            return '';
+        }
+
+        return sanitize_title($value);
+    };
+
+    $candidate_keys = [];
+    foreach ($candidates as $candidate) {
+        $key = $normalize($candidate);
+        if ($key !== '') {
+            $candidate_keys[$key] = true;
+        }
+    }
+    if (empty($candidate_keys)) {
+        return 0;
+    }
+
+    $posts = get_posts([
+        'post_type' => 'fuehrung',
+        'post_status' => ['publish', 'draft', 'private', 'pending'],
+        'posts_per_page' => -1,
+        'fields' => 'ids',
+        'orderby' => 'title',
+        'order' => 'ASC',
+        'no_found_rows' => true,
+    ]);
+
+    $matches = [];
+    foreach ($posts as $post_id) {
+        $post_id = (int) $post_id;
+        if ($post_id <= 0) {
+            continue;
+        }
+
+        $title_key = $normalize(get_the_title($post_id));
+        if ($title_key !== '' && isset($candidate_keys[$title_key])) {
+            $matches[] = $post_id;
+            continue;
+        }
+
+        $slug = (string) get_post_field('post_name', $post_id);
+        $slug_key = $normalize(str_replace(['-', '_'], ' ', $slug));
+        if ($slug_key !== '' && isset($candidate_keys[$slug_key])) {
+            $matches[] = $post_id;
+        }
+    }
+
+    $matches = array_values(array_unique(array_filter(array_map('intval', $matches))));
+    if (count($matches) !== 1) {
+        return 0;
+    }
+
+    return (int) $matches[0];
+}
+
+function iss_calendar_try_resolve_source_post_from_map_entry($entry) {
+    if (!is_array($entry)) {
+        return 0;
+    }
+
+    $source_post_id = isset($entry['source_post_id']) ? (int) $entry['source_post_id'] : 0;
+    if ($source_post_id > 0 && get_post($source_post_id) instanceof WP_Post) {
+        return $source_post_id;
+    }
+
+    $fallback_url = isset($entry['fallback_url']) ? trim((string) $entry['fallback_url']) : '';
+    if ($fallback_url !== '' && strpos($fallback_url, '#') !== 0) {
+        $resolved = (int) url_to_postid($fallback_url);
+        if ($resolved > 0 && get_post_type($resolved) === 'fuehrung') {
+            return $resolved;
+        }
+    }
+
+    $candidates = iss_calendar_map_entry_title_candidates($entry);
+    return iss_calendar_match_fuehrung_by_title_candidates($candidates);
+}
+
+function iss_calendar_find_linked_source_by_series_key($series_key) {
+    $series_key = trim((string) $series_key);
+    if ($series_key === '') {
+        return ['source_post_id' => 0, 'source_post_type' => ''];
+    }
+
+    if (function_exists('iss_calendar_resolve_source_by_series_key')) {
+        $resolved = iss_calendar_resolve_source_by_series_key($series_key);
+        if (is_array($resolved) && !empty($resolved['source_post_id'])) {
+            return [
+                'source_post_id' => (int) ($resolved['source_post_id'] ?? 0),
+                'source_post_type' => sanitize_key((string) ($resolved['source_post_type'] ?? '')),
+            ];
+        }
+    }
+
+    static $cache = [];
+    if (array_key_exists($series_key, $cache)) {
+        return $cache[$series_key];
+    }
+
+    $q = new WP_Query([
+        'post_type' => ISS_CALENDAR_ITEM_POST_TYPE,
+        'post_status' => 'publish',
+        'posts_per_page' => 1,
+        'fields' => 'ids',
+        'no_found_rows' => true,
+        'meta_query' => [
+            [
+                'key' => 'series_key',
+                'value' => $series_key,
+                'compare' => '=',
+            ],
+            [
+                'key' => 'source_post_id',
+                'value' => 0,
+                'compare' => '>',
+                'type' => 'NUMERIC',
+            ],
+        ],
+    ]);
+
+    if (empty($q->posts)) {
+        $cache[$series_key] = ['source_post_id' => 0, 'source_post_type' => ''];
+        return $cache[$series_key];
+    }
+
+    $item_id = (int) $q->posts[0];
+    $cache[$series_key] = [
+        'source_post_id' => (int) get_post_meta($item_id, 'source_post_id', true),
+        'source_post_type' => sanitize_key((string) get_post_meta($item_id, 'source_post_type', true)),
+    ];
+
+    return $cache[$series_key];
 }
 
 /**
@@ -571,15 +671,17 @@ function iss_calendar_sync_supersaas_to_cpt() {
 
     $schedule_url = iss_calendar_build_schedule_url($settings);
     $map = function_exists('iss_calendar_get_source_map') ? iss_calendar_get_source_map() : [];
+    $series_map = function_exists('iss_calendar_get_series_map') ? iss_calendar_get_series_map() : [];
     $mapped_tags = array_keys($map);
     $mapped_tags = array_filter(array_map(function ($t) { return strtoupper(sanitize_text_field((string) $t)); }, $mapped_tags));
 
     $title_index = [];
     foreach ($map as $map_tag => $entry) {
         if (!is_array($entry)) continue;
-        $t = isset($entry['supersaas_title']) ? trim((string) $entry['supersaas_title']) : '';
-        if ($t !== '') {
-            $title_index[$t] = strtoupper(sanitize_text_field((string) $map_tag));
+        $map_tag_norm = strtoupper(sanitize_text_field((string) $map_tag));
+        $candidates = iss_calendar_map_entry_title_candidates($entry);
+        foreach ($candidates as $candidate) {
+            $title_index[$candidate] = $map_tag_norm;
         }
     }
 
@@ -614,6 +716,9 @@ function iss_calendar_sync_supersaas_to_cpt() {
         if ($clean_title === '') {
             $clean_title = trim((string) $raw_title);
         }
+        $series_key = function_exists('iss_calendar_build_series_key')
+            ? iss_calendar_build_series_key($clean_title, 'tour')
+            : '';
 
         $start = isset($slot['start']) ? trim((string) $slot['start']) : '';
         if ($start === '') continue;
@@ -647,9 +752,91 @@ function iss_calendar_sync_supersaas_to_cpt() {
         $source_post_type = isset($map_entry['source_post_type']) ? sanitize_key((string) $map_entry['source_post_type']) : '';
         $fallback_url = isset($map_entry['fallback_url']) ? esc_url_raw((string) $map_entry['fallback_url']) : '';
 
-        $booking_url = $fallback_url ?: $schedule_url;
+        $series_entry = ($series_key !== '' && isset($series_map[$series_key]) && is_array($series_map[$series_key]))
+            ? $series_map[$series_key]
+            : [];
+        if ($source_post_id <= 0 && !empty($series_entry['source_post_id'])) {
+            $resolved_series_post_id = (int) $series_entry['source_post_id'];
+            if ($resolved_series_post_id > 0 && get_post($resolved_series_post_id) instanceof WP_Post) {
+                $source_post_id = $resolved_series_post_id;
+                $source_post_type = sanitize_key((string) ($series_entry['source_post_type'] ?? get_post_type($resolved_series_post_id)));
+            }
+        }
+        if ($fallback_url === '' && !empty($series_entry['fallback_url'])) {
+            $fallback_url = esc_url_raw((string) $series_entry['fallback_url']);
+        }
+
+        if ($source_post_id <= 0 && $is_mapped_tag) {
+            $resolved_from_map = iss_calendar_try_resolve_source_post_from_map_entry($map_entry);
+            if ($resolved_from_map > 0) {
+                $source_post_id = $resolved_from_map;
+                $source_post_type = sanitize_key((string) get_post_type($source_post_id));
+            }
+        }
 
         $post_id = iss_calendar_find_item_post_id($external_id, $source_calendar);
+        if ($source_post_id <= 0 && $post_id) {
+            $existing_source_post_id = (int) get_post_meta($post_id, 'source_post_id', true);
+            $existing_source_post_type = sanitize_key((string) get_post_meta($post_id, 'source_post_type', true));
+            if ($existing_source_post_id > 0) {
+                $source_post_id = $existing_source_post_id;
+                $source_post_type = $existing_source_post_type;
+            }
+        }
+
+        if ($source_post_id <= 0 && $series_key !== '') {
+            $inferred = iss_calendar_find_linked_source_by_series_key($series_key);
+            if (!empty($inferred['source_post_id'])) {
+                $source_post_id = (int) $inferred['source_post_id'];
+                $source_post_type = sanitize_key((string) ($inferred['source_post_type'] ?? ''));
+            }
+        }
+
+        if ($source_post_id > 0 && $source_post_type === '') {
+            $source_post_type = sanitize_key((string) get_post_type($source_post_id));
+        }
+
+        if ($source_post_id > 0 && $is_mapped_tag && function_exists('iss_calendar_remember_source_mapping')) {
+            iss_calendar_remember_source_mapping($tag, $fallback_url, $source_post_id, $source_post_type);
+
+            $map[$tag] = isset($map[$tag]) && is_array($map[$tag]) ? $map[$tag] : [];
+            $map[$tag]['source_post_id'] = $source_post_id;
+            $map[$tag]['source_post_type'] = $source_post_type;
+            if (!isset($map[$tag]['fallback_url'])) {
+                $map[$tag]['fallback_url'] = $fallback_url;
+            }
+        }
+
+        if ($series_key !== '' && function_exists('iss_calendar_remember_series_mapping')) {
+            iss_calendar_remember_series_mapping($series_key, $source_post_id, $source_post_type, $clean_title, $tag, $fallback_url);
+
+            $series_map[$series_key] = isset($series_map[$series_key]) && is_array($series_map[$series_key]) ? $series_map[$series_key] : [];
+            if (!isset($series_map[$series_key]['source_post_id']) || (int) $series_map[$series_key]['source_post_id'] <= 0) {
+                $series_map[$series_key]['source_post_id'] = $source_post_id;
+            } elseif ($source_post_id > 0) {
+                $series_map[$series_key]['source_post_id'] = $source_post_id;
+            }
+            if (!isset($series_map[$series_key]['source_post_type']) || trim((string) $series_map[$series_key]['source_post_type']) === '') {
+                $series_map[$series_key]['source_post_type'] = $source_post_type;
+            } elseif ($source_post_type !== '') {
+                $series_map[$series_key]['source_post_type'] = $source_post_type;
+            }
+            if (trim((string) ($series_map[$series_key]['supersaas_title'] ?? '')) === '' && $clean_title !== '') {
+                $series_map[$series_key]['supersaas_title'] = $clean_title;
+            }
+            if (trim((string) ($series_map[$series_key]['tag'] ?? '')) === '' && $tag !== '') {
+                $series_map[$series_key]['tag'] = $tag;
+            }
+            if (trim((string) ($series_map[$series_key]['fallback_url'] ?? '')) === '' && $fallback_url !== '') {
+                $series_map[$series_key]['fallback_url'] = $fallback_url;
+            }
+            $series_map[$series_key]['version'] = defined('ISS_CALENDAR_SERIES_MAP_VERSION')
+                ? (int) ISS_CALENDAR_SERIES_MAP_VERSION
+                : 1;
+            $series_map[$series_key]['last_seen_at'] = $now;
+        }
+
+        $booking_url = $fallback_url ?: $schedule_url;
         $incoming_title = $clean_title !== '' ? wp_strip_all_tags($clean_title) : 'Calendar Item';
         $incoming_description = '';
         if (!empty($slot['description'])) {
@@ -719,8 +906,8 @@ function iss_calendar_sync_supersaas_to_cpt() {
         update_post_meta($post_id, 'event_end', $end);
         update_post_meta($post_id, 'item_type', 'tour');
         update_post_meta($post_id, 'supersaas_title', $clean_title);
-        if (function_exists('iss_calendar_build_series_key')) {
-            update_post_meta($post_id, 'series_key', iss_calendar_build_series_key($clean_title, 'tour'));
+        if ($series_key !== '') {
+            update_post_meta($post_id, 'series_key', $series_key);
         }
         update_post_meta($post_id, 'source_system', 'supersaas');
         update_post_meta($post_id, 'source_calendar', $source_calendar);

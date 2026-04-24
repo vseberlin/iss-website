@@ -17,7 +17,6 @@ add_action('add_meta_boxes', function () {
 
 function iss_fuehrungen_render_meta_box($post) {
     wp_nonce_field('iss_fuehrung_save_meta', 'iss_fuehrung_meta_nonce');
-    $calendar_tag_options = iss_fuehrungen_get_calendar_tag_options($post->ID);
 
     $fields = [
         'duration'      => __('Dauer', 'iss-fuehrungen'),
@@ -26,7 +25,6 @@ function iss_fuehrungen_render_meta_box($post) {
         'price_note'    => __('Preishinweis', 'iss-fuehrungen'),
         'booking_note'  => __('Buchungshinweis', 'iss-fuehrungen'),
         'booking_mode'  => __('Buchungsmodus', 'iss-fuehrungen'),
-        'calendar_tag'  => __('Kalender-Verknüpfung (Tag)', 'iss-fuehrungen'),
         'allow_on_demand_with_calendar' => __('Auf Anfrage zusätzlich erlauben (bei Modus Auto)', 'iss-fuehrungen'),
         'inquiry_url'   => __('Anfrage-URL', 'iss-fuehrungen'),
         'inquiry_label' => __('Anfrage-Button Label', 'iss-fuehrungen'),
@@ -55,17 +53,6 @@ function iss_fuehrungen_render_meta_box($post) {
                 printf('<option value="%s" %s>%s</option>', esc_attr($option_value), selected($mode, $option_value, false), esc_html($option_label));
             }
             echo '</select>';
-        } elseif ($key === 'calendar_tag') {
-            $list_id = 'iss-calendar-tag-options';
-            echo '<input class="widefat" type="text" list="' . esc_attr($list_id) . '" id="iss_' . esc_attr($key) . '" name="iss_fuehrung[' . esc_attr($key) . ']" value="' . esc_attr((string) $value) . '" placeholder="z. B. ELEKTRO">';
-            if (!empty($calendar_tag_options)) {
-                echo '<datalist id="' . esc_attr($list_id) . '">';
-                foreach ($calendar_tag_options as $tag => $label_text) {
-                    echo '<option value="' . esc_attr((string) $tag) . '" label="' . esc_attr((string) $label_text) . '"></option>';
-                }
-                echo '</datalist>';
-            }
-            echo '<span class="description" style="display:block;margin-top:6px;">' . esc_html__('Wählen Sie einen vorhandenen Tag. Beim Speichern wird die Tour mit Kalenderterminen verknüpft (ohne Shortcodes).', 'iss-fuehrungen') . '</span>';
         } elseif ($key === 'allow_on_demand_with_calendar') {
             echo '<label><input type="checkbox" name="iss_fuehrung[' . esc_attr($key) . ']" value="1" ' . checked(!empty($value), true, false) . '> ' . esc_html__('Ja', 'iss-fuehrungen') . '</label>';
         } elseif ($key === 'booking_note' || $key === 'inquiry_note') {
@@ -140,8 +127,6 @@ add_action('save_post_' . ISS_FUEHRUNGEN_POST_TYPE, function ($post_id) {
             update_post_meta($post_id, $key, $value);
         }
     }
-
-    iss_fuehrungen_sync_calendar_mapping($post_id);
 }, 10, 1);
 
 add_action('admin_enqueue_scripts', function ($hook) {
@@ -163,168 +148,6 @@ add_action('admin_enqueue_scripts', function ($hook) {
         true
     );
 });
-
-function iss_fuehrungen_get_calendar_tag_options($post_id = 0) {
-    $options = [];
-
-    if (function_exists('iss_calendar_get_source_map')) {
-        $map = iss_calendar_get_source_map();
-        if (is_array($map)) {
-            foreach ($map as $tag => $entry) {
-                $tag = strtoupper(sanitize_text_field((string) $tag));
-                if ($tag === '') {
-                    continue;
-                }
-
-                $label = $tag;
-                if (is_array($entry)) {
-                    $source_id = isset($entry['source_post_id']) ? (int) $entry['source_post_id'] : 0;
-                    $mapped_title = isset($entry['supersaas_title']) ? trim((string) $entry['supersaas_title']) : '';
-
-                    if ($mapped_title !== '') {
-                        $label .= ' — ' . $mapped_title;
-                    } elseif ($source_id > 0) {
-                        $label .= ' — #' . $source_id . ' ' . get_the_title($source_id);
-                    } else {
-                        $label .= ' — ' . __('nicht zugeordnet', 'iss-fuehrungen');
-                    }
-                }
-
-                $options[$tag] = $label;
-            }
-        }
-    }
-
-    $current = strtoupper(sanitize_text_field((string) get_post_meta((int) $post_id, 'calendar_tag', true)));
-    if ($current !== '' && !isset($options[$current])) {
-        $options[$current] = $current;
-    }
-
-    ksort($options);
-    return $options;
-}
-
-function iss_fuehrungen_sync_calendar_mapping($post_id) {
-    $post_id = (int) $post_id;
-    if ($post_id <= 0) {
-        return;
-    }
-
-    $tag = strtoupper(sanitize_text_field((string) get_post_meta($post_id, 'calendar_tag', true)));
-    if ($tag === '') {
-        return;
-    }
-
-    $fallback_url = '';
-    if (function_exists('iss_calendar_get_source_map_entry')) {
-        $entry = iss_calendar_get_source_map_entry($tag);
-        if (is_array($entry) && !empty($entry['fallback_url'])) {
-            $fallback_url = esc_url_raw((string) $entry['fallback_url']);
-        }
-    }
-
-    if (function_exists('iss_calendar_remember_source_mapping')) {
-        iss_calendar_remember_source_mapping($tag, $fallback_url, $post_id, ISS_FUEHRUNGEN_POST_TYPE);
-    }
-
-    iss_fuehrungen_relink_calendar_series_for_tour($post_id, $tag);
-}
-
-function iss_fuehrungen_relink_calendar_series_for_tour($post_id, $tag = '') {
-    if (!defined('ISS_CALENDAR_ITEM_POST_TYPE')) {
-        return;
-    }
-
-    $post_id = (int) $post_id;
-    if ($post_id <= 0) {
-        return;
-    }
-
-    $series_keys = [];
-    $series_seed_titles = [];
-    $title = trim((string) get_the_title($post_id));
-    if ($title !== '') {
-        $series_seed_titles[] = $title;
-        $series_seed_titles[] = preg_replace('/(?:\\s|-)*(tour|fuehrung|führung)$/iu', '', $title);
-    }
-
-    $post_slug = (string) get_post_field('post_name', $post_id);
-    if ($post_slug !== '') {
-        $slug_title = trim(str_replace(['-', '_'], ' ', $post_slug));
-        if ($slug_title !== '') {
-            $series_seed_titles[] = $slug_title;
-        }
-        $slug_reduced = preg_replace('/(?:-|_)?(tour|fuehrung|fuehrungen)$/iu', '', $post_slug);
-        $slug_reduced = trim(str_replace(['-', '_'], ' ', (string) $slug_reduced));
-        if ($slug_reduced !== '') {
-            $series_seed_titles[] = $slug_reduced;
-        }
-    }
-
-    if (function_exists('iss_calendar_build_series_key')) {
-        foreach ($series_seed_titles as $seed_title) {
-            $seed_title = trim((string) $seed_title);
-            if ($seed_title === '') {
-                continue;
-            }
-            $series_keys[] = iss_calendar_build_series_key($seed_title, 'tour');
-        }
-    }
-
-    $tag = strtoupper(sanitize_text_field((string) $tag));
-    if ($tag !== '' && function_exists('iss_calendar_get_source_map_entry') && function_exists('iss_calendar_build_series_key')) {
-        $entry = iss_calendar_get_source_map_entry($tag);
-        if (is_array($entry) && !empty($entry['supersaas_title'])) {
-            $mapped_title = trim((string) $entry['supersaas_title']);
-            if ($mapped_title !== '') {
-                $series_keys[] = iss_calendar_build_series_key($mapped_title, 'tour');
-            }
-        }
-    }
-
-    $series_keys = array_values(array_unique(array_filter(array_map(static function ($value) {
-        return trim((string) $value);
-    }, $series_keys))));
-    if (empty($series_keys)) {
-        return;
-    }
-
-    $query = new WP_Query([
-        'post_type' => ISS_CALENDAR_ITEM_POST_TYPE,
-        'post_status' => 'publish',
-        'posts_per_page' => -1,
-        'fields' => 'ids',
-        'no_found_rows' => true,
-        'meta_query' => [
-            'relation' => 'AND',
-            [
-                'key' => 'source_post_id',
-                'value' => $post_id,
-                'compare' => '!=',
-                'type' => 'NUMERIC',
-            ],
-            [
-                'key' => 'series_key',
-                'value' => $series_keys,
-                'compare' => 'IN',
-            ],
-        ],
-    ]);
-
-    if (empty($query->posts)) {
-        return;
-    }
-
-    foreach ($query->posts as $calendar_item_id) {
-        $calendar_item_id = (int) $calendar_item_id;
-        if ($calendar_item_id <= 0) {
-            continue;
-        }
-
-        update_post_meta($calendar_item_id, 'source_post_id', $post_id);
-        update_post_meta($calendar_item_id, 'source_post_type', ISS_FUEHRUNGEN_POST_TYPE);
-    }
-}
 
 add_action('admin_notices', function () {
     if (!function_exists('get_current_screen')) {
@@ -349,7 +172,7 @@ add_action('admin_notices', function () {
     echo '<div class="notice notice-warning"><p>';
     echo esc_html__('Für diese Führung sind keine zukünftigen Kalender-Termine verknüpft, obwohl der Buchungsmodus einen Kalender erwartet.', 'iss-fuehrungen');
     echo ' ';
-    echo '<a href="' . esc_url($edit_url) . '#iss_calendar_tag">' . esc_html__('Kalender-Verknüpfung prüfen', 'iss-fuehrungen') . '</a>';
+    echo '<a href="' . esc_url($edit_url) . '#iss-programm-calendar-mapping">' . esc_html__('Kalender-Zuordnung prüfen', 'iss-fuehrungen') . '</a>';
     echo '</p></div>';
 });
 
@@ -377,7 +200,7 @@ function iss_fuehrungen_calendar_warning_required($post_id) {
 }
 
 function iss_fuehrungen_has_linked_future_calendar_events($post_id) {
-    if (!defined('ISS_CALENDAR_ITEM_POST_TYPE')) {
+    if (!function_exists('iss_programm_has_linked_future_events')) {
         return false;
     }
 
@@ -386,40 +209,5 @@ function iss_fuehrungen_has_linked_future_calendar_events($post_id) {
         return false;
     }
 
-    $items = get_posts([
-        'post_type' => ISS_CALENDAR_ITEM_POST_TYPE,
-        'post_status' => 'publish',
-        'posts_per_page' => 100,
-        'fields' => 'ids',
-        'meta_key' => 'event_start',
-        'orderby' => 'meta_value',
-        'order' => 'ASC',
-        'meta_query' => [
-            [
-                'key' => 'source_post_id',
-                'value' => $post_id,
-                'compare' => '=',
-                'type' => 'NUMERIC',
-            ],
-        ],
-    ]);
-
-    if (empty($items)) {
-        return false;
-    }
-
-    $now_ts = current_time('timestamp');
-    foreach ($items as $item_id) {
-        $start = (string) get_post_meta((int) $item_id, 'event_start', true);
-        if ($start === '') {
-            continue;
-        }
-
-        $event_ts = strtotime($start);
-        if ($event_ts !== false && $event_ts >= $now_ts) {
-            return true;
-        }
-    }
-
-    return false;
+    return iss_programm_has_linked_future_events($post_id);
 }
