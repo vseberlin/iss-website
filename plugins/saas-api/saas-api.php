@@ -53,6 +53,18 @@ function is_saas_normalize_schedule_path($schedule_path) {
     return str_replace('%2F', '/', rawurlencode(rawurldecode($schedule_path)));
 }
 
+add_action('admin_notices', function () {
+    $settings = is_saas_get_settings();
+    if (empty($settings['schedule_id']) || empty($settings['api_key'])) {
+        $settings_url = esc_url(admin_url('options-general.php?page=' . IS_SAAS_OPTION_GROUP));
+        echo '<div class="notice notice-warning is-dismissible"><p>'
+            . '<strong>SuperSaaS API:</strong> '
+            . 'API-Zugangsdaten fehlen. Das Buchungssystem ist nicht aktiv. '
+            . '<a href="' . $settings_url . '">Jetzt einrichten →</a>'
+            . '</p></div>';
+    }
+});
+
 function is_saas_register_settings() {
     register_setting(
         IS_SAAS_OPTION_GROUP,
@@ -228,12 +240,14 @@ function is_saas_field_schedule_path() {
 }
 
 add_action('rest_api_init', function () {
+    // Public intentionally: frontend tour calendar reads slot availability without authentication.
     register_rest_route('is-tours/v1', '/slots', [
         'methods'  => 'GET',
         'callback' => 'is_tours_get_slots',
         'permission_callback' => '__return_true',
     ]);
 
+    // Public intentionally: visitors book tours without a WordPress account.
     register_rest_route('is-tours/v1', '/book', [
         'methods'  => 'POST',
         'callback' => 'is_tours_create_booking',

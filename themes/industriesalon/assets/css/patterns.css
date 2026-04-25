@@ -50,23 +50,41 @@
    .iss-media-text* / .iss-asymmetric-feature* / .iss-feature-split-stack*
        Structured content patterns for editorial landing pages.
 
-   PAGE/PATTERN FAMILIES IN THIS FILE
-   - Header shell
-   - Footer template
-   - Front page composition
-   - Default page template
-   - Timeline bridge
-   - Visit info module
-   - Single tour page
-   - Tours landing page
-   - Info panel
-   - Feature split stack
-   - 50-50 media text
-   - Asymmetric feature
-   - Newsletter / funders band
-   - Archive landing
-   - Mission support strip
-   - Salon-Vermietung page
+   TABLE OF CONTENTS
+   -----------------
+    1. Header Navigation Shell .............. L 78
+    2. Footer Template ...................... L 320
+    3. Front Page Composition ............... L 598
+       3a. Front Page Rhythm ............... L 617
+       3b. Hero ............................. L 647
+       3c. Hero Banner / Note .............. L 813
+       3d. General Rhythm .................. L 1067
+       3e. Visit Panel ..................... L 1072
+       3f. Card Rows ....................... L 1088
+       3g. Media Text ...................... L 1189
+       3h. Newsletter Band ................. L 1227
+       3i. Responsive ...................... L 1270
+    4. Hero Page Template .................. L 1389
+    5. Microblocks ......................... L 1797
+    6. Default Page Template ............... L 1885
+    7. Inner Page Template ................. L 1895
+    8. Secondary Landing Cover ............. L 2033
+    9. Timeline Theme Bridge ............... L 2266
+       9a. Timeline Theme Layer ............ L 2278
+       9b. Timeline Color Schemes .......... L 2323
+       9c. Timeline Section Intro .......... L 2505
+   10. Visit Info Module ................... L 2633
+   11. Single Tour Page ................... L 3200
+   12. Tours Landing Page ................. L 3497
+   13. Info Panel (Anmeldung/Besuch/Vermietung) .. L (see search: .iss-info-panel)
+   14. Feature Split Stack ................ L (see search: .iss-feature-split-stack)
+   15. 50-50 Media Text ................... L 4239
+   16. Asymmetric Feature ................. L 4631
+   17. Newsletter + Funders Band .......... L 4885
+   18. Archive Landing .................... L 5126
+   19. Mission Support Strip .............. L 5818
+   20. Salon-Vermietung Page .............. L 5993
+   21. Single Blog Post Template .......... L 6267
 
    MAINTENANCE RULE:
    When debugging, always check whether the issue is:
