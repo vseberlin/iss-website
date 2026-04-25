@@ -1,4 +1,9 @@
-/* Calendar + modal token bridge for industriesalon theme standards. */
+/* =========================================================
+   ISS PLUGIN TOKEN BRIDGE
+   Maps --iss-* theme tokens into --site-* plugin tokens.
+   Fallback chain: --iss-token → wp-preset → hardcoded.
+   Do not override --iss-* here; change only --site-* in customizer output.
+   ========================================================= */
 :root {
   --site-color-bg: var(--iss-white, var(--wp--preset--color--vaporous-white, #f9f9fa));
   --site-color-surface: color-mix(in srgb, var(--iss-grey, #c0b8b5) 10%, var(--site-color-bg));
@@ -150,6 +155,7 @@
   width: 100%; max-width: 100%;
 }
 
+/* flatpickr reset — flatpickr.min.css uses fixed widths and inline styles that must be overridden */
 .is-tour-calendar .flatpickr-innerContainer,
 .is-tour-calendar .flatpickr-rContainer {
   display: flex !important;
@@ -219,6 +225,7 @@
   gap: 3px;
 }
 
+/* flatpickr state reset — overrides flatpickr's own .disabled/.selected/.today rules */
 .is-tour-calendar .flatpickr-day.prevMonthDay,
 .is-tour-calendar .flatpickr-day.nextMonthDay,
 .is-tour-calendar .flatpickr-day.flatpickr-disabled {
@@ -311,6 +318,7 @@
   transform: translateY(-1px);
 }
 
+/* overrides flatpickr .selected background which is set with !important in flatpickr.min.css */
 .is-tour-calendar__day-cell--selected {
   background: var(--site-color-accent) !important;
   color: #fff !important;
@@ -605,6 +613,7 @@
   margin: 0; color: var(--site-color-text-muted);
 }
 
+/* mobile reset — !important needed because base layout is display:flex with fixed flex-basis */
 @media (max-width: 900px) {
   .is-tour-calendar { width: min(100%, calc(100% - 1.5rem)); }
   .is-tour-calendar__layout { display: grid !important; grid-template-columns: 1fr; }
@@ -650,6 +659,7 @@
   margin: .35rem 0 0; color: var(--site-color-text-muted);
 }
 
+/* single-tour layout reset — collapses the two-column calendar layout to block in sidebar context */
 .iss-tour-single .is-tour-calendar__layout {
   display: block !important; gap: 0 !important;
 }
@@ -666,7 +676,7 @@
   align-items: flex-start; /* Anchor content to the left of the column */
 }
 
-/* Force weekday container to match grid exactly */
+/* flatpickr reset — single-tour inline calendar needs same grid overrides as the standalone version */
 .iss-tour-single .is-tour-calendar .flatpickr-weekdaycontainer {
   display: grid !important;
   grid-template-columns: repeat(7, 1fr) !important;
@@ -674,7 +684,6 @@
   width: 100% !important;
 }
 
-/* Force day container to match weekday columns */
 .iss-tour-single .is-tour-calendar .dayContainer {
   display: grid !important;
   grid-template-columns: repeat(7, 1fr) !important;

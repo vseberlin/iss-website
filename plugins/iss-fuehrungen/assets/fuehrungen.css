@@ -1,7 +1,13 @@
+/* =========================================================
+   ISS PLUGIN TOKEN BRIDGE
+   Maps --iss-* theme tokens into plugin-local --iss-fuehrung-* tokens.
+   Fallback chain: --iss-token → hardcoded.
+   Do not override --iss-* here; override --iss-fuehrung-* in customizer output.
+   ========================================================= */
 :root {
   --iss-fuehrung-gap: clamp(1rem, 2vw, 2rem);
-  --iss-fuehrung-border: rgba(30, 30, 30, 0.12);
-  --iss-fuehrung-surface: #ffffff;
+  --iss-fuehrung-border: var(--iss-border, rgba(30, 30, 30, 0.12));
+  --iss-fuehrung-surface: var(--iss-white, #ffffff);
   --iss-fuehrung-surface-muted: rgba(192, 184, 181, 0.14);
 }
 

@@ -153,8 +153,8 @@ add_action('init', function () {
     foreach ($meta_fields as $meta_key => $args) {
         register_post_meta('iss_calendar_item', $meta_key, array_merge([
             'single' => true,
-            'auth_callback' => static function () {
-                return current_user_can('edit_posts');
+            'auth_callback' => static function ($allowed, $meta_key, $post_id) {
+                return current_user_can('edit_post', $post_id);
             },
         ], $args));
     }
