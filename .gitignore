@@ -5,9 +5,25 @@
 # Keep this ignore file.
 !.gitignore
 !/themes/
+/themes/*
 !/themes/industriesalon/
 !/themes/industriesalon/**
 
-# Keep all plugins.
+# Keep only selected plugins.
 !/plugins/
-!/plugins/**
+/plugins/*
+!/plugins/industriesalon-notices/
+!/plugins/industriesalon-notices/**
+!/plugins/industriesalon-steuerung/
+!/plugins/industriesalon-steuerung/**
+!/plugins/iss-calendar/
+!/plugins/iss-calendar/**
+!/plugins/iss-fuehrungen/
+!/plugins/iss-fuehrungen/**
+!/plugins/iss-programm/
+!/plugins/iss-programm/**
+!/plugins/saas-api/
+!/plugins/saas-api/**
+
+# Ignore editor lock noise.
+*~lock*
