@@ -11,20 +11,27 @@
    Why: <what Gutenberg/runtime behavior breaks and why this override exists>
    ===================================================================== */
 
-/* Page: single-tour / single-tour-on-demand related cards
-   Block: core/query -> ul.wp-block-post-template.is-layout-flow > li inside .iss-card-grid
-   Why: Gutenberg flow layout injects per-item block margins; first row gets uneven vertical start.
-        Reset list-item margins so all cards start on the same baseline. */
-.iss-card-grid > .wp-block-post-template.is-layout-flow > li,
-.iss-card-grid > .wp-block-post-template.wp-block-post-template.is-layout-flow > li {
-  margin-block-start: 0 !important;
-  margin-block-end: 0 !important;
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
-  padding: 0;
+/* Page: single-tour
+   Block: .section.iss-tour-main
+   Why: Specific template adjustment to reduce gap between hero and main content. */
+.section.iss-tour-main {
+    padding-top: 0rem;
 }
 
-/* Specific override for this section */
-.section.iss-tour-main {
-    padding-top: 0rem; /* or your desired value */
+/* Page: single
+   Block: .iss-post-content img
+   Why: Ensure images inside the single post content stay within the constrained post width. */
+.iss-post-content img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Page: single
+   Block: .iss-post-content .alignwide, .alignfull
+   Why: Force images to stay within the constrained post width. */
+.iss-post-content .alignwide,
+.iss-post-content .alignfull {
+    width: 100%;
+    margin-left: 0;
+    transform: none;
 }

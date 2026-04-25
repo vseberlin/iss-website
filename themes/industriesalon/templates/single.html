@@ -1,16 +1,98 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
-<!-- wp:group {"tagName":"main","layout":{"type":"constrained"}} -->
-<main class="wp-block-group">
-  <!-- wp:group {"className":"container-1280","layout":{"type":"constrained"}} -->
-  <div class="wp-block-group container-1280">
-    <!-- wp:post-title {"level":1} /-->
-    <!-- wp:post-featured-image {"isLink":false} /-->
-    <!-- wp:post-content /-->
-  </div>
-  <!-- /wp:group -->
+<!-- wp:group {"tagName":"main","className":"iss-post-page","layout":{"type":"default"}} -->
+<main class="wp-block-group iss-post-page">
+
+	<!-- wp:group {"tagName":"section","className":"iss-post-hero section","layout":{"type":"default"}} -->
+	<section class="wp-block-group iss-post-hero section">
+		<!-- wp:group {"className":"iss-container","layout":{"type":"default"}} -->
+		<div class="wp-block-group iss-container">
+
+			<!-- wp:group {"className":"iss-post-hero__media iss-media-card iss-media-card--cover iss-media-card--red","layout":{"type":"default"}} -->
+			<div class="wp-block-group iss-post-hero__media iss-media-card iss-media-card--cover iss-media-card--red">
+				<!-- wp:post-featured-image {"isLink":false} /-->
+			</div>
+			<!-- /wp:group -->
+
+			<!-- wp:group {"className":"iss-post-hero__intro iss-heading iss-heading--uncaged","layout":{"type":"default"}} -->
+			<div class="wp-block-group iss-post-hero__intro iss-heading iss-heading--uncaged">
+
+				<!-- wp:post-terms {"term":"category","className":"iss-kicker iss-kicker--compact"} /-->
+
+				<!-- wp:post-title {"level":1,"className":"iss-post-hero__title iss-heading__title"} /-->
+
+				<!-- wp:post-excerpt {"moreText":"","showMoreOnNewLine":false,"excerptLength":36,"className":"iss-post-hero__lede iss-heading__text"} /-->
+
+				<!-- wp:group {"className":"iss-post-meta","layout":{"type":"default"}} -->
+				<div class="wp-block-group iss-post-meta">
+					<!-- wp:post-date {"format":"j. F Y","className":"iss-post-meta__date"} /-->
+				</div>
+				<!-- /wp:group -->
+
+			</div>
+			<!-- /wp:group -->
+
+		</div>
+		<!-- /wp:group -->
+	</section>
+	<!-- /wp:group -->
+
+	<!-- wp:group {"tagName":"section","className":"iss-post-main section","layout":{"type":"default"}} -->
+	<section class="wp-block-group iss-post-main section">
+		<!-- wp:group {"className":"iss-post-content","layout":{"type":"default"}} -->
+		<div class="wp-block-group iss-post-content">
+
+			<!-- wp:post-content /-->
+
+		</div>
+		<!-- /wp:group -->
+	</section>
+	<!-- /wp:group -->
+
+	<!-- wp:group {"tagName":"section","className":"iss-post-related section section--soft","layout":{"type":"default"}} -->
+	<section class="wp-block-group iss-post-related section section--soft">
+		<!-- wp:group {"className":"iss-container","layout":{"type":"default"}} -->
+		<div class="wp-block-group iss-container">
+
+			<!-- wp:group {"className":"iss-heading","layout":{"type":"default"}} -->
+			<div class="wp-block-group iss-heading">
+				<!-- wp:paragraph {"className":"iss-kicker iss-kicker--compact"} -->
+				<p class="iss-kicker iss-kicker--compact">Weiterlesen</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:heading {"level":2,"className":"iss-heading__title"} -->
+				<h2 class="iss-heading__title">Weitere Beiträge</h2>
+				<!-- /wp:heading -->
+			</div>
+			<!-- /wp:group -->
+
+			<!-- wp:query {"queryId":1,"query":{"perPage":3,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[0],"sticky":"","inherit":false},"className":"iss-card-grid","displayLayout":{"type":"grid","columns":3}} -->
+			<div class="wp-block-query iss-card-grid">
+				<!-- wp:post-template -->
+					<!-- wp:group {"className":"iss-card iss-card--flat","layout":{"type":"default"}} -->
+					<div class="wp-block-group iss-card iss-card--flat">
+						<!-- wp:post-featured-image {"isLink":true,"className":"iss-card__media"} /-->
+
+						<!-- wp:group {"className":"iss-card__body","layout":{"type":"default"}} -->
+						<div class="wp-block-group iss-card__body">
+							<!-- wp:post-terms {"term":"category","className":"iss-kicker iss-kicker--compact"} /-->
+							<!-- wp:post-title {"isLink":true,"level":3,"className":"iss-card__title"} /-->
+							<!-- wp:post-excerpt {"moreText":"","showMoreOnNewLine":false,"excerptLength":18,"className":"iss-card__text"} /-->
+							<!-- wp:read-more {"content":"Weiterlesen","className":"iss-card__link"} /-->
+						</div>
+						<!-- /wp:group -->
+					</div>
+					<!-- /wp:group -->
+				<!-- /wp:post-template -->
+			</div>
+			<!-- /wp:query -->
+
+		</div>
+		<!-- /wp:group -->
+	</section>
+	<!-- /wp:group -->
+
 </main>
 <!-- /wp:group -->
 
 <!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
-

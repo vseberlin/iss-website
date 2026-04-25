@@ -1,0 +1,146 @@
+<?php
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+function iss_fuehrung_get_upcoming_events($post_id, $limit = 12) {
+    if (!function_exists('iss_programm_get_upcoming_events')) {
+        return [];
+    }
+
+    $post_id = (int) $post_id;
+    if ($post_id <= 0) {
+        return [];
+    }
+
+    return iss_programm_get_upcoming_events($post_id, (int) $limit);
+}
+
+function iss_fuehrung_get_next_event($post_id) {
+    if (function_exists('iss_programm_get_next_event')) {
+        return iss_programm_get_next_event((int) $post_id);
+    }
+
+    $events = iss_fuehrung_get_upcoming_events($post_id, 1);
+    return !empty($events) ? $events[0] : null;
+}
+
+function iss_fuehrung_get_event_start_label($event_id) {
+    $start = get_post_meta($event_id, 'event_start', true);
+    if (!$start) {
+        return '';
+    }
+
+    $timestamp = strtotime((string) $start);
+    if (!$timestamp) {
+        return (string) $start;
+    }
+
+    return wp_date('j. F Y, H:i', $timestamp);
+}
+
+function iss_fuehrung_get_event_booking_url($event_id, $post_id = 0) {
+    $url = (string) get_post_meta($event_id, 'booking_url', true);
+    if ($url !== '') {
+        return $url;
+    }
+
+    if ($post_id > 0) {
+        $url = (string) get_post_meta($post_id, 'fallback_url', true);
+        if ($url !== '') {
+            return $url;
+        }
+    }
+
+    return '';
+}
+
+function iss_fuehrung_get_card_meta($post_id) {
+    $parts = [];
+
+    foreach (['duration', 'meeting_point', 'target_group'] as $key) {
+        $value = trim((string) get_post_meta($post_id, $key, true));
+        if ($value !== '') {
+            $parts[] = $value;
+        }
+    }
+
+    return $parts;
+}
+
+function iss_fuehrung_get_related($post_id, $limit = 3) {
+    $terms = wp_get_post_terms($post_id, 'fuehrung_typ', ['fields' => 'ids']);
+
+    $tax_query = [];
+    if (!is_wp_error($terms) && !empty($terms)) {
+        $tax_query[] = [
+            'taxonomy' => 'fuehrung_typ',
+            'field'    => 'term_id',
+            'terms'    => $terms,
+        ];
+    }
+
+    return get_posts([
+        'post_type'      => ISS_FUEHRUNGEN_POST_TYPE,
+        'posts_per_page' => max(1, (int) $limit),
+        'post__not_in'   => [$post_id],
+        'orderby'        => ['menu_order' => 'ASC', 'date' => 'DESC'],
+        'tax_query'      => $tax_query,
+    ]);
+}
+
+function iss_fuehrung_get_booking_mode($post_id) {
+    $mode = sanitize_key((string) get_post_meta($post_id, 'booking_mode', true));
+    $allowed = ['auto', 'calendar', 'on_demand', 'hybrid'];
+
+    if (!in_array($mode, $allowed, true)) {
+        return 'auto';
+    }
+
+    return $mode;
+}
+
+function iss_fuehrung_get_inquiry_data($post_id) {
+    $url = trim((string) get_post_meta($post_id, 'inquiry_url', true));
+    $label = trim((string) get_post_meta($post_id, 'inquiry_label', true));
+    $note = trim((string) get_post_meta($post_id, 'inquiry_note', true));
+
+    if ($label === '') {
+        $label = __('Anfrage senden', 'iss-fuehrungen');
+    }
+
+    return [
+        'url' => $url,
+        'label' => $label,
+        'note' => $note,
+    ];
+}
+
+function iss_fuehrung_get_effective_booking_mode($post_id) {
+    $mode = iss_fuehrung_get_booking_mode($post_id);
+    if ($mode !== 'auto') {
+        return $mode;
+    }
+
+    $next_event = iss_fuehrung_get_next_event($post_id);
+    $has_calendar = ($next_event instanceof WP_Post);
+
+    $inquiry = iss_fuehrung_get_inquiry_data($post_id);
+    $has_on_demand = ($inquiry['url'] !== '' || $inquiry['note'] !== '');
+    $allow_hybrid = !empty(get_post_meta($post_id, 'allow_on_demand_with_calendar', true));
+
+    if ($has_calendar && $has_on_demand && $allow_hybrid) {
+        return 'hybrid';
+    }
+
+    if ($has_calendar) {
+        return 'calendar';
+    }
+
+    if ($has_on_demand) {
+        return 'on_demand';
+    }
+
+    return 'calendar';
+}

@@ -642,7 +642,7 @@
 /* Remove the gap at the top of the main content */
 /* .home: Base class for home; apply on primary wrapper/scope. */
 .home #wp--skip-link--target {
-    margin-top: 0 !important;
+    margin-top: 0;
 }
 /* =====================================================================
    HERO
@@ -705,10 +705,10 @@
   align-items: end;
   align-content: end;
   column-gap: clamp(1rem, 3vw, 2.5rem);
-  width: 100% !important;
+  width: 100%;
   min-height: inherit;
-  max-width: none !important;
-  margin: 0 !important;
+  max-width: none;
+  margin: 0;
   padding: calc(var(--iss-header-height) + 1.5rem) var(--iss-hero-right-pad) var(--iss-hero-pad-bottom) var(--iss-hero-left-pad);
   box-sizing: border-box;
   overflow: visible;
@@ -1067,28 +1067,6 @@
 /* =====================================================================
    GENERAL FRONT PAGE RHYTHM
    ===================================================================== */
-
-/* .home: Base class for home; apply on primary wrapper/scope. */
-/* .section: Base class for section; apply on primary wrapper/scope. */
-/* .iss-section--mission-support: Modifier class for `iss-section`; combine for `mission-support` variant. */
-.home .section:not(.iss-section--mission-support) {
-  padding-top: clamp(3.5rem, 6vw, 5.5rem);
-  padding-bottom: clamp(3.5rem, 6vw, 5.5rem);
-}
-
-
-
-/* .home: Base class for home; apply on primary wrapper/scope. */
-/* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
-.home .iss-heading {
-  max-width: 46rem;
-}
-
-/* .home: Base class for home; apply on primary wrapper/scope. */
-/* .iss-heading__text: Element class for `iss-heading`; apply on `text` element. */
-.home .iss-heading__text {
-  color: rgba(30, 30, 30, 0.72);
-}
 
 /* =====================================================================
    VISIT PANEL
@@ -2541,8 +2519,8 @@
 /* .iss-heading: Base class for iss heading; apply on primary wrapper/scope. */
 .iss-timeline-latest .iss-heading {
   width: 100%;
-  margin-left: 0 !important;
-  margin-right: auto !important;
+  margin-left: 0;
+  margin-right: auto;
   align-self: flex-start;
   justify-self: start;
   text-align: left;
@@ -2647,7 +2625,7 @@
 /* .iss-timeline-latest: Base class for iss timeline latest; apply on primary wrapper/scope. */
 /* .has-text-align-center: Base class for has text align center; apply on primary wrapper/scope. */
 .iss-timeline-latest .has-text-align-center {
-  text-align: left !important;
+  text-align: left;
 }
 
 
@@ -3783,6 +3761,13 @@ Raum / Vermietung → brown
   margin-right: auto;
 }
 
+/* Modifier for panels inside narrow columns (e.g. tour asides) */
+.iss-info-panel--full-width,
+.iss-tour-main__aside .iss-info-panel {
+  max-width: 100%;
+  margin: 0;
+}
+
 /* .iss-info-panel__grid: Element class for `iss-info-panel`; apply on `grid` element. */
 .iss-info-panel__grid {
   gap: clamp(1.75rem, 2.2vw, 3rem);
@@ -4639,21 +4624,6 @@ Raum / Vermietung → brown
     aspect-ratio: 4 / 3;
     height: auto;
   }
-}
-
-
-/* .iss-front-page-main: Base class for iss front page main; apply on primary wrapper/scope. */
-/* .iss-media-text: Base class for iss media text; apply on primary wrapper/scope. */
-/* .section: Base class for section; apply on primary wrapper/scope. */
-/* .iss-media-text__layout: Element class for `iss-media-text`; apply on `layout` element. */
-.iss-front-page-main .iss-media-text.section .iss-media-text__layout {
-  margin-top: 0 !important;
-}
-
-/* .iss-front-page-main: Base class for iss front page main; apply on primary wrapper/scope. */
-/* .iss-section--timeline: Modifier class for `iss-section`; combine for `timeline` variant. */
-.iss-front-page-main .iss-section--timeline {
-  padding-bottom: 0 !important;
 }
 
 
@@ -6291,5 +6261,122 @@ Raum / Vermietung → brown
 /* .iss-rental-qualities__image: Element class for `iss-rental-qualities`; apply on `image` element. */
   .iss-rental-qualities__image img {
     min-height: 260px;
+  }
+}
+/* =========================================================
+   GROUP: SINGLE BLOG POST TEMPLATE
+   ========================================================= */
+
+.iss-post-page {
+  margin: 0;
+}
+
+.iss-post-hero {
+  padding-top: calc(var(--iss-header-height) + 3rem);
+  padding-bottom: 3rem;
+}
+
+.iss-post-hero__media {
+  min-height: clamp(22rem, 52vh, 42rem);
+  margin-bottom: clamp(2rem, 4vw, 4rem);
+}
+
+.iss-post-hero__media > .wp-block-post-featured-image,
+.iss-post-hero__media > .wp-block-post-featured-image img {
+  width: 100%;
+  height: 100%;
+}
+
+.iss-post-hero__media > .wp-block-post-featured-image {
+  margin: 0;
+  overflow: hidden;
+}
+
+.iss-post-hero__media > .wp-block-post-featured-image img {
+  display: block;
+  max-width: none;
+  object-fit: cover;
+}
+
+.iss-post-hero__intro {
+  max-width: 54rem;
+}
+
+.iss-post-hero__title {
+  max-width: 13ch;
+  font-size: clamp(2.6rem, 5.5vw, 5rem);
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+.iss-post-hero__lede {
+  max-width: 44rem;
+  color: rgba(30, 30, 30, 0.72);
+  font-size: clamp(1rem, 1vw + 0.8rem, 1.2rem);
+}
+
+.iss-post-meta {
+  margin-top: 0.5rem;
+  color: rgba(30, 30, 30, 0.58);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.iss-post-content {
+  width: min(100% - (2 * var(--iss-container-pad)), 860px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.iss-post-content > * {
+  max-width: 100%;
+}
+
+.iss-post-content .alignwide {
+  width: min(100vw - (2 * var(--iss-container-pad)), 1280px);
+  max-width: none;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+.iss-post-content .alignfull {
+  width: 100vw;
+  max-width: none;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+.iss-post-content p,
+.iss-post-content li {
+  font-size: clamp(1.02rem, 0.25vw + 1rem, 1.15rem);
+  line-height: 1.75;
+}
+
+.iss-post-content h2,
+.iss-post-content h3,
+.iss-post-content h4 {
+  margin-top: 2.4em;
+}
+
+.iss-post-content figure {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.iss-post-related .iss-heading {
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+@media (max-width: 782px) {
+  .iss-post-hero {
+    padding-top: calc(var(--iss-header-height) + 1.5rem);
+  }
+
+  .iss-post-hero__media {
+    min-height: 18rem;
+  }
+
+  .iss-post-hero__title {
+    max-width: 11ch;
   }
 }

@@ -32,7 +32,7 @@ function iss_programm_register_frontend_assets() {
         'is-tour-calendar',
         plugin_dir_url(ISS_PROGRAMM_FILE) . 'assets/programm.js',
         ['is-tour-calendar-flatpickr', 'is-tour-calendar-flatpickr-l10n-de'],
-        ISS_PROGRAMM_VERSION,
+        filemtime(plugin_dir_path(ISS_PROGRAMM_FILE) . 'assets/programm.js'),
         true
     );
 
@@ -40,14 +40,14 @@ function iss_programm_register_frontend_assets() {
         'is-tour-calendar',
         plugin_dir_url(ISS_PROGRAMM_FILE) . 'assets/programm.css',
         [],
-        ISS_PROGRAMM_VERSION
+        filemtime(plugin_dir_path(ISS_PROGRAMM_FILE) . 'assets/programm.css')
     );
 
     wp_register_style(
         'iss-timeline',
         plugin_dir_url(ISS_PROGRAMM_FILE) . 'assets/timeline.css',
         [],
-        ISS_PROGRAMM_VERSION
+        filemtime(plugin_dir_path(ISS_PROGRAMM_FILE) . 'assets/timeline.css')
     );
 
     wp_add_inline_script(

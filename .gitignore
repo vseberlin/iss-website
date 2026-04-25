@@ -4,15 +4,10 @@
 
 # Keep this ignore file.
 !.gitignore
-!/docker-compose.yml
 !/themes/
 !/themes/industriesalon/
 !/themes/industriesalon/**
 
-# Keep only selected plugin paths for this repo snapshot.
+# Keep all plugins.
 !/plugins/
-/plugins/*
-!/plugins/iss-programm/
-!/plugins/iss-programm/**
-
-# Keep themes (note: `themes/` is its own git repo here).
+!/plugins/**
